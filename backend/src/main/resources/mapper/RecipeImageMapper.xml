@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fitness.mapper.RecipeImageMapper">
+    <select id="countByImageUrl" resultType="int">
+        SELECT COUNT(*) FROM recipe_images
+        WHERE SUBSTRING_INDEX(image_url, '://', -1) = SUBSTRING_INDEX(#{imageUrl}, '://', -1)
+    </select>
+    <insert id="insert" parameterType="RecipeImage">
+        INSERT INTO recipe_images (recipe_id, image_url, sort_order)
+        VALUES (#{recipeDbId}, #{imageUrl}, #{sortOrder})
+    </insert>
+
+    <update id="update" parameterType="RecipeImage">
+        UPDATE recipe_images
+        SET image_url = #{imageUrl},
+            sort_order = #{sortOrder}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteByRecipeDbId" parameterType="Long">
+        DELETE FROM recipe_images WHERE recipe_id = #{recipeDbId}
+    </delete>
+
+    <select id="findByRecipeDbId" parameterType="Long" resultType="RecipeImage">
+        SELECT id, recipe_id AS recipeDbId, image_url, sort_order
+        FROM recipe_images
+        WHERE recipe_id = #{recipeDbId}
+        ORDER BY sort_order ASC
+    </select>
+
+    <select id="findByRecipeDbIds" resultType="RecipeImage">
+        SELECT id, recipe_id AS recipeDbId, image_url, sort_order
+        FROM recipe_images
+        WHERE recipe_id IN
+        <foreach collection="recipeDbIds" item="recipeDbId" open="(" separator="," close=")">
+            #{recipeDbId}
+        </foreach>
+        ORDER BY recipe_id ASC, sort_order ASC, id ASC
+    </select>
+</mapper>

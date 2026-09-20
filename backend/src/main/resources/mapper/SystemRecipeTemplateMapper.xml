@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fitness.mapper.SystemRecipeTemplateMapper">
+    <resultMap id="base" type="SystemRecipeTemplate">
+        <id column="id" property="id"/>
+        <result column="template_id" property="recipeId"/>
+        <result column="name" property="mealType"/>
+        <result column="aliases" property="aliases"/>
+        <result column="category" property="category"/>
+        <result column="cuisine_type" property="cuisineType"/>
+        <result column="cover_image_url" property="coverImageUrl"/>
+        <result column="goal_tags" property="goalTags"/>
+        <result column="serving_description" property="servingDescription"/>
+        <result column="steps" property="steps"/>
+        <result column="protein" property="protein"/>
+        <result column="carb" property="carb"/>
+        <result column="fat" property="fat"/>
+        <result column="calorie" property="calorie"/>
+        <result column="allergen_info" property="allergenInfo"/>
+        <result column="source_name" property="sourceName"/>
+        <result column="source_ref" property="sourceRef"/>
+        <result column="data_version" property="dataVersion"/>
+    </resultMap>
+
+    <sql id="keywordFilter">
+        enabled = 1
+        <if test="goal != null and goal != ''">
+            AND COALESCE(goal_tags, '') LIKE CONCAT('%', #{goal}, '%')
+        </if>
+        <if test="cuisine != null and cuisine != ''">
+            AND cuisine_type = #{cuisine}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (name LIKE CONCAT('%', #{keyword}, '%')
+              OR COALESCE(aliases, '') LIKE CONCAT('%', #{keyword}, '%')
+              OR category LIKE CONCAT('%', #{keyword}, '%')
+              OR cuisine_type LIKE CONCAT('%', #{keyword}, '%')
+              OR COALESCE(goal_tags, '') LIKE CONCAT('%', #{keyword}, '%')
+              OR EXISTS (SELECT 1 FROM system_recipe_ingredients sri
+                         WHERE sri.template_id = system_recipe_templates.id
+                           AND sri.food_name LIKE CONCAT('%', #{keyword}, '%')))
+        </if>
+    </sql>
+
+    <select id="countEnabled" resultType="long">
+        SELECT COUNT(*) FROM system_recipe_templates WHERE <include refid="keywordFilter"/>
+    </select>
+    <select id="searchEnabled" resultMap="base">
+        SELECT * FROM system_recipe_templates WHERE <include refid="keywordFilter"/>
+        ORDER BY sort_order DESC, id ASC LIMIT #{offset}, #{size}
+    </select>
+    <select id="findByRecipeId" resultMap="base">
+        SELECT * FROM system_recipe_templates WHERE template_id = #{recipeId} AND enabled = 1
+    </select>
+    <select id="countEnabledByCoverImageUrl" resultType="long">
+        SELECT COUNT(*) FROM system_recipe_templates WHERE cover_image_url = #{imageUrl} AND enabled = 1
+    </select>
+</mapper>

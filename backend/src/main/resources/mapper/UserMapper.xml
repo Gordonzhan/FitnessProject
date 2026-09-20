@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fitness.mapper.UserMapper">
+    <resultMap id="UserResultMap" type="User">
+        <id column="id" property="id"/>
+        <result column="openid" property="openid"/>
+        <result column="display_name" property="displayName"/>
+        <result column="gender" property="gender"/>
+        <result column="age" property="age"/>
+        <result column="height" property="height"/>
+        <result column="weight" property="weight"/>
+        <result column="activity_level" property="activityLevel"/>
+        <result column="goal" property="goal"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <select id="findByOpenid" parameterType="String" resultMap="UserResultMap">
+        SELECT * FROM users WHERE openid = #{openid}
+    </select>
+
+    <select id="findById" parameterType="Long" resultMap="UserResultMap">
+        SELECT * FROM users WHERE id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO users (openid, display_name, gender, age, height, weight, activity_level, goal, created_at, updated_at)
+        VALUES (#{openid}, #{displayName}, #{gender}, #{age}, #{height}, #{weight}, #{activityLevel}, #{goal}, NOW(), NOW())
+    </insert>
+
+    <update id="update" parameterType="User">
+        UPDATE users
+        SET display_name = #{displayName},
+            gender = #{gender},
+            age = #{age},
+            height = #{height},
+            weight = #{weight},
+            activity_level = #{activityLevel},
+            goal = #{goal},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateWeight">
+        UPDATE users SET weight = #{weight}, updated_at = NOW() WHERE id = #{id}
+    </update>
+</mapper>

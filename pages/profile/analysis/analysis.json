@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "阶段分析",
+  "usingComponents": {
+    "ec-canvas": "/ec-canvas/ec-canvas"
+  }
+}

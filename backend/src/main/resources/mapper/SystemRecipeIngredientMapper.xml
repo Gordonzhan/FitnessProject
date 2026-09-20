@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fitness.mapper.SystemRecipeIngredientMapper">
+    <select id="findByTemplateDbId" resultType="SystemRecipeIngredient">
+        SELECT id, template_id AS templateDbId, food_name, weight, protein, carb, fat, calorie,
+               source_name, source_ref, data_version
+        FROM system_recipe_ingredients WHERE template_id = #{templateDbId} ORDER BY sort_order, id
+    </select>
+    <select id="findByTemplateDbIds" resultType="SystemRecipeIngredient">
+        SELECT id, template_id AS templateDbId, food_name, weight, protein, carb, fat, calorie,
+               source_name, source_ref, data_version
+        FROM system_recipe_ingredients WHERE template_id IN
+        <foreach collection="templateDbIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+        ORDER BY template_id, sort_order, id
+    </select>
+</mapper>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fitness.mapper.ComparisonSampleMapper">
+    <!-- participant_key 仅在服务端聚合期间存在，Controller 响应类型不包含该字段。 -->
+    <select id="aggregateByRange" resultType="com.fitness.dto.ComparisonParticipantStats">
+        SELECT participant_key,
+               MAX(masked_display_name) AS masked_display_name,
+               goal,
+               source,
+               COALESCE(SUM(completed_sessions), 0) AS completed_count,
+               COUNT(DISTINCT CASE WHEN completed_sessions > 0 THEN sample_date END) AS active_days,
+               COALESCE(SUM(planned_sessions), 0) AS planned_count,
+               COALESCE(SUM(cancelled_sessions), 0) AS cancelled_count,
+               COALESCE(SUM(actual_calories), 0) AS actual_calories
+        FROM comparison_daily_samples
+        WHERE sample_date BETWEEN #{startDate} AND #{endDate}
+          AND (source &lt;&gt; 'SYNTHETIC' OR #{includeSynthetic} = TRUE)
+        GROUP BY participant_key, goal, source
+        HAVING SUM(completed_sessions + planned_sessions + cancelled_sessions) > 0
+        ORDER BY participant_key
+    </select>
+</mapper>

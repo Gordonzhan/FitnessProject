@@ -1,0 +1,102 @@
+<!-- 按日期查看训练计划及完成记录 -->
+<view class="page-shell workout-page">
+  <view class="hero workout-hero">
+    <view class="hero-content">
+      <text class="hero-eyebrow">{{isFuture ? 'WORKOUT PLAN' : 'TRAINING LOG'}}</text>
+      <text class="hero-title">{{isFuture ? '提前安排，训练更从容' : '今天，也要比昨天更强'}}</text>
+      <text class="hero-copy">{{isFuture ? '未来安排只记录预计消耗，完成后才进入能量统计。' : '记录真实完成的训练，让每一次进步都有依据。'}}</text>
+      <view class="hero-badge-row">
+        <text class="hero-badge accent">{{currentWorkout ? currentWorkout.exercises.length : 0}} 个动作</text>
+        <text class="hero-badge">{{dateContextLabel}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 训练日期切换 -->
+  <view class="date-switcher">
+    <view class="date-arrow" bindtap="prevDay">‹</view>
+    <view class="date-center">
+      <text class="date-label">{{dateContextLabel}}</text>
+      <text class="date-value">{{currentDate}}</text>
+    </view>
+    <view class="date-arrow" bindtap="nextDay">›</view>
+  </view>
+
+  <view class="section-heading">
+    <view>
+      <text class="section-title">{{isFuture ? '训练安排' : '训练记录'}}</text>
+      <text class="section-subtitle">{{isFuture ? '计划不会提前计入实际消耗' : '只有已完成训练会进入能量统计'}}</text>
+    </view>
+    <view class="inline-action" bindtap="addWorkout">＋ {{isFuture ? '安排' : '记录'}}</view>
+  </view>
+
+  <view wx:if="{{loadingWorkout}}" class="section-card workout-message">正在加载训练数据…</view>
+  <view wx:elif="{{workoutError}}" class="section-card workout-message workout-error">
+    <text>{{workoutError}}</text>
+    <view class="message-retry" bindtap="loadWorkout">重新加载</view>
+  </view>
+
+  <!-- 当前日期训练详情及状态操作 -->
+  <view wx:elif="{{currentWorkout}}" class="workout-card {{currentWorkout.status === 'CANCELLED' ? 'is-cancelled' : ''}}">
+    <view class="workout-status-row">
+      <text class="status-chip status-{{currentWorkout.status}}">{{currentWorkout.statusText}}</text>
+      <text class="status-explain">{{currentWorkout.status === 'PLANNED' ? '预计消耗，不计入能量' : (currentWorkout.status === 'CANCELLED' ? '计划已取消，不计入能量' : '实际消耗已计入能量')}}</text>
+    </view>
+    <view class="workout-list">
+      <view wx:for="{{currentWorkout.exercises}}" wx:key="index" class="exercise-row">
+        <view class="exercise-number">{{index + 1}}</view>
+        <view class="exercise-content">
+          <text class="exercise-name">{{item.name}}</text>
+          <view class="exercise-prescription">
+            <text>{{item.weight}} kg</text>
+            <text class="exercise-dot">×</text>
+            <text>{{item.sets}} 组</text>
+            <text class="exercise-dot">×</text>
+            <text>{{item.reps}} 次</text>
+          </view>
+        </view>
+        <view class="exercise-energy">
+          <text class="exercise-calorie">{{item.calories}}</text>
+          <text class="exercise-unit">kcal</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="workout-total">
+      <view>
+        <text class="total-kicker">{{currentWorkout.status === 'COMPLETED' ? 'ACTUAL BURN' : 'ESTIMATED BURN'}}</text>
+        <text class="total-label">{{currentWorkout.status === 'COMPLETED' ? '本次实际训练消耗' : '本次训练预计消耗'}}</text>
+      </view>
+      <view class="total-value-wrap">
+        <text class="total-value">{{currentWorkout.displayCalories}}</text>
+        <text class="total-unit">kcal</text>
+      </view>
+    </view>
+
+    <view wx:if="{{currentWorkout.status === 'PLANNED'}}" class="plan-actions">
+      <view class="plan-secondary" bindtap="cancelPlan">取消计划</view>
+      <view wx:if="{{!isFuture}}" class="plan-primary" bindtap="completePlan">{{updatingStatus ? '处理中…' : '确认已完成'}}</view>
+      <view wx:else class="plan-primary" bindtap="addWorkout">编辑计划</view>
+    </view>
+    <view wx:elif="{{currentWorkout.status === 'CANCELLED'}}" class="plan-actions single-action">
+      <view class="plan-primary" bindtap="addWorkout">{{isFuture ? '重新安排' : '记录实际训练'}}</view>
+    </view>
+    <view wx:else class="plan-actions single-action">
+      <view class="plan-primary" bindtap="addWorkout">编辑训练记录</view>
+    </view>
+  </view>
+
+  <view wx:else class="section-card empty-state workout-empty">
+    <view class="empty-mark">↗</view>
+    <text class="empty-title">{{isFuture ? '该日还没有训练计划' : '该日还没有训练记录'}}</text>
+    <text class="empty-copy">{{isFuture ? '提前选好动作和训练量，到训练日再确认完成。' : '从一个动作开始，完成后会计入当天运动消耗。'}}</text>
+    <view class="empty-action" bindtap="addWorkout">{{isFuture ? '安排训练' : '开始记录训练'}}</view>
+  </view>
+</view>
+
+<!-- 始终位于原生 TabBar 上方的训练快捷入口。 -->
+<view class="list-quick-action {{loadingWorkout || updatingStatus ? 'button-disabled' : ''}}" bindtap="addWorkout">
+  <text class="list-quick-icon">＋</text>
+  <text>{{currentWorkout ? (isFuture ? '编辑计划' : '编辑训练') : (isFuture ? '安排训练' : '记录训练')}}</text>
+</view>
+<view wx:if="{{showBackToTop}}" class="list-back-to-top" bindtap="scrollToTop">↑</view>

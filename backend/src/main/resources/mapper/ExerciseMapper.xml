@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fitness.mapper.ExerciseMapper">
+    <resultMap id="ExerciseResultMap" type="Exercise">
+        <id column="id" property="id"/>
+        <result column="workout_id" property="workoutDbId"/>
+        <result column="name" property="name"/>
+        <result column="weight" property="weight"/>
+        <result column="sets" property="sets"/>
+        <result column="reps" property="reps"/>
+        <result column="calories" property="calories"/>
+    </resultMap>
+
+    <select id="findByWorkoutDbId" parameterType="Long" resultMap="ExerciseResultMap">
+        SELECT * FROM exercises WHERE workout_id = #{workoutDbId}
+    </select>
+
+    <select id="findByWorkoutDbIds" resultMap="ExerciseResultMap">
+        SELECT * FROM exercises
+        WHERE workout_id IN
+        <foreach collection="workoutDbIds" item="workoutDbId" open="(" separator="," close=")">
+            #{workoutDbId}
+        </foreach>
+        ORDER BY workout_id ASC, id ASC
+    </select>
+
+    <insert id="insert" parameterType="Exercise">
+        INSERT INTO exercises (workout_id, name, weight, sets, reps, calories)
+        VALUES (#{workoutDbId}, #{name}, #{weight}, #{sets}, #{reps}, #{calories})
+    </insert>
+
+    <update id="update" parameterType="Exercise">
+        UPDATE exercises
+        SET workout_id = #{workoutDbId},
+            name = #{name},
+            weight = #{weight},
+            sets = #{sets},
+            reps = #{reps},
+            calories = #{calories}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteByWorkoutDbId" parameterType="Long">
+        DELETE FROM exercises WHERE workout_id = #{workoutDbId}
+    </delete>
+</mapper>

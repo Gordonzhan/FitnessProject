@@ -1,0 +1,141 @@
+<!-- 新建、编辑及复制系统菜谱共用表单 -->
+<view class="page-shell form-page recipe-form-page">
+  <view class="form-intro">
+    <text class="form-intro-kicker">BUILD YOUR MEAL</text>
+    <text class="form-intro-title">{{sourceTemplateId ? '定制系统菜谱' : (recipeId ? '升级这份菜谱' : '创建能量菜谱')}}</text>
+    <text class="form-intro-copy">图片、食材与做法都可随时调整，营养会根据食材自动计算。</text>
+    <text wx:if="{{sourceTemplateId}}" class="form-intro-copy">保存后会生成你的独立菜谱，不会修改系统模板。</text>
+    <text wx:if="{{sourceTemplateId && dataVersion}}" class="form-intro-copy">数据版本：{{dataVersion}} · {{servingDescription}}</text>
+    <text wx:if="{{sourceTemplateId && allergenInfo}}" class="form-intro-copy">过敏原提示：{{allergenInfo}}</text>
+  </view>
+
+  <!-- 图片上传、失败重试和删除区域 -->
+  <view class="section-card upload-card">
+    <view class="form-section-head">
+      <view>
+        <text class="card-kicker">01 · COVER</text>
+        <text class="card-title">菜品图片</text>
+      </view>
+      <text class="section-counter">{{images.length}} / 9</text>
+    </view>
+
+    <view class="image-grid">
+      <view wx:for="{{images}}" wx:key="index" class="upload-image">
+        <image wx:if="{{!imageErrors[index]}}" src="{{item}}" mode="aspectFill" binderror="onImageError" data-index="{{index}}" data-url="{{item}}"></image>
+        <view wx:else class="image-error" bindtap="retryImage" data-index="{{index}}">
+          <text>图片加载失败</text>
+          <text class="image-retry">点击重试</text>
+        </view>
+        <view class="remove-image" catchtap="removeImage" data-index="{{index}}">×</view>
+      </view>
+      <view wx:if="{{images.length < 9}}" class="upload-trigger" bindtap="chooseImage">
+        <text class="upload-plus">＋</text>
+        <text class="upload-text">{{uploading ? '上传中…' : (choosingImages ? '选择中…' : '添加图片')}}</text>
+      </view>
+    </view>
+    <text class="upload-tip">建议使用清晰的横向成品图，上传时会自动压缩。</text>
+    <text wx:if="{{uploading}}" class="upload-status">上传进度 {{uploadCompleted}} / {{uploadTotal}}，最多同时上传2张，请稍候</text>
+    <text wx:if="{{uploadMessage}}" class="upload-status">{{uploadMessage}}</text>
+    <text class="upload-tip">加载失败可能是网络或OSS服务异常，不会自动删除图片；移除已有图片需保存后才生效。</text>
+  </view>
+
+  <!-- 菜谱名称与制作步骤 -->
+  <view class="section-card">
+    <view class="form-section-head">
+      <view>
+        <text class="card-kicker">02 · DETAILS</text>
+        <text class="card-title">菜谱信息</text>
+      </view>
+      <text class="optional-tag">选填</text>
+    </view>
+
+    <view class="field-group">
+      <text class="field-label">菜谱名称</text>
+      <input class="field" placeholder="例如：鸡胸藜麦能量碗" placeholder-class="field-placeholder" value="{{recipeName}}" bindinput="inputRecipeName" bindkeyboardheightchange="onKeyboardHeightChange"></input>
+    </view>
+    <view class="field-group">
+      <text class="field-label">制作步骤</text>
+      <textarea class="field" placeholder="分步骤写下做法，支持换行" placeholder-class="field-placeholder" value="{{steps}}" bindinput="inputSteps" bindkeyboardheightchange="onKeyboardHeightChange" maxlength="-1"></textarea>
+    </view>
+  </view>
+
+  <view class="section-card">
+    <view class="form-section-head">
+      <view>
+        <text class="card-kicker">03 · INGREDIENTS</text>
+        <text class="card-title">食材清单</text>
+      </view>
+      <view class="inline-action" bindtap="addIngredient">＋ 添加</view>
+    </view>
+
+    <view wx:if="{{ingredients.length === 0}}" class="ingredient-empty">
+      <text class="ingredient-empty-title">还没有食材</text>
+      <text class="ingredient-empty-copy">点击“添加”录入食材名称与重量</text>
+    </view>
+
+    <view wx:for="{{ingredients}}" wx:key="index" id="ingredient-{{index}}" class="ingredient-block">
+      <view class="ingredient-head">
+        <view class="ingredient-index">{{index + 1}}</view>
+        <text class="ingredient-title">食材 {{index + 1}}</text>
+        <view class="remove-text" catchtap="removeIngredient" data-index="{{index}}">移除</view>
+      </view>
+      <view class="field-group compact">
+        <text class="field-label">名称</text>
+        <view class="database-select-field" bindtap="openFoodSelector" data-index="{{index}}">
+          <text class="{{item.foodName ? 'database-select-value' : 'field-placeholder'}}">{{item.foodName || '搜索并选择食材'}}</text>
+          <text class="database-select-action">搜索选择 ›</text>
+        </view>
+        <text wx:if="{{item.foodName && !item.databaseMatched}}" class="field-error">该食材不在基础数据库中</text>
+      </view>
+      <view class="field-group compact">
+        <text class="field-label">重量</text>
+        <view class="field-row">
+          <input class="field" placeholder="0" placeholder-class="field-placeholder" value="{{item.weight}}" bindinput="inputIngredientWeight" bindkeyboardheightchange="onKeyboardHeightChange" data-index="{{index}}" type="digit"></input>
+          <text class="field-unit">克</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="nutrition-panel">
+    <view class="nutrition-heading">
+      <view>
+        <text class="nutrition-kicker">LIVE MACROS</text>
+        <text class="nutrition-title">营养汇总</text>
+      </view>
+      <view class="energy-total">
+        <text class="energy-number">{{totalNutrients.calorie}}</text>
+        <text class="energy-unit">kcal</text>
+      </view>
+    </view>
+    <view class="nutrition-grid">
+      <view class="nutrition-tile protein-tile">
+        <text class="nutrition-code">P</text>
+        <text class="nutrition-value">{{totalNutrients.protein}}g</text>
+        <text class="nutrition-name">蛋白质</text>
+      </view>
+      <view class="nutrition-tile carb-tile">
+        <text class="nutrition-code">C</text>
+        <text class="nutrition-value">{{totalNutrients.carb}}g</text>
+        <text class="nutrition-name">碳水</text>
+      </view>
+      <view class="nutrition-tile fat-tile">
+        <text class="nutrition-code">F</text>
+        <text class="nutrition-value">{{totalNutrients.fat}}g</text>
+        <text class="nutrition-name">脂肪</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 固定快捷新增与保存栏：键盘或选择器出现时隐藏，避免遮挡。 -->
+  <view wx:if="{{!keyboardOpen && !selectorVisible}}" class="sticky-action form-sticky-action">
+    <view class="sticky-add-button {{uploading || saving || choosingImages || removingImage || loadingRecipe || loadFailed ? 'button-disabled' : ''}}" bindtap="quickAddIngredient">
+      <text class="sticky-add-label">＋ 添加食材</text>
+      <text class="sticky-add-count">当前 {{ingredients.length}} 项</text>
+    </view>
+    <view class="primary-button {{uploading || saving || choosingImages || removingImage || loadingRecipe || loadFailed ? 'button-disabled' : ''}}" bindtap="saveRecipe">{{saving ? '保存中…' : (uploading ? '图片上传中…' : (recipeId ? '保存修改' : '保存菜谱'))}}</view>
+  </view>
+  <view wx:if="{{showBackToTop && !keyboardOpen && !selectorVisible}}" class="form-back-to-top" bindtap="scrollToTop">↑</view>
+
+  <reference-selector wx:if="{{selectorVisible}}" type="food" bindselect="selectIngredient" bindclose="closeFoodSelector"></reference-selector>
+</view>

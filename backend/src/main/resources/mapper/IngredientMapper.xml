@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fitness.mapper.IngredientMapper">
+    <insert id="insert" parameterType="Ingredient">
+        INSERT INTO ingredients (recipe_id, food_name, weight, protein, carb, fat, calorie)
+        VALUES (#{recipeDbId}, #{foodName}, #{weight}, #{protein}, #{carb}, #{fat}, #{calorie})
+    </insert>
+
+    <update id="update" parameterType="Ingredient">
+        UPDATE ingredients
+        SET food_name = #{foodName},
+            weight = #{weight},
+            protein = #{protein},
+            carb = #{carb},
+            fat = #{fat},
+            calorie = #{calorie}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteByRecipeDbId" parameterType="Long">
+        DELETE FROM ingredients WHERE recipe_id = #{recipeDbId}
+    </delete>
+
+    <select id="findByRecipeDbId" parameterType="Long" resultType="Ingredient">
+        SELECT id, recipe_id AS recipeDbId, food_name, weight, protein, carb, fat, calorie
+        FROM ingredients
+        WHERE recipe_id = #{recipeDbId}
+    </select>
+
+    <select id="findByRecipeDbIds" resultType="Ingredient">
+        SELECT id, recipe_id AS recipeDbId, food_name, weight, protein, carb, fat, calorie
+        FROM ingredients
+        WHERE recipe_id IN
+        <foreach collection="recipeDbIds" item="recipeDbId" open="(" separator="," close=")">
+            #{recipeDbId}
+        </foreach>
+        ORDER BY recipe_id ASC, id ASC
+    </select>
+</mapper>

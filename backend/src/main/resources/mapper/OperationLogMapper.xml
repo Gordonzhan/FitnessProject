@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fitness.mapper.OperationLogMapper">
+    <insert id="insert" parameterType="OperationLog">
+        INSERT INTO operation_logs
+          (user_id, request_id, event_type, target_ref, result, ip, interface_name, method,
+           request_params, status_code, error_message, execution_time, operation_time)
+        VALUES
+          (#{userId}, #{requestId}, #{eventType}, #{targetRef}, #{result}, #{ip}, #{interfaceName}, #{method},
+           #{requestParams}, #{statusCode}, #{errorMessage}, #{executionTime}, #{operationTime})
+    </insert>
+
+    <delete id="deleteBefore">
+        DELETE FROM operation_logs WHERE operation_time &lt; #{cutoff}
+    </delete>
+</mapper>

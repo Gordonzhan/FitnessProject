@@ -1,0 +1,44 @@
+{
+  "setting": {
+    "es6": true,
+    "postcss": true,
+    "minified": true,
+    "uglifyFileName": false,
+    "enhance": true,
+    "packNpmRelationList": [],
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    },
+    "useCompilerPlugins": false,
+    "minifyWXML": true,
+    "compileWorklet": false,
+    "uploadWithSourceMap": true,
+    "packNpmManually": false,
+    "minifyWXSS": true,
+    "localPlugins": false,
+    "disableUseStrict": false,
+    "condition": false
+  },
+  "compileType": "miniprogram",
+  "simulatorPluginLibVersion": {},
+  "packOptions": {
+    "ignore": [
+      { "type": "folder", "value": "backend" },
+      { "type": "folder", "value": "tools" },
+      { "type": "folder", "value": "deploy" },
+      { "type": "folder", "value": "images/system-recipes" },
+      { "type": "folder", "value": "images/branding" },
+      { "type": "folder", "value": "icon" },
+      { "type": "file", "value": "PROJECT_HANDOFF.md" },
+      { "type": "file", "value": "ITEM10_CLOUD_HOSTING_ROLLOUT_PLAN.md" },
+      { "type": "file", "value": "健身饮食日记小程序需求文档.md" },
+      { "type": "file", "value": "package.json" },
+      { "type": "suffix", "value": ".log" }
+    ],
+    "include": []
+  },
+  "appid": "<YOUR_WECHAT_MINIPROGRAM_APPID>",
+  "editorSetting": {}
+}

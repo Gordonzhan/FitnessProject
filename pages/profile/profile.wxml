@@ -1,0 +1,181 @@
+<!-- 用户身体档案与健身目标 -->
+<view class="page-shell profile-page">
+  <view class="profile-hero">
+    <view class="profile-avatar">
+      <view class="avatar-head"></view>
+      <view class="avatar-body"></view>
+    </view>
+    <view class="profile-hero-content">
+      <text class="profile-kicker">MY FITNESS PLAN</text>
+      <text class="profile-title">我的身体档案</text>
+      <text class="profile-subtitle">完善数据，获得更准确的能量建议</text>
+    </view>
+    <view class="profile-goal-pill">{{goal === 'lose_weight' ? '减脂' : (goal === 'gain_muscle' ? '增肌' : '保持')}}</view>
+  </view>
+
+  <view class="analysis-entry" bindtap="goToAnalysis">
+    <view class="analysis-entry-icon">↗</view>
+    <view class="analysis-entry-copy">
+      <text class="analysis-entry-kicker">PERSONAL ANALYSIS</text>
+      <text class="analysis-entry-title">查看阶段饮食与训练分析</text>
+      <text class="analysis-entry-note">按 7 / 30 / 90 天或自定义日期观察趋势</text>
+    </view>
+    <text class="analysis-entry-arrow">›</text>
+  </view>
+
+  <view class="analysis-entry activity-entry" bindtap="goToActivity">
+    <view class="analysis-entry-icon activity-entry-icon">步</view>
+    <view class="analysis-entry-copy">
+      <text class="analysis-entry-kicker">WECHAT ACTIVITY</text>
+      <text class="analysis-entry-title">同步微信运动步数</text>
+      <text class="analysis-entry-note">查看 31 天步数和独立估算消耗，不计入能量差</text>
+    </view>
+    <text class="analysis-entry-arrow">›</text>
+  </view>
+
+  <view class="analysis-entry comparison-entry" bindtap="goToPopulationComparison">
+    <view class="analysis-entry-icon comparison-entry-icon">%</view>
+    <view class="analysis-entry-copy">
+      <text class="analysis-entry-kicker">ANONYMOUS COMPARISON</text>
+      <text class="analysis-entry-title">查看近30天训练百分位</text>
+      <text class="analysis-entry-note">查看个人百分位与脱敏后的前10名训练榜</text>
+    </view>
+    <text class="analysis-entry-arrow">›</text>
+  </view>
+
+  <!-- 身体基础数据表单 -->
+  <view class="section-card profile-card">
+    <view class="profile-section-head">
+      <view>
+        <text class="card-kicker">BODY DATA</text>
+        <text class="card-title">基本信息</text>
+      </view>
+      <text class="profile-step">01</text>
+    </view>
+
+    <view class="profile-field first-field">
+      <view>
+        <text class="profile-label">展示昵称</text>
+        <text class="profile-hint">排行榜仅显示掩码，例如 g****n</text>
+      </view>
+      <view class="profile-input-wrap name-input-wrap">
+        <input class="profile-input name-input" maxlength="30" placeholder="选填" placeholder-class="profile-placeholder" value="{{displayName}}" bindinput="inputDisplayName"></input>
+      </view>
+    </view>
+
+    <view class="profile-field">
+      <text class="profile-label">性别</text>
+      <view class="gender-switch">
+        <view class="gender-option {{gender === 'male' ? 'active' : ''}}" bindtap="selectGender" data-value="male">男</view>
+        <view class="gender-option {{gender === 'female' ? 'active' : ''}}" bindtap="selectGender" data-value="female">女</view>
+      </view>
+    </view>
+
+    <view class="profile-field">
+      <view>
+        <text class="profile-label">年龄</text>
+        <text class="profile-hint">你的当前年龄</text>
+      </view>
+      <view class="profile-input-wrap">
+        <input class="profile-input" type="number" placeholder="0" placeholder-class="profile-placeholder" value="{{age}}" bindinput="inputAge"></input>
+        <text class="profile-unit">岁</text>
+      </view>
+    </view>
+
+    <view class="profile-field">
+      <view>
+        <text class="profile-label">身高</text>
+        <text class="profile-hint">用于计算基础代谢</text>
+      </view>
+      <view class="profile-input-wrap">
+        <input class="profile-input" type="digit" placeholder="0" placeholder-class="profile-placeholder" value="{{height}}" bindinput="inputHeight"></input>
+        <text class="profile-unit">cm</text>
+      </view>
+    </view>
+
+    <view class="profile-field">
+      <view>
+        <text class="profile-label">体重</text>
+        <text class="profile-hint">保存后同步训练计算</text>
+      </view>
+      <view class="profile-input-wrap">
+        <input class="profile-input" type="digit" placeholder="0" placeholder-class="profile-placeholder" value="{{weight}}" bindinput="inputWeight"></input>
+        <text class="profile-unit">kg</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="section-card profile-card">
+    <view class="profile-section-head">
+      <view>
+        <text class="card-kicker">YOUR GOAL</text>
+        <text class="card-title">健身目标</text>
+      </view>
+      <text class="profile-step">02</text>
+    </view>
+
+    <view class="goal-grid">
+      <view class="goal-option {{goal === 'lose_weight' ? 'active' : ''}}" bindtap="selectGoal" data-value="lose_weight">
+        <text class="goal-arrow">↓</text>
+        <text class="goal-name">减脂</text>
+        <text class="goal-copy">制造热量缺口</text>
+      </view>
+      <view class="goal-option {{goal === 'maintain' ? 'active' : ''}}" bindtap="selectGoal" data-value="maintain">
+        <text class="goal-arrow">＝</text>
+        <text class="goal-name">保持</text>
+        <text class="goal-copy">维持当前状态</text>
+      </view>
+      <view class="goal-option {{goal === 'gain_muscle' ? 'active' : ''}}" bindtap="selectGoal" data-value="gain_muscle">
+        <text class="goal-arrow">↑</text>
+        <text class="goal-name">增肌</text>
+        <text class="goal-copy">提供训练盈余</text>
+      </view>
+    </view>
+
+    <view class="activity-field">
+      <view>
+        <text class="profile-label">活动水平</text>
+        <text class="profile-hint">选择与你最接近的日常状态</text>
+      </view>
+      <picker mode="selector" range="{{activityLevels}}" range-key="label" value="{{activityIndex}}" bindchange="changeActivity">
+        <view class="activity-picker">
+          <text class="activity-value">{{activityLevels[activityIndex].label}}</text>
+          <text class="activity-arrow">›</text>
+        </view>
+      </picker>
+    </view>
+  </view>
+
+  <view class="section-heading result-heading">
+    <view>
+      <text class="section-title">能量建议</text>
+      <text class="section-subtitle">根据你的身体数据实时估算</text>
+    </view>
+  </view>
+
+  <view class="result-grid">
+    <view class="result-card bmr-card">
+      <text class="result-kicker">BMR</text>
+      <view class="result-value-wrap">
+        <text class="result-value">{{bmr}}</text>
+        <text class="result-unit">kcal</text>
+      </view>
+      <text class="result-label">基础代谢 / 天</text>
+    </view>
+    <view class="result-card target-card">
+      <text class="result-kicker">DAILY TARGET</text>
+      <view class="result-value-wrap">
+        <text class="result-value">{{dailyCalories}}</text>
+        <text class="result-unit">kcal</text>
+      </view>
+      <text class="result-label">每日推荐摄入</text>
+    </view>
+  </view>
+
+  <view class="goal-note">
+    <text class="goal-note-mark">✓</text>
+    <text>{{goalText || '填写完整信息后生成专属建议'}}</text>
+  </view>
+
+  <view class="profile-save primary-button" bindtap="saveProfile">保存身体档案</view>
+</view>

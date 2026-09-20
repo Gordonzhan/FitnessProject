@@ -1,0 +1,61 @@
+<view class="activity-page page-shell">
+  <view class="activity-hero">
+    <text class="activity-kicker">WECHAT ACTIVITY</text>
+    <text class="activity-title">微信运动步数</text>
+    <text class="activity-subtitle">同步最近 31 天步数，按体重生成独立活动估算</text>
+    <view class="sync-time">上次同步：{{lastSyncedText}}</view>
+  </view>
+
+  <view class="boundary-card">
+    <text class="boundary-title">不会改变你的能量差</text>
+    <text class="boundary-copy">步数估算不会写入训练记录，也不会与已完成训练消耗累计，仅用于观察日常活动趋势。</text>
+  </view>
+
+  <view wx:if="{{error}}" class="error-card">
+    <text>{{error}}</text>
+    <view wx:if="{{permissionDenied}}" class="settings-link" bindtap="openPermissionSettings">打开微信权限设置</view>
+  </view>
+
+  <button class="sync-button" loading="{{syncing}}" disabled="{{syncing || deleting}}" bindtap="syncWechat">
+    {{syncing ? '正在读取微信运动…' : '同步微信运动步数'}}
+  </button>
+  <text class="sync-hint">同步仅在你点击后进行；微信可能要求授权“微信运动”。</text>
+
+  <view wx:if="{{loading && !summary}}" class="state-card">正在加载活动记录…</view>
+  <block wx:elif="{{summary}}">
+    <view class="metric-grid">
+      <view class="metric-card"><text class="metric-label">今日步数</text><text class="metric-value">{{todaySteps}}</text><text class="metric-unit">步</text></view>
+      <view class="metric-card"><text class="metric-label">今日估算</text><text class="metric-value accent">{{todayCalories}}</text><text class="metric-unit">kcal</text></view>
+      <view class="metric-card"><text class="metric-label">近 7 天日均</text><text class="metric-value">{{sevenDayAverage}}</text><text class="metric-unit">步</text></view>
+    </view>
+
+    <view wx:if="{{!summary.recordedDays}}" class="empty-card">
+      <text class="empty-mark">—</text>
+      <text class="empty-title">尚未同步微信运动</text>
+      <text class="empty-copy">点击上方按钮并授权后，将显示最近 31 天微信运动汇总步数。</text>
+    </view>
+
+    <view wx:else class="trend-card">
+      <view class="card-heading"><text class="card-title">每日活动趋势</text><text class="recorded-days">{{summary.recordedDays}} 天</text></view>
+      <view wx:for="{{displayPoints}}" wx:key="date" class="trend-row">
+        <text class="trend-date">{{item.shortDate}}</text>
+        <view class="trend-track"><view class="trend-fill" style="width: {{item.barWidth}}%;"></view></view>
+        <view class="trend-values"><text>{{item.steps}} 步</text><text>{{item.caloriesText}} kcal 估算</text></view>
+      </view>
+    </view>
+
+    <view class="method-card">
+      <text class="method-kicker">ESTIMATION METHOD</text>
+      <text class="method-title">估算口径</text>
+      <text class="method-formula">{{summary.estimationFormula}}</text>
+      <text class="method-copy">每次同步使用当时档案体重，历史估算会随微信步数重新同步更新。它不能替代 Apple Watch 的实测活动热量。</text>
+    </view>
+
+    <view class="notice-list">
+      <text wx:for="{{summary.notices}}" wx:key="*this" class="notice-item">• {{item}}</text>
+      <text class="notice-item required">仅供健身参考，不构成医疗诊断。</text>
+    </view>
+
+    <button wx:if="{{summary.recordedDays}}" class="delete-button" loading="{{deleting}}" disabled="{{syncing || deleting}}" bindtap="deleteWechatData">删除本项目中的微信运动数据</button>
+  </block>
+</view>

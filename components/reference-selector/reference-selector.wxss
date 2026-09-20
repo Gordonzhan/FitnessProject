@@ -1,0 +1,80 @@
+/* 通用食材/动作选择器：底部弹层、筛选标签和分页状态。 */
+.selector-mask {
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(8, 15, 10, 0.58);
+}
+
+.selector-sheet {
+  position: fixed;
+  z-index: 1001;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 78vh;
+  padding: 30rpx 28rpx calc(24rpx + env(safe-area-inset-bottom));
+  border-radius: 36rpx 36rpx 0 0;
+  background: #f5f7f3;
+  box-sizing: border-box;
+}
+
+.selector-head, .result-item, .search-box {
+  display: flex;
+  align-items: center;
+}
+
+.selector-head { justify-content: space-between; }
+.selector-kicker { display: block; color: #19aa66; font-size: 19rpx; font-weight: 900; letter-spacing: 3rpx; }
+.selector-title { display: block; margin-top: 5rpx; color: #172019; font-size: 34rpx; font-weight: 900; }
+.selector-close { padding: 10rpx 14rpx; color: #67736a; font-size: 46rpx; }
+
+.search-box {
+  height: 86rpx;
+  margin-top: 24rpx;
+  padding: 0 22rpx;
+  border: 2rpx solid #dfe6df;
+  border-radius: 20rpx;
+  background: #ffffff;
+}
+.search-icon { margin-right: 14rpx; color: #19aa66; font-size: 36rpx; }
+.search-box input { flex: 1; height: 82rpx; color: #172019; font-size: 27rpx; }
+.search-placeholder { color: #aab3ac; }
+
+.category-list { width: 100%; margin-top: 16rpx; white-space: nowrap; }
+.category-row { display: inline-flex; padding-right: 24rpx; }
+.category-chip {
+  flex: none;
+  margin-right: 12rpx;
+  padding: 12rpx 22rpx;
+  border: 2rpx solid #dfe6df;
+  border-radius: 999rpx;
+  background: #ffffff;
+  color: #667269;
+  font-size: 22rpx;
+  font-weight: 750;
+}
+.category-chip-active { border-color: #19aa66; background: #19aa66; color: #ffffff; }
+
+.result-list { height: calc(78vh - 260rpx - env(safe-area-inset-bottom)); margin-top: 18rpx; }
+.result-summary {
+  display: flex;
+  justify-content: space-between;
+  padding: 2rpx 4rpx 14rpx;
+  color: #89938c;
+  font-size: 20rpx;
+  font-weight: 750;
+}
+.result-item { margin-bottom: 14rpx; padding: 22rpx; border-radius: 20rpx; background: #ffffff; box-shadow: 0 7rpx 20rpx rgba(20,32,25,.05); }
+.result-main { flex: 1; min-width: 0; }
+.result-name { display: block; color: #172019; font-size: 28rpx; font-weight: 850; }
+.result-meta, .result-alias { display: block; margin-top: 7rpx; color: #7b867e; font-size: 21rpx; }
+.result-alias { color: #9aa49c; }
+.result-value { margin-left: 18rpx; color: #ef7544; font-size: 28rpx; font-weight: 900; white-space: nowrap; }
+.result-unit { font-size: 18rpx; }
+.result-state { padding: 34rpx 12rpx; color: #89938c; font-size: 23rpx; text-align: center; }
+.result-error { color: #ba4d3b; }
+.retry-button { display: block; margin: 18rpx auto 0; color: #159255; font-weight: 850; }

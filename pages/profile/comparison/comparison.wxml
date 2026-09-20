@@ -1,0 +1,98 @@
+<view class="page-shell comparison-page">
+  <view class="comparison-hero">
+    <text class="comparison-kicker">30-DAY POSITION</text>
+    <text class="comparison-title">匿名训练横向对比</text>
+    <text class="comparison-subtitle">查看个人百分位与隐私保护后的训练排名</text>
+    <view class="period-pill">{{periodText || '最近30天'}}</view>
+  </view>
+
+  <view wx:if="{{loading}}" class="state-card">
+    <text class="state-title">正在计算匿名对比…</text>
+    <text class="state-note">只读取汇总样本，不加载其他用户明细</text>
+  </view>
+
+  <view wx:elif="{{error}}" class="state-card error-card">
+    <text class="state-title">加载失败</text>
+    <text class="state-note">{{error}}</text>
+    <view class="retry-button" bindtap="retry">重新加载</view>
+  </view>
+
+  <block wx:elif="{{summary}}">
+    <view wx:if="{{summary.demoData}}" class="demo-banner">
+      <text class="demo-badge">DEMO</text>
+      <view class="demo-copy">
+        <text class="demo-title">当前使用合成演示样本</text>
+        <text class="demo-note">仅用于本地功能验收，不能代表真实用户排名</text>
+      </view>
+    </view>
+
+    <view class="cohort-card">
+      <view>
+        <text class="section-kicker">COMPARISON GROUP</text>
+        <text class="cohort-label">{{summary.cohortLabel}}</text>
+      </view>
+      <view class="sample-count">
+        <text class="sample-number">{{summary.sampleSize}}</text>
+        <text class="sample-unit">有效样本</text>
+      </view>
+    </view>
+
+    <view class="section-heading">
+      <view>
+        <text class="section-title">{{statusTitle}}</text>
+        <text class="section-subtitle">{{statusDetail}}</text>
+      </view>
+    </view>
+
+    <view class="metric-list">
+      <view wx:for="{{metrics}}" wx:key="code" class="metric-card">
+        <view class="metric-topline">
+          <view>
+            <text class="metric-label">{{item.label}}</text>
+            <view class="metric-value-row">
+              <text class="metric-value">{{item.currentText}}</text>
+              <text class="metric-unit">{{item.unit}}</text>
+            </view>
+          </view>
+          <text class="percentile-pill {{item.percentile == null ? 'disabled' : ''}}">{{item.percentileText}}</text>
+        </view>
+        <view class="percentile-track">
+          <view class="percentile-fill" style="width: {{item.barWidth}}%;"></view>
+        </view>
+        <text class="metric-description">{{item.description}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{summary.leaderboard}}" class="leaderboard-card">
+      <view class="leaderboard-heading">
+        <view>
+          <text class="section-kicker">ANONYMOUS TOP 10</text>
+          <text class="leaderboard-title">{{summary.leaderboard.title}}</text>
+        </view>
+        <view class="my-rank">
+          <text class="my-rank-label">你的大致名次</text>
+          <view class="my-rank-value-row">
+            <text class="my-rank-value">{{summary.leaderboard.currentRank}}</text>
+            <text class="my-rank-total">/ {{summary.leaderboard.totalParticipants}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="leaderboard-list">
+        <view wx:for="{{leaderboardEntries}}" wx:key="rowKey" class="leaderboard-row">
+          <text class="rank-number">{{item.rank}}</text>
+          <text class="rank-name">{{item.displayName}}</text>
+          <text class="rank-band">{{item.valueBand}}</text>
+        </view>
+      </view>
+      <text class="leaderboard-note">{{summary.leaderboard.note}}</text>
+    </view>
+
+    <view class="privacy-card">
+      <text class="privacy-title">隐私与口径说明</text>
+      <view wx:for="{{summary.notices}}" wx:key="*this" class="notice-row">
+        <text class="notice-dot">•</text>
+        <text class="notice-text">{{item}}</text>
+      </view>
+    </view>
+  </block>
+</view>

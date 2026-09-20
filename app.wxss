@@ -1,0 +1,544 @@
+/* 全局主题变量的视觉基线、通用布局卡片和底部安全区样式。 */
+page {
+  min-height: 100%;
+  background: #f2f5f0;
+  color: #172019;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+  font-size: 28rpx;
+  line-height: 1.5;
+}
+
+view,
+text,
+input,
+textarea,
+picker,
+image {
+  box-sizing: border-box;
+}
+
+.page-shell {
+  min-height: 100vh;
+  padding: 24rpx 24rpx 150rpx;
+}
+
+.form-page {
+  padding-bottom: 210rpx;
+}
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 28rpx;
+  padding: 40rpx 36rpx;
+  border-radius: 32rpx;
+  background: #142019;
+  color: #ffffff;
+  box-shadow: 0 18rpx 44rpx rgba(20, 32, 25, 0.16);
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  top: -92rpx;
+  right: -56rpx;
+  width: 250rpx;
+  height: 250rpx;
+  border: 38rpx solid rgba(190, 242, 96, 0.12);
+  border-radius: 50%;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  right: 36rpx;
+  bottom: 34rpx;
+  width: 120rpx;
+  height: 12rpx;
+  border-radius: 999rpx;
+  background: #bef260;
+  transform: rotate(-14deg);
+  opacity: 0.9;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-eyebrow {
+  display: block;
+  margin-bottom: 10rpx;
+  color: #bef260;
+  font-size: 22rpx;
+  font-weight: 800;
+  letter-spacing: 4rpx;
+}
+
+.hero-title {
+  display: block;
+  max-width: 560rpx;
+  font-size: 46rpx;
+  font-weight: 800;
+  line-height: 1.18;
+  letter-spacing: -1rpx;
+}
+
+.hero-copy {
+  display: block;
+  max-width: 530rpx;
+  margin-top: 14rpx;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 25rpx;
+  line-height: 1.6;
+}
+
+.hero-badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 28rpx;
+}
+
+.hero-badge {
+  margin-right: 12rpx;
+  margin-bottom: 8rpx;
+  padding: 10rpx 18rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.16);
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 23rpx;
+  font-weight: 600;
+}
+
+.hero-badge.accent {
+  border-color: #bef260;
+  background: #bef260;
+  color: #142019;
+}
+
+.section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin: 36rpx 4rpx 20rpx;
+}
+
+.section-title {
+  display: block;
+  color: #172019;
+  font-size: 34rpx;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.section-subtitle {
+  display: block;
+  margin-top: 5rpx;
+  color: #859088;
+  font-size: 23rpx;
+}
+
+.section-card {
+  margin-bottom: 22rpx;
+  padding: 30rpx;
+  border: 1rpx solid rgba(26, 45, 34, 0.06);
+  border-radius: 28rpx;
+  background: #ffffff;
+  box-shadow: 0 10rpx 30rpx rgba(35, 54, 42, 0.06);
+}
+
+.card-kicker {
+  display: block;
+  color: #1ab56c;
+  font-size: 21rpx;
+  font-weight: 800;
+  letter-spacing: 3rpx;
+}
+
+.card-title {
+  display: block;
+  color: #172019;
+  font-size: 32rpx;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.card-copy {
+  color: #7a867e;
+  font-size: 24rpx;
+}
+
+.inline-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 64rpx;
+  padding: 0 24rpx;
+  border-radius: 999rpx;
+  background: #e8f8ef;
+  color: #148553;
+  font-size: 25rpx;
+  font-weight: 700;
+}
+
+.inline-action:active {
+  background: #d8f2e3;
+  transform: scale(0.98);
+}
+
+.primary-button,
+.secondary-button,
+.danger-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 84rpx;
+  padding: 0 28rpx;
+  border-radius: 20rpx;
+  font-size: 28rpx;
+  font-weight: 800;
+}
+
+.primary-button {
+  background: #bef260;
+  color: #142019;
+  box-shadow: 0 10rpx 24rpx rgba(136, 190, 53, 0.2);
+}
+
+.secondary-button {
+  background: #eef2ed;
+  color: #34423a;
+}
+
+.danger-button {
+  background: #fff0ed;
+  color: #d9513d;
+}
+
+.primary-button:active,
+.secondary-button:active,
+.danger-button:active {
+  transform: scale(0.98);
+  opacity: 0.88;
+}
+
+/* 异步操作期间统一呈现禁用状态，并阻止重复点击。 */
+.button-disabled {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.field-group {
+  margin-top: 24rpx;
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 10rpx;
+  color: #48554d;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.field,
+.input {
+  width: 100%;
+  min-height: 88rpx;
+  padding: 0 24rpx;
+  border: 2rpx solid #e7ece7;
+  border-radius: 18rpx;
+  background: #f8faf7;
+  color: #172019;
+  font-size: 28rpx;
+}
+
+textarea.field,
+textarea.input {
+  min-height: 190rpx;
+  padding-top: 22rpx;
+  padding-bottom: 22rpx;
+  line-height: 1.65;
+}
+
+.field-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.field-row .field,
+.field-row .input {
+  padding-right: 90rpx;
+}
+
+.field-unit {
+  position: absolute;
+  right: 24rpx;
+  color: #8c978f;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.date-switcher {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+  padding: 14rpx;
+  border-radius: 24rpx;
+  background: #ffffff;
+  box-shadow: 0 8rpx 26rpx rgba(35, 54, 42, 0.06);
+}
+
+.date-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 68rpx;
+  height: 68rpx;
+  border-radius: 18rpx;
+  background: #eff4ed;
+  color: #172019;
+  font-size: 38rpx;
+  font-weight: 500;
+}
+
+.date-arrow:active {
+  background: #bef260;
+}
+
+.date-center {
+  text-align: center;
+}
+
+.date-label {
+  display: block;
+  color: #9aa39d;
+  font-size: 20rpx;
+  font-weight: 700;
+  letter-spacing: 2rpx;
+}
+
+.date-value {
+  display: block;
+  margin-top: 2rpx;
+  color: #172019;
+  font-size: 29rpx;
+  font-weight: 800;
+}
+
+.empty-state {
+  padding: 76rpx 32rpx 64rpx;
+  text-align: center;
+}
+
+.empty-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 108rpx;
+  height: 108rpx;
+  margin: 0 auto 24rpx;
+  border-radius: 32rpx;
+  background: #e9f8ef;
+  color: #18a662;
+  font-size: 48rpx;
+  font-weight: 800;
+  transform: rotate(-7deg);
+}
+
+.empty-title {
+  display: block;
+  color: #27332b;
+  font-size: 30rpx;
+  font-weight: 800;
+}
+
+.empty-copy {
+  display: block;
+  margin-top: 10rpx;
+  color: #909991;
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
+.empty-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 28rpx;
+  padding: 18rpx 30rpx;
+  border-radius: 999rpx;
+  background: #172019;
+  color: #ffffff;
+  font-size: 25rpx;
+  font-weight: 700;
+}
+
+.sticky-action {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 50;
+  padding: 18rpx 24rpx calc(18rpx + env(safe-area-inset-bottom));
+  border-top: 1rpx solid rgba(26, 45, 34, 0.08);
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.sticky-action .primary-button {
+  min-height: 92rpx;
+  border-radius: 24rpx;
+  background: #172019;
+  color: #bef260;
+  box-shadow: 0 12rpx 30rpx rgba(20, 32, 25, 0.18);
+}
+
+/* 长表单固定操作栏：左侧快捷新增并显示明细数量，右侧保留主保存操作。 */
+.form-sticky-action {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+}
+
+.form-sticky-action .primary-button {
+  flex: 1;
+  min-width: 0;
+}
+
+.sticky-add-button {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 206rpx;
+  min-height: 92rpx;
+  border: 2rpx solid #dbe5dc;
+  border-radius: 24rpx;
+  background: #edf8f1;
+  color: #158b56;
+  font-weight: 850;
+}
+
+.sticky-add-label {
+  color: #158b56;
+  font-size: 23rpx;
+  line-height: 1.25;
+}
+
+.sticky-add-count {
+  margin-top: 4rpx;
+  color: #7a897f;
+  font-size: 18rpx;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.sticky-add-button:active {
+  transform: scale(0.97);
+}
+
+.form-back-to-top {
+  position: fixed;
+  right: 28rpx;
+  bottom: calc(138rpx + env(safe-area-inset-bottom));
+  z-index: 49;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64rpx;
+  height: 64rpx;
+  border: 4rpx solid #f2f5f0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.96);
+  color: #536057;
+  font-size: 30rpx;
+  font-weight: 800;
+  box-shadow: 0 8rpx 24rpx rgba(20, 32, 25, 0.15);
+}
+
+.floating-button {
+  position: fixed;
+  right: 28rpx;
+  bottom: calc(124rpx + env(safe-area-inset-bottom));
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 108rpx;
+  height: 108rpx;
+  border: 8rpx solid #f2f5f0;
+  border-radius: 34rpx;
+  background: #172019;
+  color: #bef260;
+  font-size: 58rpx;
+  font-weight: 400;
+  box-shadow: 0 14rpx 34rpx rgba(20, 32, 25, 0.28);
+  transform: rotate(-4deg);
+}
+
+.floating-button:active {
+  transform: rotate(-4deg) scale(0.94);
+}
+
+/* TabBar 页面统一快捷入口：固定在安全区上方，不遮挡原生导航。 */
+.list-quick-action {
+  position: fixed;
+  right: 24rpx;
+  bottom: calc(118rpx + env(safe-area-inset-bottom));
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 188rpx;
+  height: 82rpx;
+  padding: 0 24rpx;
+  border: 6rpx solid #f2f5f0;
+  border-radius: 28rpx;
+  background: #172019;
+  color: #bef260;
+  font-size: 24rpx;
+  font-weight: 850;
+  box-shadow: 0 14rpx 34rpx rgba(20, 32, 25, 0.25);
+}
+
+.list-quick-icon {
+  margin-right: 8rpx;
+  font-size: 34rpx;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.list-quick-action:active {
+  transform: scale(0.96);
+}
+
+.list-back-to-top {
+  position: fixed;
+  right: 34rpx;
+  bottom: calc(216rpx + env(safe-area-inset-bottom));
+  z-index: 44;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64rpx;
+  height: 64rpx;
+  border: 4rpx solid #f2f5f0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.96);
+  color: #536057;
+  font-size: 30rpx;
+  font-weight: 800;
+  box-shadow: 0 8rpx 24rpx rgba(20, 32, 25, 0.15);
+}
+
+.divider {
+  height: 1rpx;
+  background: #edf0ec;
+}
+
+.muted {
+  color: #8b958e;
+}

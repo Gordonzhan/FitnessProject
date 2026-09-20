@@ -1,0 +1,46 @@
+.activity-page { padding-bottom: 100rpx; }
+.activity-hero { position: relative; overflow: hidden; padding: 36rpx; border-radius: 32rpx; background: #172019; color: #fff; }
+.activity-hero::after { content: ""; position: absolute; right: -62rpx; bottom: -70rpx; width: 210rpx; height: 210rpx; border: 32rpx solid rgba(190,242,96,.12); border-radius: 50%; }
+.activity-kicker { display: block; color: #bef260; font-size: 19rpx; font-weight: 900; letter-spacing: 3rpx; }
+.activity-title { display: block; margin-top: 8rpx; font-size: 42rpx; font-weight: 850; }
+.activity-subtitle { display: block; margin-top: 8rpx; color: rgba(255,255,255,.62); font-size: 23rpx; }
+.sync-time { display: inline-block; margin-top: 24rpx; padding: 8rpx 14rpx; border-radius: 999rpx; background: rgba(255,255,255,.09); color: rgba(255,255,255,.78); font-size: 20rpx; }
+.boundary-card { margin: 22rpx 0; padding: 24rpx 26rpx; border-left: 8rpx solid #bef260; border-radius: 22rpx; background: #fff; }
+.boundary-title { display: block; color: #172019; font-size: 27rpx; font-weight: 850; }
+.boundary-copy { display: block; margin-top: 6rpx; color: #77827b; font-size: 22rpx; line-height: 1.6; }
+.error-card { margin-bottom: 18rpx; padding: 20rpx 24rpx; border-radius: 20rpx; background: #fff0eb; color: #b94f35; font-size: 22rpx; }
+.settings-link { margin-top: 10rpx; color: #168f59; font-weight: 800; }
+.sync-button { height: 92rpx; border: 0; border-radius: 24rpx; background: #bef260; color: #172019; font-size: 28rpx; font-weight: 850; line-height: 92rpx; }
+.sync-button::after, .delete-button::after { border: 0; }
+.sync-button[disabled] { background: #dce5d7; color: #81907f; }
+.sync-hint { display: block; margin: 10rpx 8rpx 24rpx; color: #8c978f; font-size: 20rpx; text-align: center; }
+.state-card, .empty-card { padding: 42rpx 28rpx; border-radius: 26rpx; background: #fff; color: #7f8b83; text-align: center; }
+.metric-grid { display: flex; gap: 14rpx; margin-bottom: 22rpx; }
+.metric-card { flex: 1; min-width: 0; padding: 23rpx 17rpx; border-radius: 24rpx; background: #fff; }
+.metric-label, .metric-unit { display: block; color: #929d95; font-size: 19rpx; }
+.metric-value { display: block; margin: 7rpx 0 1rpx; color: #172019; font-size: 36rpx; font-weight: 900; overflow: hidden; text-overflow: ellipsis; }
+.metric-value.accent { color: #15955b; }
+.empty-mark { display: block; color: #cbd3cc; font-size: 48rpx; }
+.empty-title { display: block; margin-top: 4rpx; color: #354139; font-size: 28rpx; font-weight: 800; }
+.empty-copy { display: block; margin-top: 8rpx; font-size: 22rpx; }
+.trend-card, .method-card { margin-bottom: 22rpx; padding: 28rpx; border-radius: 28rpx; background: #fff; }
+.card-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20rpx; }
+.card-title { color: #172019; font-size: 30rpx; font-weight: 850; }
+.recorded-days { color: #8b968e; font-size: 21rpx; }
+.trend-row { display: flex; align-items: center; min-height: 68rpx; border-top: 1rpx solid #edf1ed; }
+.trend-row:first-of-type { border-top: 0; }
+.trend-date { width: 72rpx; color: #647169; font-size: 21rpx; }
+.trend-track { flex: 1; height: 12rpx; overflow: hidden; border-radius: 999rpx; background: #edf2e9; }
+.trend-fill { height: 100%; border-radius: 999rpx; background: #bef260; }
+.trend-values { width: 170rpx; margin-left: 16rpx; text-align: right; }
+.trend-values text { display: block; color: #344039; font-size: 20rpx; }
+.trend-values text + text { color: #96a098; font-size: 18rpx; }
+.method-card { background: #172019; color: #fff; }
+.method-kicker { display: block; color: #bef260; font-size: 18rpx; font-weight: 900; letter-spacing: 3rpx; }
+.method-title { display: block; margin-top: 5rpx; font-size: 30rpx; font-weight: 850; }
+.method-formula { display: block; margin-top: 17rpx; color: #bef260; font-size: 25rpx; font-weight: 800; }
+.method-copy { display: block; margin-top: 10rpx; color: rgba(255,255,255,.62); font-size: 21rpx; line-height: 1.65; }
+.notice-list { margin: 26rpx 4rpx; }
+.notice-item { display: block; margin-bottom: 9rpx; color: #748078; font-size: 21rpx; line-height: 1.55; }
+.notice-item.required { color: #435149; font-weight: 750; }
+.delete-button { margin-top: 18rpx; border: 1rpx solid #e4c6bd; border-radius: 22rpx; background: transparent; color: #bd5b43; font-size: 24rpx; }

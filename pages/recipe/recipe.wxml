@@ -1,0 +1,157 @@
+<!-- 菜谱目录工具栏和快速新增入口 -->
+<view class="page-shell recipe-page">
+  <view class="recipe-toolbar">
+    <view>
+      <text class="section-title">菜谱中心</text>
+      <text class="recipe-summary">{{total}} 份菜谱</text>
+    </view>
+    <view class="create-recipe-button" bindtap="addRecipe">
+      <text class="create-icon">＋</text>
+      <text>新建</text>
+    </view>
+  </view>
+
+  <!-- 关键字、来源及高级筛选 -->
+  <view class="recipe-search">
+    <text class="search-icon">⌕</text>
+    <input value="{{keyword}}" bindinput="searchRecipe" bindfocus="onSearchFocus" bindblur="onSearchBlur" placeholder="搜索菜谱名称、食材或分类" placeholder-class="search-placeholder"></input>
+    <text wx:if="{{keyword}}" class="search-clear" bindtap="clearSearch">×</text>
+  </view>
+  <view class="source-filter-bar">
+    <scroll-view class="source-tabs" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="source-tab-row">
+        <view class="source-tab {{source === '' ? 'active' : ''}}" bindtap="selectSource" data-source="">全部</view>
+        <view class="source-tab {{source === 'USER' ? 'active user' : ''}}" bindtap="selectSource" data-source="USER">我的菜谱</view>
+        <view class="source-tab {{source === 'SYSTEM' ? 'active' : ''}}" bindtap="selectSource" data-source="SYSTEM">系统菜谱</view>
+      </view>
+    </scroll-view>
+    <view wx:if="{{source !== 'USER'}}" class="filter-trigger {{advancedFilterCount ? 'active' : ''}}" bindtap="openFilters">
+      <text class="filter-trigger-icon">≡</text>
+      <text>筛选</text>
+      <text wx:if="{{advancedFilterCount}}" class="filter-count">{{advancedFilterCount}}</text>
+    </view>
+  </view>
+
+  <view wx:if="{{advancedFilterCount}}" class="active-filters">
+    <text class="active-filter-label">已选</text>
+    <view wx:if="{{cuisine}}" class="active-filter-chip" bindtap="clearCuisineFilter">{{cuisine}} <text>×</text></view>
+    <view wx:if="{{goal}}" class="active-filter-chip" bindtap="clearGoalFilter">{{goal}} <text>×</text></view>
+  </view>
+
+  <!-- 用户菜谱优先的分页目录 -->
+  <view wx:for="{{recipes}}" wx:for-item="recipe" wx:key="recipeId" class="recipe-card {{recipe.isSelected ? 'is-selected' : ''}}">
+    <view class="recipe-main" bindtap="viewRecipe" data-recipeid="{{recipe.recipeId}}" data-sourcetype="{{recipe.sourceType}}">
+      <view class="recipe-cover">
+        <image wx:if="{{recipe.images && recipe.images.length > 0 && !recipe.coverFailed}}" src="{{recipe.images[0].imageUrl}}" mode="aspectFill" binderror="onCoverError" data-recipeid="{{recipe.recipeId}}"></image>
+        <view wx:else class="recipe-placeholder">
+          <text class="placeholder-icon">N</text>
+          <text class="placeholder-copy">{{recipe.coverFailed ? '图片暂不可用' : 'FUEL'}}</text>
+        </view>
+        <text wx:if="{{recipe.isSelected}}" class="selected-tag">今日</text>
+      </view>
+
+      <view class="recipe-content">
+        <view class="recipe-heading">
+          <view class="recipe-name-wrap">
+            <view class="recipe-tag-row">
+              <text class="source-badge {{recipe.sourceType === 'SYSTEM' ? 'system' : 'user'}}" catchtap="selectSource" data-source="{{recipe.sourceType}}">{{recipe.sourceType === 'SYSTEM' ? '系统菜谱' : '我的菜谱'}}</text>
+              <text wx:if="{{recipe.sourceType === 'SYSTEM'}}" class="recipe-label">{{(recipe.cuisineType || '轻食') + ' · ' + recipe.category}}</text>
+            </view>
+            <text class="recipe-name">{{recipe.mealType}}</text>
+            <text wx:if="{{recipe.sourceType === 'SYSTEM' && recipe.goalTags}}" class="recipe-goals">{{recipe.goalTags}}</text>
+          </view>
+          <text class="recipe-chevron">›</text>
+        </view>
+
+        <view class="calorie-line">
+          <text class="calorie-number">{{recipe.calorie}}</text>
+          <text class="calorie-unit">KCAL</text>
+        </view>
+
+        <view class="macro-row">
+          <view class="macro-chip protein">
+            <text class="macro-key">P</text>
+            <text class="macro-value">{{recipe.protein}}g</text>
+          </view>
+          <view class="macro-chip carb">
+            <text class="macro-key">C</text>
+            <text class="macro-value">{{recipe.carb}}g</text>
+          </view>
+          <view class="macro-chip fat">
+            <text class="macro-key">F</text>
+            <text class="macro-value">{{recipe.fat}}g</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="recipe-actions">
+      <view wx:if="{{!recipe.isSelected}}" class="recipe-select {{addingRecipeId ? 'button-disabled' : ''}}" catchtap="selectForToday" data-recipeid="{{recipe.recipeId}}" data-mealtype="{{recipe.mealType}}">
+        <text class="action-symbol">＋</text>
+        <text>{{addingRecipeId === recipe.recipeId ? '添加中…' : '加入今日饮食'}}</text>
+      </view>
+      <view wx:else class="recipe-select selected" catchtap="cancelSelect" data-recipeid="{{recipe.recipeId}}" data-mealtype="{{recipe.mealType}}">
+        <text class="action-symbol">✓</text>
+        <text>已加入 · 点击取消</text>
+      </view>
+      <view wx:if="{{recipe.deletable}}" class="recipe-delete" catchtap="deleteRecipe" data-recipeid="{{recipe.recipeId}}" data-mealtype="{{recipe.mealType}}">删除</view>
+      <view wx:else class="recipe-copy" catchtap="copyRecipe" data-recipeid="{{recipe.recipeId}}">复制编辑</view>
+    </view>
+  </view>
+
+  <view wx:if="{{!loading && recipes.length === 0}}" class="section-card empty-state">
+    <view class="empty-mark">＋</view>
+    <text class="empty-title">{{keyword || advancedFilterCount ? '没有找到相关菜谱' : (source === 'USER' ? '还没有自己的菜谱' : '开始创建你的能量菜单')}}</text>
+    <text class="empty-copy">{{keyword || advancedFilterCount ? '试试调整搜索词或筛选条件。' : '你可以自己创建，也可以从系统菜谱复制后调整。'}}</text>
+    <view wx:if="{{!keyword && !advancedFilterCount}}" class="empty-actions">
+      <view class="empty-action" bindtap="addRecipe">新建菜谱</view>
+      <view wx:if="{{source === 'USER'}}" class="empty-action secondary" bindtap="showSystemRecipes">看看系统菜谱</view>
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="catalog-status">加载中…</view>
+  <view wx:elif="{{recipes.length && !hasMore}}" class="catalog-status">已加载全部菜谱</view>
+
+</view>
+
+<!-- 始终位于原生 TabBar 上方的快捷新增入口；键盘和筛选弹层打开时隐藏。 -->
+<view wx:if="{{!filterOpen && !searchFocused}}" class="list-quick-action" bindtap="addRecipe">
+  <text class="list-quick-icon">＋</text>
+  <text>新建菜谱</text>
+</view>
+<view wx:if="{{showBackToTop && !filterOpen && !searchFocused}}" class="list-back-to-top" bindtap="scrollToTop">↑</view>
+
+<view wx:if="{{filterOpen}}" class="filter-overlay" bindtap="closeFilters">
+  <view class="filter-sheet" catchtap="stopPropagation">
+    <view class="sheet-handle"></view>
+    <view class="sheet-heading">
+      <view>
+        <text class="sheet-eyebrow">FILTER RECIPES</text>
+        <text class="sheet-title">筛选系统菜谱</text>
+      </view>
+      <text class="sheet-close" bindtap="closeFilters">×</text>
+    </view>
+
+    <view class="sheet-section">
+      <text class="sheet-label">菜式</text>
+      <view class="sheet-options">
+        <view class="sheet-option {{draftCuisine === '' ? 'active' : ''}}" bindtap="selectDraftCuisine" data-cuisine="">全部菜式</view>
+        <view class="sheet-option {{draftCuisine === '中式家常' ? 'active' : ''}}" bindtap="selectDraftCuisine" data-cuisine="中式家常">中式家常</view>
+      </view>
+    </view>
+
+    <view class="sheet-section">
+      <text class="sheet-label">健身目标</text>
+      <view class="sheet-options">
+        <view class="sheet-option {{draftGoal === '' ? 'active' : ''}}" bindtap="selectDraftGoal" data-goal="">全部目标</view>
+        <view class="sheet-option {{draftGoal === '减脂友好' ? 'active' : ''}}" bindtap="selectDraftGoal" data-goal="减脂友好">减脂友好</view>
+        <view class="sheet-option {{draftGoal === '增肌友好' ? 'active' : ''}}" bindtap="selectDraftGoal" data-goal="增肌友好">增肌友好</view>
+      </view>
+    </view>
+
+    <view class="sheet-actions">
+      <view class="sheet-reset" bindtap="resetDraftFilters">重置</view>
+      <view class="sheet-apply" bindtap="applyFilters">查看结果</view>
+    </view>
+  </view>
+</view>

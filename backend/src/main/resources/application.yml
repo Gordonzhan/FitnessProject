@@ -1,0 +1,100 @@
+spring:
+  config:
+    # 自动读取 backend/.env，方便 IntelliJ 直接启动；文件不存在时仍允许读取系统环境变量
+    import: 'optional:file:./.env[.properties]'
+  datasource:
+    url: ${FITNESS_DB_URL:jdbc:mysql://localhost:3306/fitness_diary?useSSL=false&serverTimezone=UTC}
+    username: ${FITNESS_DB_USERNAME:root}
+    password: ${FITNESS_DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: ${FITNESS_DB_POOL_MAX_SIZE:10}
+      minimum-idle: ${FITNESS_DB_POOL_MIN_IDLE:2}
+      connection-timeout: ${FITNESS_DB_CONNECTION_TIMEOUT_MS:5000}
+      validation-timeout: ${FITNESS_DB_VALIDATION_TIMEOUT_MS:3000}
+      idle-timeout: ${FITNESS_DB_IDLE_TIMEOUT_MS:600000}
+      max-lifetime: ${FITNESS_DB_MAX_LIFETIME_MS:1800000}
+  servlet:
+    multipart:
+      max-file-size: ${FITNESS_UPLOAD_MAX_FILE_SIZE:20MB}
+      max-request-size: ${FITNESS_UPLOAD_MAX_REQUEST_SIZE:20MB}
+  jpa:
+    open-in-view: false
+    properties:
+      # 覆盖基础数据模块使用的 JPA 查询；MyBatis 查询由 SlowQueryInterceptor 记录。
+      hibernate.log_slow_query: ${FITNESS_SLOW_QUERY_MS:300}
+  
+  security:
+    basic:
+      enabled: false
+  
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.fitness.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+  
+server:
+  # 云托管可通过 PORT 注入监听端口；本地仍默认 8080。
+  port: ${PORT:8080}
+  servlet:
+    context-path: /api
+
+# 自定义配置
+fitness:
+  # 生产发布时显式设为 true；启动阶段会拒绝不安全的微信认证配置。
+  production-mode: ${FITNESS_PRODUCTION_MODE:false}
+  # 训练日期和“未来90天”边界按产品业务时区判断，不依赖服务器所在时区。
+  business-zone: ${FITNESS_BUSINESS_ZONE:Asia/Shanghai}
+  audit:
+    # 0 表示关闭自动清理；其他值会限制在 30～365 天，默认每天 03:20 清理。
+    retention-days: ${FITNESS_AUDIT_RETENTION_DAYS:90}
+    cleanup-cron: ${FITNESS_AUDIT_CLEANUP_CRON:0 20 3 * * *}
+  performance:
+    slow-query-ms: ${FITNESS_SLOW_QUERY_MS:300}
+    slow-request-ms: ${FITNESS_SLOW_REQUEST_MS:800}
+    category-cache-ttl-seconds: ${FITNESS_CATEGORY_CACHE_TTL_SECONDS:300}
+    user-cache-ttl-seconds: ${FITNESS_USER_CACHE_TTL_SECONDS:30}
+    user-cache-max-size: ${FITNESS_USER_CACHE_MAX_SIZE:10000}
+  auth:
+    # 本地未配置时会生成临时密钥；部署时必须通过环境变量设置固定随机值
+    token-secret: ${FITNESS_AUTH_TOKEN_SECRET:}
+    token-ttl-seconds: ${FITNESS_AUTH_TOKEN_TTL_SECONDS:604800}
+  wechat:
+    # 本地联调默认复用 database.sql 中的 test_openid 用户，部署前必须关闭
+    mock-enabled: ${FITNESS_WECHAT_MOCK_ENABLED:true}
+    mock-openid: ${FITNESS_WECHAT_MOCK_OPENID:test_openid}
+    app-id: ${FITNESS_WECHAT_APP_ID:}
+    app-secret: ${FITNESS_WECHAT_APP_SECRET:}
+    # 云托管开放接口服务的内网地址；正式环境通常无需覆盖。
+    open-data-url: ${FITNESS_WECHAT_OPEN_DATA_URL:http://api.weixin.qq.com/wxa/getopendata}
+  comparison:
+    # 正式环境默认不读取合成样本；本地 R7 验收时显式开启。
+    include-synthetic: ${FITNESS_COMPARISON_INCLUDE_SYNTHETIC:false}
+    minimum-sample-size: ${FITNESS_COMPARISON_MINIMUM_SAMPLE_SIZE:10}
+    real-snapshot-enabled: ${FITNESS_COMPARISON_REAL_SNAPSHOT_ENABLED:false}
+    hash-secret: ${FITNESS_COMPARISON_HASH_SECRET:}
+    minimum-user-events: ${FITNESS_COMPARISON_MINIMUM_USER_EVENTS:4}
+    snapshot-cron: ${FITNESS_COMPARISON_SNAPSHOT_CRON:0 10 4 * * *}
+  upload:
+    path: /uploads
+  oss:
+    endpoint: ${FITNESS_OSS_ENDPOINT:https://oss-cn-beijing.aliyuncs.com}
+    region: ${FITNESS_OSS_REGION:cn-beijing}
+    access-key-id: ${FITNESS_OSS_ACCESS_KEY_ID:}
+    access-key-secret: ${FITNESS_OSS_ACCESS_KEY_SECRET:}
+    bucket-name: ${FITNESS_OSS_BUCKET_NAME:}
+    image-dir: ${FITNESS_OSS_IMAGE_DIR:fitness-diary/images/}
+    sts-role-arn: ${FITNESS_OSS_STS_ROLE_ARN:}
+    upload-ticket-ttl-seconds: ${FITNESS_OSS_UPLOAD_TICKET_TTL_SECONDS:300}
+    upload-ticket-cleanup-delay-ms: ${FITNESS_OSS_UPLOAD_TICKET_CLEANUP_DELAY_MS:60000}
+  
+# 日志配置
+logging:
+  level:
+    root: info
+    com.fitness: ${FITNESS_LOG_LEVEL:info}

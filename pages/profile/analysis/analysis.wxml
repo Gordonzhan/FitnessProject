@@ -1,0 +1,118 @@
+<view class="analysis-page page-shell">
+  <view class="analysis-hero">
+    <text class="analysis-kicker">PERSONAL PHASE REVIEW</text>
+    <text class="analysis-title">阶段饮食与训练分析</text>
+    <text class="analysis-subtitle">按业务日期汇总饮食快照与已完成训练</text>
+    <view class="range-caption">{{startDate}} 至 {{endDate}}</view>
+  </view>
+
+  <view class="preset-row">
+    <view wx:for="{{presets}}" wx:key="*this" class="preset-chip {{activePreset === item ? 'active' : ''}}" bindtap="selectPreset" data-days="{{item}}">近 {{item}} 天</view>
+  </view>
+
+  <view class="section-card range-card">
+    <view class="range-pickers">
+      <picker class="range-picker" mode="date" value="{{startDate}}" end="{{today}}" bindchange="changeStartDate">
+        <text class="range-label">开始</text>
+        <text class="range-value">{{startDate}}</text>
+      </picker>
+      <text class="range-divider">→</text>
+      <picker class="range-picker" mode="date" value="{{endDate}}" end="{{today}}" bindchange="changeEndDate">
+        <text class="range-label">结束</text>
+        <text class="range-value">{{endDate}}</text>
+      </picker>
+    </view>
+    <view class="range-apply" bindtap="applyCustomRange">应用自定义范围</view>
+  </view>
+
+  <view wx:if="{{loading && !summary}}" class="analysis-state section-card">正在生成阶段分析…</view>
+  <view wx:elif="{{error && !summary}}" class="analysis-state section-card">
+    <text>{{error}}</text>
+    <view class="retry-button" bindtap="loadAnalysis">重新加载</view>
+  </view>
+
+  <block wx:elif="{{summary}}">
+    <view wx:if="{{refreshing}}" class="refresh-banner">正在更新所选范围，图表会保留显示…</view>
+    <view wx:elif="{{error}}" class="refresh-banner refresh-error">
+      <text>{{error}}</text>
+      <text class="refresh-retry" bindtap="loadAnalysis">重试</text>
+    </view>
+    <view class="state-banner {{summary.dataState === 'COMPLETE' ? 'complete' : ''}}">
+      <view>
+        <text class="state-label">数据状态</text>
+        <text class="state-title">{{stateText}}</text>
+      </view>
+      <text class="state-days">饮食 {{summary.averages.nutritionRecordedDays}} / {{summary.totalDays}} 天</text>
+    </view>
+
+    <view wx:if="{{summary.dataState === 'NO_DATA'}}" class="empty-panel section-card">
+      <text class="empty-mark">—</text>
+      <text class="empty-title">这个阶段还没有可分析记录</text>
+      <text class="empty-copy">先在饮食页添加每日饮食，或在训练页记录已完成训练；也可以在下方补录体重。</text>
+    </view>
+
+    <!-- 用 hidden 保留已有 Canvas；切换范围时只更新 option，不重新创建图表。 -->
+    <view hidden="{{summary.dataState === 'NO_DATA'}}">
+      <view class="metric-grid">
+        <view class="metric-card"><text class="metric-label">日均摄入</text><text class="metric-value">{{summary.averages.intakeCalories}}</text><text class="metric-unit">kcal</text></view>
+        <view class="metric-card"><text class="metric-label">日均实际消耗</text><text class="metric-value green">{{summary.averages.actualExpenditure}}</text><text class="metric-unit">kcal</text></view>
+        <view class="metric-card"><text class="metric-label">日均能量差</text><text class="metric-value dark">{{summary.averages.energyDifference}}</text><text class="metric-unit">kcal</text></view>
+      </view>
+
+      <view class="assessment-card {{summary.goalAssessment.status === 'ROUGHLY_ALIGNED' ? 'aligned' : ''}}">
+        <text class="assessment-kicker">GOAL CHECK</text>
+        <text class="assessment-title">{{summary.goalAssessment.title}}</text>
+        <text class="assessment-detail">{{summary.goalAssessment.detail}}</text>
+      </view>
+
+      <view class="section-card chart-card">
+        <view class="chart-head"><text class="chart-title">能量收支趋势</text><text class="chart-note">仅计已完成训练实际消耗</text></view>
+        <ec-canvas id="energy-chart" canvas-id="energy-chart-canvas" ec="{{energyEc}}" class="analysis-chart"></ec-canvas>
+      </view>
+
+      <view class="section-card chart-card">
+        <view class="chart-head"><text class="chart-title">三大营养素趋势</text><text class="chart-note">按饮食快照汇总</text></view>
+        <ec-canvas id="macro-chart" canvas-id="macro-chart-canvas" ec="{{macroEc}}" class="analysis-chart"></ec-canvas>
+      </view>
+
+      <view class="section-card macro-card">
+        <view class="macro-head">
+          <view><text class="card-kicker">DAILY REFERENCE</text><text class="card-title">宏量营养素参考</text></view>
+          <text class="weight-chip">{{summary.macroReference.referenceWeight}} kg</text>
+        </view>
+        <view class="macro-row"><text class="macro-name protein">蛋白质</text><text class="macro-range">{{summary.macroReference.protein.min}}～{{summary.macroReference.protein.max}} {{summary.macroReference.protein.unit}}</text></view>
+        <view class="macro-row"><text class="macro-name carb">碳水</text><text class="macro-range">{{summary.macroReference.carb.min}}～{{summary.macroReference.carb.max}} {{summary.macroReference.carb.unit}}</text></view>
+        <view class="macro-row"><text class="macro-name fat">脂肪</text><text class="macro-range">{{summary.macroReference.fat.min}}～{{summary.macroReference.fat.max}} {{summary.macroReference.fat.unit}}</text></view>
+        <text class="macro-note">{{summary.macroReference.note}}</text>
+      </view>
+
+      <view class="section-card completion-card">
+        <text class="card-kicker">TRAINING FOLLOW-THROUGH</text>
+        <text class="card-title">训练完成率</text>
+        <text class="completion-value">{{completionText}}</text>
+        <text class="completion-note">取消与尚未完成的计划不会计入真实消耗。</text>
+      </view>
+
+      <view class="section-card weight-trend-card">
+        <view class="weight-trend-head"><text class="card-title">阶段体重趋势</text><text>{{summary.weightPointCount}} 个日期</text></view>
+        <view wx:if="{{summary.goalAssessment.hasWeightTrend}}" class="weight-change">{{summary.goalAssessment.weightChange > 0 ? '+' : ''}}{{summary.goalAssessment.weightChange}} kg</view>
+        <text wx:else class="weight-insufficient">数据不足：需要至少两个不同日期的体重记录</text>
+      </view>
+    </view>
+
+    <view class="section-card weight-form">
+      <view><text class="card-kicker">WEIGHT HISTORY</text><text class="card-title">补录体重</text></view>
+      <view class="weight-form-row">
+        <picker class="weight-date" mode="date" value="{{weightDate}}" end="{{today}}" bindchange="changeWeightDate">{{weightDate}}</picker>
+        <view class="weight-input-wrap"><input type="digit" value="{{weightValue}}" placeholder="例如 68.5" bindinput="inputWeight"></input><text>kg</text></view>
+        <button class="weight-save" loading="{{savingWeight}}" disabled="{{savingWeight}}" bindtap="saveWeight">记录</button>
+      </view>
+      <text class="weight-form-note">同一天可多次记录；趋势会采用当天最后一条。补录今天时会同步档案当前体重。</text>
+    </view>
+
+    <view class="notice-list">
+      <text wx:for="{{summary.notices}}" wx:key="*this" class="notice-item">• {{item}}</text>
+      <text class="notice-item notice-required">仅供健身参考，不构成医疗诊断。</text>
+    </view>
+  </block>
+</view>

@@ -1,0 +1,12 @@
+target/
+.idea/
+.env
+*.log
+hs_err_pid*.log
+replay_pid*.log
+dev-data/
+data-sources/
+migrations/
+database.sql
+database-design.md
+README.md

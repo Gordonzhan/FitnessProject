@@ -1,0 +1,446 @@
+/* 档案页：身体数据表单、目标选择和能量计算结果。 */
+.profile-page {
+  padding-bottom: 170rpx;
+}
+
+.profile-hero {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  margin-bottom: 24rpx;
+  padding: 34rpx;
+  border-radius: 32rpx;
+  background: #172019;
+  color: #ffffff;
+  box-shadow: 0 18rpx 44rpx rgba(20, 32, 25, 0.16);
+}
+
+.profile-hero::after {
+  content: "";
+  position: absolute;
+  right: -50rpx;
+  bottom: -90rpx;
+  width: 210rpx;
+  height: 210rpx;
+  border: 30rpx solid rgba(190, 242, 96, 0.1);
+  border-radius: 50%;
+}
+
+.analysis-entry {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24rpx;
+  padding: 26rpx;
+  border: 2rpx solid #e4ebe4;
+  border-radius: 26rpx;
+  background: #ffffff;
+  box-shadow: 0 10rpx 28rpx rgba(35, 54, 42, 0.06);
+}
+
+.analysis-entry-icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 70rpx;
+  height: 70rpx;
+  margin-right: 18rpx;
+  border-radius: 20rpx;
+  background: #172019;
+  color: #bef260;
+  font-size: 34rpx;
+  font-weight: 900;
+}
+
+.analysis-entry-copy { flex: 1; min-width: 0; }
+.analysis-entry-kicker { display: block; color: #15955b; font-size: 17rpx; font-weight: 900; letter-spacing: 2rpx; }
+.analysis-entry-title { display: block; margin-top: 4rpx; color: #172019; font-size: 27rpx; font-weight: 850; }
+.analysis-entry-note { display: block; margin-top: 5rpx; color: #929d95; font-size: 20rpx; }
+.analysis-entry-arrow { margin-left: 14rpx; color: #829087; font-size: 42rpx; }
+.activity-entry { margin-top: -10rpx; }
+.activity-entry-icon { background: #bef260; color: #172019; font-size: 24rpx; }
+.comparison-entry { margin-top: -10rpx; }
+.comparison-entry-icon { background: #e8f0ff; color: #315fa8; font-size: 27rpx; }
+
+.profile-avatar {
+  position: relative;
+  flex-shrink: 0;
+  width: 104rpx;
+  height: 104rpx;
+  margin-right: 24rpx;
+  overflow: hidden;
+  border-radius: 32rpx;
+  background: #bef260;
+  transform: rotate(-5deg);
+}
+
+.avatar-head {
+  position: absolute;
+  top: 22rpx;
+  left: 36rpx;
+  width: 34rpx;
+  height: 34rpx;
+  border-radius: 50%;
+  background: #172019;
+}
+
+.avatar-body {
+  position: absolute;
+  right: 22rpx;
+  bottom: 12rpx;
+  left: 22rpx;
+  height: 40rpx;
+  border-radius: 40rpx 40rpx 12rpx 12rpx;
+  background: #172019;
+}
+
+.profile-hero-content {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-kicker {
+  display: block;
+  color: #bef260;
+  font-size: 18rpx;
+  font-weight: 900;
+  letter-spacing: 3rpx;
+}
+
+.profile-title {
+  display: block;
+  margin-top: 5rpx;
+  font-size: 33rpx;
+  font-weight: 850;
+}
+
+.profile-subtitle {
+  display: block;
+  margin-top: 6rpx;
+  color: rgba(255, 255, 255, 0.54);
+  font-size: 20rpx;
+}
+
+.profile-goal-pill {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  margin-left: 12rpx;
+  padding: 9rpx 14rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  font-size: 20rpx;
+  font-weight: 700;
+}
+
+.profile-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18rpx;
+}
+
+.card-kicker {
+  margin-bottom: 4rpx;
+}
+
+.profile-step {
+  color: #dce2dc;
+  font-size: 44rpx;
+  font-weight: 900;
+  font-style: italic;
+}
+
+.profile-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 112rpx;
+  border-top: 1rpx solid #edf1ed;
+}
+
+.profile-field.first-field {
+  border-top: none;
+}
+
+.profile-label {
+  display: block;
+  color: #354139;
+  font-size: 26rpx;
+  font-weight: 800;
+}
+
+.profile-hint {
+  display: block;
+  margin-top: 4rpx;
+  color: #9ca59f;
+  font-size: 20rpx;
+}
+
+.gender-switch {
+  display: flex;
+  padding: 6rpx;
+  border-radius: 17rpx;
+  background: #eff3ee;
+}
+
+.gender-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 94rpx;
+  height: 60rpx;
+  border-radius: 13rpx;
+  color: #7d8880;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.gender-option.active {
+  background: #172019;
+  color: #bef260;
+  box-shadow: 0 5rpx 12rpx rgba(20, 32, 25, 0.14);
+}
+
+.profile-input-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 220rpx;
+}
+
+.profile-input {
+  width: 130rpx;
+  height: 70rpx;
+  color: #172019;
+  font-size: 31rpx;
+  font-weight: 850;
+  text-align: right;
+}
+
+.name-input-wrap { min-width: 280rpx; }
+.name-input { width: 260rpx; font-size: 26rpx; }
+
+.profile-placeholder {
+  color: #c0c6c1;
+}
+
+.profile-unit {
+  width: 66rpx;
+  margin-left: 8rpx;
+  color: #7f8a82;
+  font-size: 22rpx;
+  font-weight: 700;
+}
+
+.goal-grid {
+  display: flex;
+  margin-top: 26rpx;
+  margin-right: -12rpx;
+}
+
+.goal-option {
+  flex: 1;
+  min-width: 0;
+  margin-right: 12rpx;
+  padding: 22rpx 14rpx;
+  border: 2rpx solid #ebefeb;
+  border-radius: 21rpx;
+  background: #f8faf7;
+  text-align: center;
+}
+
+.goal-option.active {
+  border-color: #172019;
+  background: #172019;
+}
+
+.goal-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48rpx;
+  height: 48rpx;
+  margin: 0 auto 12rpx;
+  border-radius: 15rpx;
+  background: #e6f6ec;
+  color: #15955b;
+  font-size: 26rpx;
+  font-weight: 900;
+}
+
+.goal-option.active .goal-arrow {
+  background: #bef260;
+  color: #172019;
+}
+
+.goal-name {
+  display: block;
+  color: #344039;
+  font-size: 26rpx;
+  font-weight: 800;
+}
+
+.goal-copy {
+  display: block;
+  margin-top: 5rpx;
+  color: #9aa39d;
+  font-size: 18rpx;
+  white-space: nowrap;
+}
+
+.goal-option.active .goal-name {
+  color: #ffffff;
+}
+
+.goal-option.active .goal-copy {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.activity-field {
+  margin-top: 28rpx;
+  padding-top: 26rpx;
+  border-top: 1rpx solid #edf1ed;
+}
+
+.activity-picker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 84rpx;
+  margin-top: 14rpx;
+  padding: 0 20rpx;
+  border: 2rpx solid #e7ece7;
+  border-radius: 18rpx;
+  background: #f8faf7;
+}
+
+.activity-value {
+  flex: 1;
+  overflow: hidden;
+  color: #465249;
+  font-size: 24rpx;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.activity-arrow {
+  margin-left: 12rpx;
+  color: #8e9991;
+  font-size: 36rpx;
+}
+
+.result-heading {
+  margin-top: 34rpx;
+}
+
+.result-grid {
+  display: flex;
+  margin-right: -16rpx;
+}
+
+.result-card {
+  flex: 1;
+  min-width: 0;
+  margin-right: 16rpx;
+  padding: 28rpx 24rpx;
+  border-radius: 26rpx;
+}
+
+.bmr-card {
+  background: #ffffff;
+  box-shadow: 0 10rpx 28rpx rgba(35, 54, 42, 0.06);
+}
+
+.target-card {
+  background: #bef260;
+}
+
+.result-kicker {
+  display: block;
+  color: #1a9a5e;
+  font-size: 18rpx;
+  font-weight: 900;
+  letter-spacing: 2rpx;
+}
+
+.target-card .result-kicker {
+  color: rgba(20, 32, 25, 0.58);
+}
+
+.result-value-wrap {
+  display: flex;
+  align-items: baseline;
+  margin-top: 14rpx;
+}
+
+.result-value {
+  overflow: hidden;
+  color: #172019;
+  font-size: 42rpx;
+  font-weight: 900;
+  letter-spacing: -1rpx;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.result-unit {
+  margin-left: 6rpx;
+  color: #7f8a82;
+  font-size: 18rpx;
+  font-weight: 700;
+}
+
+.target-card .result-unit {
+  color: rgba(20, 32, 25, 0.56);
+}
+
+.result-label {
+  display: block;
+  margin-top: 6rpx;
+  color: #919b93;
+  font-size: 20rpx;
+}
+
+.target-card .result-label {
+  color: rgba(20, 32, 25, 0.6);
+}
+
+.goal-note {
+  display: flex;
+  align-items: center;
+  margin-top: 18rpx;
+  padding: 20rpx 22rpx;
+  border-radius: 19rpx;
+  background: #e8f6ed;
+  color: #51705d;
+  font-size: 22rpx;
+  line-height: 1.5;
+}
+
+.goal-note-mark {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 38rpx;
+  height: 38rpx;
+  margin-right: 12rpx;
+  border-radius: 50%;
+  background: #179b5e;
+  color: #ffffff;
+  font-size: 20rpx;
+  font-weight: 900;
+}
+
+.profile-save {
+  margin-top: 28rpx;
+  background: #172019;
+  color: #bef260;
+  box-shadow: 0 12rpx 30rpx rgba(20, 32, 25, 0.18);
+}

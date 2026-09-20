@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fitness.mapper.DailyIntakeMapper">
+    <resultMap id="DailyIntakeResultMap" type="DailyIntake">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="date" property="date"/>
+        <result column="recipe_id" property="recipeDbId"/>
+        <result column="request_id" property="requestId"/>
+        <result column="recipe_business_id" property="recipeBusinessId"/>
+        <result column="meal_type_snapshot" property="mealTypeSnapshot"/>
+        <result column="protein_snapshot" property="proteinSnapshot"/>
+        <result column="carb_snapshot" property="carbSnapshot"/>
+        <result column="fat_snapshot" property="fatSnapshot"/>
+        <result column="calorie_snapshot" property="calorieSnapshot"/>
+    </resultMap>
+
+    <select id="findByUserIdAndDate" resultMap="DailyIntakeResultMap">
+        SELECT id, user_id, date, recipe_id, request_id, recipe_business_id, meal_type_snapshot,
+               protein_snapshot, carb_snapshot, fat_snapshot, calorie_snapshot
+        FROM daily_intake WHERE user_id = #{userId} AND date = #{date} ORDER BY id ASC
+    </select>
+
+    <insert id="insertIfAbsent" parameterType="DailyIntake">
+        INSERT INTO daily_intake
+          (user_id, date, recipe_id, request_id, recipe_business_id, meal_type_snapshot,
+           protein_snapshot, carb_snapshot, fat_snapshot, calorie_snapshot)
+        VALUES
+          (#{userId}, #{date}, #{recipeDbId}, #{requestId}, #{recipeBusinessId}, #{mealTypeSnapshot},
+           #{proteinSnapshot}, #{carbSnapshot}, #{fatSnapshot}, #{calorieSnapshot})
+        ON DUPLICATE KEY UPDATE request_id = VALUES(request_id)
+    </insert>
+
+    <select id="sumCaloriesByUserIdAndDate" resultType="java.math.BigDecimal">
+        SELECT COALESCE(SUM(calorie_snapshot), 0)
+        FROM daily_intake WHERE user_id = #{userId} AND date = #{date}
+    </select>
+
+    <!-- R5 必须聚合已保存的营养快照，不能回查菜谱当前值。 -->
+    <select id="aggregateByDateRange" resultType="com.fitness.dto.DailyNutritionSummary">
+        SELECT date,
+               COALESCE(SUM(calorie_snapshot), 0) AS calories,
+               COALESCE(SUM(protein_snapshot), 0) AS protein,
+               COALESCE(SUM(carb_snapshot), 0) AS carb,
+               COALESCE(SUM(fat_snapshot), 0) AS fat,
+               COUNT(*) AS record_count
+        FROM daily_intake
+        WHERE user_id = #{userId}
+          AND date BETWEEN #{startDate} AND #{endDate}
+        GROUP BY date
+        ORDER BY date ASC
+    </select>
+
+    <delete id="deleteByUserIdAndDateAndId">
+        DELETE FROM daily_intake
+        WHERE id = #{intakeId} AND user_id = #{userId} AND date = #{date}
+    </delete>
+
+    <delete id="deleteByUserIdAndDateAndRecipeDbId">
+        DELETE FROM daily_intake
+        WHERE user_id = #{userId} AND date = #{date} AND recipe_id = #{recipeDbId}
+    </delete>
+    <delete id="deleteByUserIdAndDateAndRecipeBusinessId">
+        DELETE FROM daily_intake
+        WHERE user_id = #{userId} AND date = #{date} AND recipe_business_id = #{recipeId}
+    </delete>
+</mapper>

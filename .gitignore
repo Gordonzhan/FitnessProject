@@ -1,0 +1,25 @@
+# Backend build output and JVM crash logs
+backend/target/
+*.log
+hs_err_pid*
+replay_pid*
+*.zip
+deploy/
+
+# Local secret files
+.env
+backend/.env
+*.pem
+*.key
+*.p12
+*.pfx
+
+# WeChat developer- and environment-specific settings
+project.config.json
+project.private.config.json
+config/runtime.js
+
+# IDE and OS files
+.idea/
+.vscode/
+.DS_Store

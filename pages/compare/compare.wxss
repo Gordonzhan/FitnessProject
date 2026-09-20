@@ -1,0 +1,386 @@
+/* 能量页：目标头图、摄入消耗卡片和每日饮食明细。 */
+.energy-hero {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 24rpx;
+  padding: 38rpx 36rpx 34rpx;
+  border-radius: 32rpx;
+  background: #172019;
+  color: #ffffff;
+  box-shadow: 0 18rpx 44rpx rgba(20, 32, 25, 0.16);
+}
+
+.energy-hero::after {
+  content: "";
+  position: absolute;
+  right: -46rpx;
+  bottom: -80rpx;
+  width: 240rpx;
+  height: 240rpx;
+  border: 34rpx solid rgba(190, 242, 96, 0.1);
+  border-radius: 50%;
+}
+
+.energy-hero-top {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.energy-kicker {
+  display: block;
+  color: #bef260;
+  font-size: 20rpx;
+  font-weight: 900;
+  letter-spacing: 4rpx;
+}
+
+.energy-title {
+  display: block;
+  margin-top: 5rpx;
+  font-size: 31rpx;
+  font-weight: 800;
+}
+
+.goal-chip {
+  padding: 9rpx 16rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.16);
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 20rpx;
+  font-weight: 700;
+}
+
+.target-value-wrap {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: baseline;
+  margin-top: 28rpx;
+}
+
+.target-value {
+  font-size: 68rpx;
+  font-weight: 900;
+  letter-spacing: -2rpx;
+  line-height: 1;
+}
+
+.target-unit {
+  margin-left: 10rpx;
+  color: #bef260;
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
+.target-copy {
+  position: relative;
+  z-index: 1;
+  display: block;
+  margin-top: 8rpx;
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 22rpx;
+}
+
+.target-progress {
+  position: relative;
+  z-index: 1;
+  height: 8rpx;
+  margin-top: 26rpx;
+  overflow: hidden;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.target-progress-fill {
+  width: 62%;
+  height: 100%;
+  border-radius: 999rpx;
+  background: #bef260;
+}
+
+.compare-date {
+  margin-bottom: 8rpx;
+}
+
+.energy-grid {
+  display: flex;
+  margin-right: -16rpx;
+}
+
+.energy-card {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  margin-right: 16rpx;
+  padding: 26rpx;
+  border-radius: 28rpx;
+  background: #ffffff;
+  box-shadow: 0 10rpx 28rpx rgba(35, 54, 42, 0.06);
+}
+
+.energy-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 54rpx;
+  height: 54rpx;
+  margin-bottom: 24rpx;
+  border-radius: 17rpx;
+  background: #fff0ea;
+  color: #ef7544;
+  font-size: 30rpx;
+  font-weight: 800;
+}
+
+.burn-card .energy-card-icon {
+  background: #e8f8ef;
+  color: #15955b;
+}
+
+.energy-card-label {
+  display: block;
+  color: #69756c;
+  font-size: 23rpx;
+  font-weight: 700;
+}
+
+.energy-card-value-wrap {
+  display: flex;
+  align-items: baseline;
+  margin-top: 8rpx;
+}
+
+.energy-card-value {
+  overflow: hidden;
+  color: #172019;
+  font-size: 40rpx;
+  font-weight: 900;
+  letter-spacing: -1rpx;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.energy-card-unit {
+  margin-left: 6rpx;
+  color: #9ca59f;
+  font-size: 18rpx;
+  font-weight: 700;
+}
+
+.energy-card-note {
+  display: block;
+  margin-top: 14rpx;
+  color: #a0a9a2;
+  font-size: 20rpx;
+}
+
+.balance-card {
+  margin-top: 20rpx;
+  padding: 32rpx;
+  border-radius: 30rpx;
+  background: #ffffff;
+  box-shadow: 0 10rpx 30rpx rgba(35, 54, 42, 0.07);
+}
+
+.balance-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.balance-kicker {
+  display: block;
+  color: #18a662;
+  font-size: 19rpx;
+  font-weight: 900;
+  letter-spacing: 3rpx;
+}
+
+.balance-title {
+  display: block;
+  margin-top: 4rpx;
+  color: #172019;
+  font-size: 30rpx;
+  font-weight: 800;
+}
+
+.balance-sign {
+  padding: 8rpx 16rpx;
+  border-radius: 999rpx;
+  font-size: 21rpx;
+  font-weight: 800;
+}
+
+.surplus-sign {
+  background: #fff0ea;
+  color: #d96336;
+}
+
+.deficit-sign {
+  background: #e8f8ef;
+  color: #168f58;
+}
+
+.balance-value-row {
+  display: flex;
+  align-items: baseline;
+  margin-top: 28rpx;
+}
+
+.balance-value {
+  font-size: 64rpx;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -2rpx;
+}
+
+.balance-value.is-surplus {
+  color: #ef7544;
+}
+
+.balance-value.is-deficit {
+  color: #19a865;
+}
+
+.balance-unit {
+  margin-left: 10rpx;
+  color: #9aa39d;
+  font-size: 23rpx;
+  font-weight: 700;
+}
+
+.balance-tip {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 28rpx;
+  padding: 20rpx;
+  border-radius: 18rpx;
+  background: #f3f6f2;
+}
+
+.tip-mark {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 36rpx;
+  height: 36rpx;
+  margin-right: 12rpx;
+  border-radius: 50%;
+  background: #172019;
+  color: #bef260;
+  font-size: 20rpx;
+  font-weight: 900;
+}
+
+.tip-content {
+  flex: 1;
+  color: #677269;
+  font-size: 23rpx;
+  line-height: 1.6;
+}
+
+.meals-card {
+  margin-top: 22rpx;
+}
+
+.meals-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22rpx;
+}
+
+.meal-row {
+  display: flex;
+  align-items: center;
+  min-height: 88rpx;
+  border-top: 1rpx solid #edf1ed;
+}
+
+.meal-index {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42rpx;
+  height: 42rpx;
+  margin-right: 15rpx;
+  border-radius: 13rpx;
+  background: #e9f8ef;
+  color: #15955b;
+  font-size: 20rpx;
+  font-weight: 900;
+}
+
+.meal-name {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: break-word;
+  padding: 12rpx 10rpx 12rpx 0;
+  color: #344039;
+  font-size: 26rpx;
+  font-weight: 700;
+}
+
+.meal-energy {
+  flex-shrink: 0;
+  color: #ef7544;
+  font-size: 25rpx;
+  font-weight: 800;
+}
+
+.meal-remove {
+  flex-shrink: 0;
+  margin: 0 0 0 16rpx;
+  padding: 0 16rpx;
+  background: #fff2ec;
+  color: #b55135;
+  font-size: 22rpx;
+  line-height: 64rpx;
+  border-radius: 14rpx;
+}
+
+.meal-remove::after { border: none; }
+.meal-remove[disabled] { opacity: 0.5; }
+.meal-retry { margin-top: 16rpx; color: #15955b; font-size: 26rpx; }
+
+.meal-unit {
+  color: #a2aaa4;
+  font-size: 19rpx;
+}
+
+.meals-empty {
+  padding: 32rpx 18rpx 18rpx;
+  text-align: center;
+}
+
+.meals-empty-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64rpx;
+  height: 64rpx;
+  margin: 0 auto 16rpx;
+  border-radius: 20rpx;
+  background: #edf7f0;
+  color: #18a662;
+  font-size: 34rpx;
+}
+
+.meals-empty-title {
+  display: block;
+  color: #536057;
+  font-size: 25rpx;
+  font-weight: 800;
+}
+
+.meals-empty-copy {
+  display: block;
+  margin-top: 8rpx;
+  color: #9aa39d;
+  font-size: 22rpx;
+}

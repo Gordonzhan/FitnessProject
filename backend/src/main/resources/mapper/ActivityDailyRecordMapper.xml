@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fitness.mapper.ActivityDailyRecordMapper">
+    <resultMap id="ActivityDailyRecordResultMap" type="ActivityDailyRecord">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="activity_date" property="activityDate"/>
+        <result column="steps" property="steps"/>
+        <result column="estimated_calories" property="estimatedCalories"/>
+        <result column="reference_weight" property="referenceWeight"/>
+        <result column="source" property="source"/>
+        <result column="estimation_version" property="estimationVersion"/>
+        <result column="source_timestamp" property="sourceTimestamp"/>
+        <result column="synced_at" property="syncedAt"/>
+    </resultMap>
+
+    <insert id="upsert" parameterType="ActivityDailyRecord">
+        INSERT INTO activity_daily_records
+          (user_id, activity_date, steps, estimated_calories, reference_weight, source,
+           estimation_version, source_timestamp, synced_at)
+        VALUES
+          (#{userId}, #{activityDate}, #{steps}, #{estimatedCalories}, #{referenceWeight}, #{source},
+           #{estimationVersion}, #{sourceTimestamp}, NOW(6))
+        ON DUPLICATE KEY UPDATE
+          steps = VALUES(steps), estimated_calories = VALUES(estimated_calories),
+          reference_weight = VALUES(reference_weight), estimation_version = VALUES(estimation_version),
+          source_timestamp = VALUES(source_timestamp), synced_at = NOW(6)
+    </insert>
+
+    <select id="findByDateRange" resultMap="ActivityDailyRecordResultMap">
+        SELECT id, user_id, activity_date, steps, estimated_calories, reference_weight,
+               source, estimation_version, source_timestamp, synced_at
+        FROM activity_daily_records
+        WHERE user_id = #{userId} AND source = 'WECHAT_WERUN'
+          AND activity_date BETWEEN #{startDate} AND #{endDate}
+        ORDER BY activity_date ASC
+    </select>
+
+    <delete id="deleteByUserIdAndSource">
+        DELETE FROM activity_daily_records WHERE user_id = #{userId} AND source = #{source}
+    </delete>
+</mapper>

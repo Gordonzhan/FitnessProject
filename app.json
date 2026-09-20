@@ -1,0 +1,63 @@
+{
+  "pages": [
+    "pages/recipe/recipe",
+    "pages/recipe/add-recipe/add-recipe",
+    "pages/workout/workout",
+    "pages/workout/add-workout/add-workout",
+    "pages/compare/compare",
+    "pages/profile/profile",
+    "pages/profile/analysis/analysis",
+    "pages/profile/activity/activity",
+    "pages/profile/comparison/comparison"
+  ],
+  "window": {
+    "backgroundColor": "#F2F5F0",
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#142019",
+    "navigationBarTitleText": "昼律",
+    "navigationBarTextStyle": "white"
+  },
+  "usingComponents": {
+    "reference-selector": "/components/reference-selector/reference-selector"
+  },
+  "lazyCodeLoading": "requiredComponents",
+  "networkTimeout": {
+    "request": 45000,
+    "uploadFile": 75000,
+    "downloadFile": 45000,
+    "connectSocket": 45000
+  },
+  "tabBar": {
+    "color": "#8C978F",
+    "selectedColor": "#16A765",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/recipe/recipe",
+        "text": "饮食",
+        "iconPath": "images/tab-recipe.png",
+        "selectedIconPath": "images/tab-recipe-active.png"
+      },
+      {
+        "pagePath": "pages/workout/workout",
+        "text": "训练",
+        "iconPath": "images/tab-workout.png",
+        "selectedIconPath": "images/tab-workout-active.png"
+      },
+      {
+        "pagePath": "pages/compare/compare",
+        "text": "能量",
+        "iconPath": "images/tab-compare.png",
+        "selectedIconPath": "images/tab-compare-active.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "images/tab-profile.png",
+        "selectedIconPath": "images/tab-profile-active.png"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json"
+}

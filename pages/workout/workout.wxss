@@ -1,0 +1,231 @@
+/* 训练主页：计划/完成状态、动作列表和状态操作区域。 */
+.workout-page {
+  padding-bottom: 240rpx;
+}
+
+.workout-hero {
+  background: linear-gradient(145deg, #142019 0%, #263827 100%);
+}
+
+.workout-card {
+  overflow: hidden;
+  border-radius: 30rpx;
+  background: #ffffff;
+  box-shadow: 0 10rpx 30rpx rgba(35, 54, 42, 0.07);
+}
+
+.workout-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 28rpx 14rpx;
+}
+
+.status-chip {
+  padding: 8rpx 18rpx;
+  border-radius: 999rpx;
+  font-size: 21rpx;
+  font-weight: 850;
+}
+
+.status-PLANNED {
+  background: #fff4d5;
+  color: #9b6900;
+}
+
+.status-COMPLETED {
+  background: #e6f7ed;
+  color: #118a50;
+}
+
+.status-CANCELLED {
+  background: #eef1ee;
+  color: #78827a;
+}
+
+.status-explain {
+  margin-left: 18rpx;
+  color: #89938b;
+  font-size: 20rpx;
+  text-align: right;
+}
+
+.is-cancelled .workout-list,
+.is-cancelled .workout-total {
+  opacity: 0.55;
+}
+
+.plan-actions {
+  display: flex;
+  gap: 18rpx;
+  padding: 22rpx 26rpx 26rpx;
+  background: #ffffff;
+}
+
+.plan-primary,
+.plan-secondary {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-height: 78rpx;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+  font-weight: 850;
+}
+
+.plan-primary {
+  background: #172019;
+  color: #bef260;
+}
+
+.plan-secondary {
+  background: #fff0ec;
+  color: #c95742;
+}
+
+.single-action .plan-primary {
+  flex: none;
+  width: 100%;
+}
+
+.workout-message {
+  color: #7e8981;
+  font-size: 24rpx;
+  text-align: center;
+}
+
+.workout-error {
+  color: #bd4f3c;
+}
+
+.message-retry {
+  margin-top: 18rpx;
+  color: #138c52;
+  font-weight: 800;
+}
+
+.workout-list {
+  padding: 8rpx 26rpx;
+}
+
+.exercise-row {
+  display: flex;
+  align-items: center;
+  min-height: 132rpx;
+  border-bottom: 1rpx solid #edf1ed;
+}
+
+.exercise-row:last-child {
+  border-bottom: none;
+}
+
+.exercise-number {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 54rpx;
+  height: 54rpx;
+  margin-right: 18rpx;
+  border-radius: 17rpx;
+  background: #e9f8ef;
+  color: #139159;
+  font-size: 23rpx;
+  font-weight: 900;
+}
+
+.exercise-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.exercise-name {
+  display: block;
+  overflow: hidden;
+  color: #172019;
+  font-size: 29rpx;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.exercise-prescription {
+  display: flex;
+  align-items: center;
+  margin-top: 8rpx;
+  color: #7d8980;
+  font-size: 22rpx;
+  font-weight: 600;
+}
+
+.exercise-dot {
+  margin: 0 9rpx;
+  color: #b6beb8;
+}
+
+.exercise-energy {
+  flex-shrink: 0;
+  margin-left: 16rpx;
+  text-align: right;
+}
+
+.exercise-calorie {
+  display: block;
+  color: #ef7544;
+  font-size: 28rpx;
+  font-weight: 900;
+}
+
+.exercise-unit {
+  display: block;
+  color: #a0a9a2;
+  font-size: 18rpx;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.workout-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx;
+  background: #172019;
+  color: #ffffff;
+}
+
+.total-kicker {
+  display: block;
+  color: #bef260;
+  font-size: 19rpx;
+  font-weight: 900;
+  letter-spacing: 3rpx;
+}
+
+.total-label {
+  display: block;
+  margin-top: 4rpx;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 23rpx;
+}
+
+.total-value-wrap {
+  display: flex;
+  align-items: baseline;
+}
+
+.total-value {
+  font-size: 46rpx;
+  font-weight: 900;
+}
+
+.total-unit {
+  margin-left: 8rpx;
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 20rpx;
+  font-weight: 700;
+}
+
+.workout-empty {
+  margin-top: 0;
+}

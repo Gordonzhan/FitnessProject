@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fitness.mapper.ComparisonSnapshotMapper">
+    <!-- user_id 只在任务内用于不可逆 HMAC，查询结果不会进入 Controller。 -->
+    <select id="findEligibleDailyAggregates" resultType="com.fitness.dto.ComparisonDailySource">
+        SELECT w.user_id,
+               u.display_name,
+               w.date AS sample_date,
+               u.goal,
+               SUM(CASE WHEN w.status = 'COMPLETED' THEN 1 ELSE 0 END) AS completed_sessions,
+               SUM(CASE WHEN w.status = 'PLANNED' THEN 1 ELSE 0 END) AS planned_sessions,
+               SUM(CASE WHEN w.status = 'CANCELLED' THEN 1 ELSE 0 END) AS cancelled_sessions,
+               COALESCE(SUM(CASE WHEN w.status = 'COMPLETED' THEN w.actual_calories ELSE 0 END), 0) AS actual_calories
+        FROM workouts w
+        INNER JOIN users u ON u.id = w.user_id
+        INNER JOIN (
+            SELECT user_id
+            FROM workouts
+            WHERE date BETWEEN #{startDate} AND #{endDate}
+            GROUP BY user_id
+            HAVING COUNT(*) &gt;= #{minimumEvents}
+        ) eligible ON eligible.user_id = w.user_id
+        WHERE w.date BETWEEN #{startDate} AND #{endDate}
+        GROUP BY w.user_id, w.date, u.goal, u.display_name
+        ORDER BY w.user_id, w.date
+    </select>
+
+    <delete id="deleteAnonymizedRange">
+        DELETE FROM comparison_daily_samples
+        WHERE source = 'ANONYMIZED'
+          AND dataset_version = #{datasetVersion}
+          AND sample_date BETWEEN #{startDate} AND #{endDate}
+    </delete>
+
+    <insert id="upsert" parameterType="com.fitness.dto.ComparisonDailySample">
+        INSERT INTO comparison_daily_samples
+          (participant_key, masked_display_name, sample_date, goal, completed_sessions, planned_sessions,
+           cancelled_sessions, actual_calories, source, dataset_version)
+        VALUES
+          (#{participantKey}, #{maskedDisplayName}, #{sampleDate}, #{goal}, #{completedSessions}, #{plannedSessions},
+           #{cancelledSessions}, #{actualCalories}, #{source}, #{datasetVersion})
+        ON DUPLICATE KEY UPDATE
+          masked_display_name = VALUES(masked_display_name),
+          goal = VALUES(goal),
+          completed_sessions = VALUES(completed_sessions),
+          planned_sessions = VALUES(planned_sessions),
+          cancelled_sessions = VALUES(cancelled_sessions),
+          actual_calories = VALUES(actual_calories),
+          source = VALUES(source)
+    </insert>
+</mapper>

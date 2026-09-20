@@ -1,0 +1,110 @@
+<!-- 每日目标概览 -->
+<view class="page-shell compare-page">
+  <view class="energy-hero">
+    <view class="energy-hero-top">
+      <view>
+        <text class="energy-kicker">DAILY ENERGY</text>
+        <text class="energy-title">今日能量目标</text>
+      </view>
+      <text class="goal-chip">{{userProfile ? (userProfile.goal === 'lose_weight' ? '减脂模式' : (userProfile.goal === 'gain_muscle' ? '增肌模式' : '保持模式')) : '默认目标'}}</text>
+    </view>
+    <view class="target-value-wrap">
+      <text class="target-value">{{dailyCalories}}</text>
+      <text class="target-unit">kcal</text>
+    </view>
+    <text class="target-copy">每日推荐摄入</text>
+    <view class="target-progress">
+      <view class="target-progress-fill"></view>
+    </view>
+  </view>
+
+  <!-- 统计日期切换 -->
+  <view class="date-switcher compare-date">
+    <view class="date-arrow" bindtap="prevDay">‹</view>
+    <view class="date-center">
+      <text class="date-label">ENERGY DATE</text>
+      <text class="date-value">{{currentDate}}</text>
+    </view>
+    <view class="date-arrow" bindtap="nextDay">›</view>
+  </view>
+
+  <view class="section-heading">
+    <view>
+      <text class="section-title">收支概览</text>
+      <text class="section-subtitle">摄入与运动消耗一目了然</text>
+    </view>
+  </view>
+
+  <!-- 摄入、实际消耗和计划状态 -->
+  <view class="energy-grid">
+    <view class="energy-card intake-card">
+      <view class="energy-card-icon">＋</view>
+      <text class="energy-card-label">热量摄入</text>
+      <view class="energy-card-value-wrap">
+        <text class="energy-card-value">{{loadingDailyData || dailyDataError ? '—' : todayIntake}}</text>
+        <text class="energy-card-unit">kcal</text>
+      </view>
+      <text class="energy-card-note">{{loadingDailyData || dailyDataError ? '等待更新' : selectedRecipes.length + ' 份饮食记录'}}</text>
+    </view>
+    <view class="energy-card burn-card">
+      <view class="energy-card-icon">↗</view>
+      <text class="energy-card-label">运动消耗</text>
+      <view class="energy-card-value-wrap">
+        <text class="energy-card-value">{{loadingDailyData || dailyDataError ? '—' : todayExpenditure}}</text>
+        <text class="energy-card-unit">kcal</text>
+      </view>
+      <text class="energy-card-note">{{workoutStatus === 'PLANNED' ? '计划 ' + workoutEstimatedCalories + ' kcal，完成后计入' : (workoutStatus === 'CANCELLED' ? '训练计划已取消' : '已完成训练消耗')}}</text>
+    </view>
+  </view>
+
+  <view class="balance-card">
+    <view class="balance-top">
+      <view>
+        <text class="balance-kicker">ENERGY BALANCE</text>
+        <text class="balance-title">今日热量差值</text>
+      </view>
+      <view wx:if="{{!loadingDailyData && !dailyDataError}}" class="balance-sign {{calorieDifference >= 0 ? 'surplus-sign' : 'deficit-sign'}}">{{calorieDifference >= 0 ? '盈余' : '缺口'}}</view>
+    </view>
+    <view class="balance-value-row">
+      <text class="balance-value {{calorieDifference >= 0 ? 'is-surplus' : 'is-deficit'}}">{{loadingDailyData || dailyDataError ? '—' : (calorieDifference >= 0 ? '+' : '') + calorieDifference}}</text>
+      <text class="balance-unit">kcal</text>
+    </view>
+    <view class="balance-tip">
+      <text class="tip-mark">i</text>
+      <text class="tip-content">{{loadingDailyData ? '正在更新当天统计…' : (dailyDataError || tipText)}}</text>
+    </view>
+  </view>
+
+  <view class="section-card meals-card">
+    <view class="meals-head">
+      <view>
+        <text class="card-kicker">TODAY'S FUEL</text>
+        <text class="card-title">今日饮食</text>
+      </view>
+      <view class="inline-action" bindtap="goToRecipe">去选择 ›</view>
+    </view>
+
+    <view wx:if="{{loadingDailyData}}" class="meals-empty">正在加载饮食记录…</view>
+    <view wx:elif="{{dailyDataError}}" class="meals-empty">
+      <text class="meals-empty-copy">{{dailyDataError}}</text>
+      <view class="meal-retry" bindtap="calculateCalories">重试</view>
+    </view>
+    <view wx:elif="{{selectedRecipes.length > 0}}" class="meal-list">
+      <view wx:for="{{selectedRecipes}}" wx:key="intakeId" class="meal-row">
+        <view class="meal-index">{{index + 1}}</view>
+        <text class="meal-name">{{item.mealType}}</text>
+        <view class="meal-energy">
+          <text>{{item.calorie}}</text>
+          <text class="meal-unit"> kcal</text>
+        </view>
+        <button class="meal-remove" size="mini" disabled="{{!!removingIntakeId}}" catchtap="removeDailyIntake" data-intakeid="{{item.intakeId}}">{{removingIntakeId === item.intakeId ? '处理中' : '移除'}}</button>
+      </view>
+    </view>
+
+    <view wx:else class="meals-empty">
+      <text class="meals-empty-mark">＋</text>
+      <text class="meals-empty-title">今天还没有选择饮食</text>
+      <text class="meals-empty-copy">去菜谱页把早餐、午餐或晚餐加入今天。</text>
+    </view>
+  </view>
+</view>

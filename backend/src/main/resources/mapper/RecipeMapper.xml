@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fitness.mapper.RecipeMapper">
+    <resultMap id="RecipeBaseResultMap" type="Recipe">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="recipe_id" property="recipeId"/>
+        <result column="meal_type" property="mealType"/>
+        <result column="cover_image" property="coverImage"/>
+        <result column="steps" property="steps"/>
+        <result column="protein" property="protein"/>
+        <result column="carb" property="carb"/>
+        <result column="fat" property="fat"/>
+        <result column="calorie" property="calorie"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <resultMap id="RecipeResultMap" type="Recipe" extends="RecipeBaseResultMap">
+        <collection property="images"
+                    ofType="RecipeImage"
+                    select="com.fitness.mapper.RecipeImageMapper.findByRecipeDbId"
+                    column="id"/>
+        <collection property="ingredients"
+                    ofType="Ingredient"
+                    select="com.fitness.mapper.IngredientMapper.findByRecipeDbId"
+                    column="id"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="RecipeResultMap">
+        SELECT r.* FROM recipes r
+    </select>
+
+    <select id="findById" parameterType="Long" resultMap="RecipeResultMap">
+        SELECT r.* FROM recipes r
+        WHERE r.id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="Recipe" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO recipes (user_id, recipe_id, meal_type, steps, protein, carb, fat, calorie, created_at, updated_at)
+        VALUES (#{userId}, #{recipeId}, #{mealType}, #{steps}, #{protein}, #{carb}, #{fat}, #{calorie}, NOW(), NOW())
+        ON DUPLICATE KEY UPDATE
+            id = LAST_INSERT_ID(id),
+            meal_type = VALUES(meal_type),
+            steps = VALUES(steps),
+            protein = VALUES(protein),
+            carb = VALUES(carb),
+            fat = VALUES(fat),
+            calorie = VALUES(calorie),
+            updated_at = NOW()
+    </insert>
+
+    <update id="update" parameterType="Recipe">
+        UPDATE recipes
+        SET user_id = #{userId},
+            recipe_id = #{recipeId},
+            meal_type = #{mealType},
+            steps = #{steps},
+            protein = #{protein},
+            carb = #{carb},
+            fat = #{fat},
+            calorie = #{calorie},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="Long">
+        DELETE FROM recipes WHERE id = #{id}
+    </delete>
+
+    <!-- 列表只查父记录，由 Service 各用一次批量查询装配明细，避免每条菜谱再发两次 SQL。 -->
+    <select id="findByUserId" parameterType="Long" resultMap="RecipeBaseResultMap">
+        SELECT r.* FROM recipes r
+        WHERE r.user_id = #{userId}
+        ORDER BY r.updated_at DESC, r.id DESC
+    </select>
+
+    <sql id="userKeywordFilter">
+        r.user_id = #{userId}
+        <if test="keyword != null and keyword != ''">
+            AND (r.meal_type LIKE CONCAT('%', #{keyword}, '%')
+              OR EXISTS (SELECT 1 FROM ingredients i WHERE i.recipe_id = r.id
+                         AND i.food_name LIKE CONCAT('%', #{keyword}, '%')))
+        </if>
+    </sql>
+    <select id="countByUserIdAndKeyword" resultType="long">
+        SELECT COUNT(*) FROM recipes r WHERE <include refid="userKeywordFilter"/>
+    </select>
+    <select id="searchByUserId" resultMap="RecipeBaseResultMap">
+        SELECT r.* FROM recipes r WHERE <include refid="userKeywordFilter"/>
+        ORDER BY r.updated_at DESC, r.id DESC LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="findByUserIdAndRecipeId" resultMap="RecipeResultMap">
+        SELECT r.* FROM recipes r
+        WHERE r.user_id = #{userId} AND r.recipe_id = #{recipeId}
+    </select>
+</mapper>

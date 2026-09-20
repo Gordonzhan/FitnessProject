@@ -1,0 +1,389 @@
+/* 训练表单：日期状态、动作输入和预计消耗汇总。 */
+.workout-form-page {
+  padding-top: 24rpx;
+}
+
+.training-date-card {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+  padding: 36rpx;
+  border-radius: 30rpx;
+  background: #172019;
+  color: #ffffff;
+  box-shadow: 0 16rpx 38rpx rgba(20, 32, 25, 0.16);
+}
+
+.training-date-card::after {
+  content: "";
+  position: absolute;
+  top: -70rpx;
+  right: -50rpx;
+  width: 190rpx;
+  height: 190rpx;
+  border: 28rpx solid rgba(190, 242, 96, 0.1);
+  border-radius: 50%;
+}
+
+.training-kicker {
+  display: block;
+  color: #bef260;
+  font-size: 20rpx;
+  font-weight: 900;
+  letter-spacing: 3rpx;
+}
+
+.training-title {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 37rpx;
+  font-weight: 850;
+}
+
+.training-date {
+  position: relative;
+  z-index: 1;
+  text-align: right;
+}
+
+.training-date-label {
+  display: block;
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 19rpx;
+  font-weight: 700;
+}
+
+.training-date-value {
+  display: block;
+  margin-top: 6rpx;
+  color: #ffffff;
+  font-size: 25rpx;
+  font-weight: 800;
+}
+
+.workout-mode-notice {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24rpx;
+  padding: 20rpx 24rpx;
+  border-radius: 20rpx;
+  font-size: 22rpx;
+}
+
+.workout-mode-notice.is-plan {
+  background: #fff5d9;
+  color: #795714;
+}
+
+.workout-mode-notice.is-completed {
+  background: #e8f7ee;
+  color: #226542;
+}
+
+.mode-notice-tag {
+  flex-shrink: 0;
+  margin-right: 16rpx;
+  padding: 7rpx 13rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.65);
+  font-weight: 850;
+}
+
+.mode-notice-copy {
+  line-height: 1.45;
+}
+
+.today-status-picker {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 24rpx;
+}
+
+.status-option {
+  flex: 1;
+  padding: 22rpx;
+  border: 2rpx solid #e2e8e2;
+  border-radius: 20rpx;
+  background: #ffffff;
+}
+
+.status-option.is-active {
+  border-color: #172019;
+  background: #172019;
+}
+
+.status-option-title,
+.status-option-copy {
+  display: block;
+}
+
+.status-option-title {
+  color: #253029;
+  font-size: 24rpx;
+  font-weight: 850;
+}
+
+.status-option-copy {
+  margin-top: 5rpx;
+  color: #8a958d;
+  font-size: 20rpx;
+}
+
+.status-option.is-active .status-option-title {
+  color: #bef260;
+}
+
+.status-option.is-active .status-option-copy {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.form-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28rpx;
+}
+
+.card-kicker {
+  margin-bottom: 4rpx;
+}
+
+.card-copy {
+  display: block;
+  margin-top: 6rpx;
+}
+
+.exercise-form-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 46rpx 20rpx;
+  border: 2rpx dashed #dce3dc;
+  border-radius: 22rpx;
+  color: #929c94;
+  font-size: 23rpx;
+}
+
+.empty-line {
+  width: 74rpx;
+  height: 8rpx;
+  margin-bottom: 20rpx;
+  border-radius: 999rpx;
+  background: #bef260;
+  transform: rotate(-8deg);
+}
+
+.exercise-form-block {
+  margin-top: 22rpx;
+  padding: 24rpx;
+  border: 2rpx solid #edf1ed;
+  border-radius: 24rpx;
+  background: #f7f9f6;
+}
+
+.exercise-form-block:first-of-type {
+  margin-top: 0;
+}
+
+.exercise-form-head {
+  display: flex;
+  align-items: center;
+}
+
+.exercise-form-index {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56rpx;
+  height: 56rpx;
+  margin-right: 14rpx;
+  border-radius: 18rpx;
+  background: #172019;
+  color: #bef260;
+  font-size: 24rpx;
+  font-weight: 900;
+}
+
+.exercise-form-title-wrap {
+  flex: 1;
+}
+
+.exercise-form-title {
+  display: block;
+  color: #263229;
+  font-size: 27rpx;
+  font-weight: 800;
+}
+
+.exercise-form-subtitle {
+  display: block;
+  color: #9da69f;
+  font-size: 17rpx;
+  font-weight: 800;
+  letter-spacing: 2rpx;
+}
+
+.remove-text {
+  padding: 12rpx 0 12rpx 24rpx;
+  color: #d95a45;
+  font-size: 23rpx;
+  font-weight: 700;
+}
+
+.field-placeholder {
+  color: #b2bab4;
+}
+
+.exercise-form-block .field {
+  background: #ffffff;
+}
+
+.database-status {
+  margin-bottom: 22rpx;
+  padding: 18rpx 22rpx;
+  border-radius: 16rpx;
+  background: #f1f6f1;
+  color: #67736a;
+  font-size: 23rpx;
+}
+
+.database-error {
+  display: flex;
+  justify-content: space-between;
+  color: #b84937;
+  background: #fff1ed;
+}
+
+.database-retry {
+  color: #148b50;
+  font-weight: 800;
+}
+
+.database-select-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 88rpx;
+  padding: 0 22rpx;
+  border: 2rpx solid #e7ece7;
+  border-radius: 17rpx;
+  background: #ffffff;
+}
+
+.database-select-value {
+  color: #172019;
+  font-size: 27rpx;
+  font-weight: 700;
+}
+
+.database-select-action {
+  color: #159255;
+  font-size: 22rpx;
+  font-weight: 800;
+}
+
+.field-error {
+  display: block;
+  margin-top: 10rpx;
+  color: #c74b36;
+  font-size: 21rpx;
+}
+
+.exercise-metrics {
+  display: flex;
+  margin-top: 20rpx;
+  margin-right: -12rpx;
+}
+
+.metric-field {
+  flex: 1;
+  min-width: 0;
+  margin-right: 12rpx;
+}
+
+.metric-input-wrap {
+  display: flex;
+  align-items: center;
+  height: 84rpx;
+  padding: 0 14rpx;
+  border: 2rpx solid #e7ece7;
+  border-radius: 17rpx;
+  background: #ffffff;
+}
+
+.metric-input {
+  flex: 1;
+  min-width: 0;
+  height: 80rpx;
+  color: #172019;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.metric-unit {
+  margin-left: 4rpx;
+  color: #8e9991;
+  font-size: 20rpx;
+  font-weight: 700;
+}
+
+.calorie-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 22rpx;
+  padding-top: 18rpx;
+  border-top: 1rpx solid #e5ebe5;
+  color: #8b958e;
+  font-size: 22rpx;
+}
+
+.calorie-preview-value {
+  color: #ef7544;
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
+.burn-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 34rpx;
+  border-radius: 28rpx;
+  background: linear-gradient(135deg, #bef260 0%, #a8e844 100%);
+  color: #172019;
+}
+
+.burn-kicker {
+  display: block;
+  font-size: 19rpx;
+  font-weight: 900;
+  letter-spacing: 3rpx;
+}
+
+.burn-title {
+  display: block;
+  margin-top: 5rpx;
+  color: rgba(20, 32, 25, 0.65);
+  font-size: 23rpx;
+  font-weight: 700;
+}
+
+.burn-value-wrap {
+  display: flex;
+  align-items: baseline;
+}
+
+.burn-value {
+  font-size: 46rpx;
+  font-weight: 900;
+}
+
+.burn-unit {
+  margin-left: 7rpx;
+  font-size: 20rpx;
+  font-weight: 800;
+}

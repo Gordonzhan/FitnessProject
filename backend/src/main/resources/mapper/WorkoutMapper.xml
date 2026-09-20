@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fitness.mapper.WorkoutMapper">
+    <resultMap id="WorkoutBaseResultMap" type="Workout">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="workout_id" property="workoutId"/>
+        <result column="date" property="date"/>
+        <result column="total_calories" property="totalCalories"/>
+        <result column="status" property="status"/>
+        <result column="estimated_calories" property="estimatedCalories"/>
+        <result column="actual_calories" property="actualCalories"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <resultMap id="WorkoutResultMap" type="Workout" extends="WorkoutBaseResultMap">
+        <collection property="exercises" ofType="Exercise" select="com.fitness.mapper.ExerciseMapper.findByWorkoutDbId" column="id"/>
+    </resultMap>
+
+    <!-- 列表的动作由 Service 一次批量读取，查询数不再随训练记录数量增长。 -->
+    <select id="findByUserId" parameterType="Long" resultMap="WorkoutBaseResultMap">
+        SELECT * FROM workouts WHERE user_id = #{userId}
+        ORDER BY date DESC, id DESC
+    </select>
+
+    <select id="findById" parameterType="Long" resultMap="WorkoutResultMap">
+        SELECT * FROM workouts WHERE id = #{id}
+    </select>
+
+    <select id="findByUserIdAndWorkoutId" resultMap="WorkoutResultMap">
+        SELECT * FROM workouts
+        WHERE user_id = #{userId} AND workout_id = #{workoutId}
+    </select>
+
+    <select id="findByDate" resultMap="WorkoutResultMap">
+        SELECT * FROM workouts WHERE user_id = #{userId} AND date = #{date} ORDER BY id DESC LIMIT 1
+    </select>
+
+    <select id="findCompletedByDate" resultMap="WorkoutBaseResultMap">
+        SELECT * FROM workouts
+        WHERE user_id = #{userId} AND date = #{date} AND status = 'COMPLETED'
+        ORDER BY id DESC LIMIT 1
+    </select>
+
+    <!-- 只有 COMPLETED.actual_calories 可进入真实消耗；计划和取消只用于完成率。 -->
+    <select id="aggregateByDateRange" resultType="com.fitness.dto.DailyWorkoutSummary">
+        SELECT date,
+               COALESCE(SUM(CASE WHEN status = 'COMPLETED' THEN actual_calories ELSE 0 END), 0) AS actual_calories,
+               SUM(CASE WHEN status = 'COMPLETED' THEN 1 ELSE 0 END) AS completed_count,
+               SUM(CASE WHEN status = 'PLANNED' THEN 1 ELSE 0 END) AS planned_count,
+               SUM(CASE WHEN status = 'CANCELLED' THEN 1 ELSE 0 END) AS cancelled_count
+        FROM workouts
+        WHERE user_id = #{userId}
+          AND date BETWEEN #{startDate} AND #{endDate}
+        GROUP BY date
+        ORDER BY date ASC
+    </select>
+
+    <!-- R7 当前用户30天训练汇总；只使用已认证 user_id，不读取其他用户明细。 -->
+    <select id="aggregateComparisonStats" resultType="com.fitness.dto.ComparisonParticipantStats">
+        SELECT SUM(CASE WHEN status = 'COMPLETED' THEN 1 ELSE 0 END) AS completed_count,
+               COUNT(DISTINCT CASE WHEN status = 'COMPLETED' THEN date END) AS active_days,
+               SUM(CASE WHEN status = 'PLANNED' THEN 1 ELSE 0 END) AS planned_count,
+               SUM(CASE WHEN status = 'CANCELLED' THEN 1 ELSE 0 END) AS cancelled_count,
+               COALESCE(SUM(CASE WHEN status = 'COMPLETED' THEN actual_calories ELSE 0 END), 0) AS actual_calories
+        FROM workouts
+        WHERE user_id = #{userId}
+          AND date BETWEEN #{startDate} AND #{endDate}
+    </select>
+
+    <insert id="insert" parameterType="Workout" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO workouts
+          (user_id, workout_id, date, total_calories, status, estimated_calories, actual_calories,
+           created_at, updated_at)
+        VALUES
+          (#{userId}, #{workoutId}, #{date}, #{totalCalories}, #{status}, #{estimatedCalories},
+           #{actualCalories}, NOW(), NOW())
+        ON DUPLICATE KEY UPDATE
+            id = LAST_INSERT_ID(id),
+            workout_id = VALUES(workout_id),
+            date = VALUES(date),
+            total_calories = VALUES(total_calories),
+            status = VALUES(status),
+            estimated_calories = VALUES(estimated_calories),
+            actual_calories = VALUES(actual_calories),
+            updated_at = NOW()
+    </insert>
+
+    <update id="update" parameterType="Workout">
+        UPDATE workouts
+        SET user_id = #{userId},
+            workout_id = #{workoutId},
+            date = #{date},
+            total_calories = #{totalCalories},
+            status = #{status},
+            estimated_calories = #{estimatedCalories},
+            actual_calories = #{actualCalories},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateState" parameterType="Workout">
+        UPDATE workouts
+        SET status = #{status},
+            total_calories = #{totalCalories},
+            estimated_calories = #{estimatedCalories},
+            actual_calories = #{actualCalories},
+            updated_at = NOW()
+        WHERE id = #{id} AND user_id = #{userId}
+    </update>
+
+    <delete id="delete" parameterType="Long">
+        DELETE FROM workouts WHERE id = #{id}
+    </delete>
+</mapper>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fitness.mapper.ImageUploadTicketMapper">
+    <insert id="insert" parameterType="com.fitness.entity.ImageUploadTicket">
+        INSERT INTO image_upload_tickets
+            (ticket_id, user_id, object_key, expected_size, expected_format, expected_mime,
+             status, expires_at, created_at)
+        VALUES
+            (#{ticketId}, #{userId}, #{objectKey}, #{expectedSize}, #{expectedFormat}, #{expectedMime},
+             #{status}, #{expiresAt}, #{createdAt})
+    </insert>
+
+    <select id="findById" resultType="com.fitness.entity.ImageUploadTicket">
+        SELECT ticket_id, user_id, object_key, expected_size, expected_format, expected_mime,
+               status, expires_at, created_at, confirmed_at
+        FROM image_upload_tickets
+        WHERE ticket_id = #{ticketId}
+    </select>
+
+    <!-- 原子领取确认权，避免同一 ticket 在多个云托管实例中被重复确认。 -->
+    <update id="claim">
+        UPDATE image_upload_tickets
+        SET status = 'VERIFYING'
+        WHERE ticket_id = #{ticketId}
+          AND user_id = #{userId}
+          AND status = 'ISSUED'
+          AND expires_at &gt;= #{now}
+    </update>
+
+    <update id="markConfirmed">
+        UPDATE image_upload_tickets
+        SET status = 'CONFIRMED', confirmed_at = #{confirmedAt}
+        WHERE ticket_id = #{ticketId} AND status = 'VERIFYING'
+    </update>
+
+    <update id="markFailed">
+        UPDATE image_upload_tickets SET status = 'FAILED'
+        WHERE ticket_id = #{ticketId} AND status = 'VERIFYING'
+    </update>
+
+    <update id="markExpired">
+        UPDATE image_upload_tickets SET status = 'EXPIRED'
+        WHERE ticket_id = #{ticketId} AND user_id = #{userId} AND status = 'ISSUED'
+    </update>
+
+    <select id="findExpiredIssued" resultType="com.fitness.entity.ImageUploadTicket">
+        SELECT ticket_id, user_id, object_key, expected_size, expected_format, expected_mime,
+               status, expires_at, created_at, confirmed_at
+        FROM image_upload_tickets
+        WHERE status = 'ISSUED' AND expires_at &lt; #{now}
+        ORDER BY expires_at
+        LIMIT #{limit}
+    </select>
+</mapper>

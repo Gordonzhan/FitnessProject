@@ -1,0 +1,54 @@
+<!-- 食材/动作通用选择器：遮罩、搜索条件和分页结果 -->
+<view class="selector-mask" catchtouchmove="preventMove" catchtap="close"></view>
+<view class="selector-sheet">
+  <view class="selector-head">
+    <view>
+      <text class="selector-kicker">DATABASE SEARCH</text>
+      <text class="selector-title">选择{{type === 'exercise' ? '训练动作' : '食材'}}</text>
+    </view>
+    <view class="selector-close" bindtap="close">×</view>
+  </view>
+
+  <!-- 搜索与横向分类筛选 -->
+  <view class="search-box">
+    <text class="search-icon">⌕</text>
+    <input value="{{keyword}}" bindinput="onKeywordInput" confirm-type="search" placeholder="搜索名称、别名或分类" placeholder-class="search-placeholder" focus></input>
+  </view>
+
+  <scroll-view wx:if="{{categories.length}}" class="category-list" scroll-x enhanced show-scrollbar="{{false}}">
+    <view class="category-row">
+      <view class="category-chip {{category === '' ? 'category-chip-active' : ''}}" bindtap="selectCategory" data-category="">全部</view>
+      <view wx:for="{{categories}}" wx:key="*this" class="category-chip {{category === item ? 'category-chip-active' : ''}}" bindtap="selectCategory" data-category="{{item}}">{{item}}</view>
+    </view>
+  </scroll-view>
+
+  <!-- 结果列表及加载、错误、空数据状态 -->
+  <scroll-view class="result-list" scroll-y enhanced bindscrolltolower="loadMore" lower-threshold="100">
+    <view wx:if="{{items.length}}" class="result-summary">
+      <text>{{keyword || category ? '筛选结果' : '常用推荐'}}</text>
+      <text>{{total}} 项</text>
+    </view>
+    <view wx:for="{{items}}" wx:key="id" class="result-item" bindtap="selectItem" data-index="{{index}}">
+      <view class="result-main">
+        <text class="result-name">{{type === 'exercise' ? item.name : item.foodName}}</text>
+        <text class="result-meta" wx:if="{{type === 'exercise'}}">{{item.category}} · {{item.primaryMuscles}} · {{item.equipment}}</text>
+        <text class="result-meta" wx:else>{{item.category}} · {{item.servingState}}</text>
+        <text class="result-alias" wx:if="{{item.aliases}}">别名：{{item.aliases}}</text>
+      </view>
+      <view class="result-value" wx:if="{{type === 'exercise'}}">
+        <text>{{item.met}}</text><text class="result-unit"> MET</text>
+      </view>
+      <view class="result-value" wx:else>
+        <text>{{item.calorie}}</text><text class="result-unit"> kcal/100g</text>
+      </view>
+    </view>
+
+    <view wx:if="{{!loading && !error && items.length === 0}}" class="result-state">当前分类没有匹配结果，请尝试名称或别名</view>
+    <view wx:if="{{error}}" class="result-state result-error">
+      <text>加载失败：{{error}}</text>
+      <text class="retry-button" bindtap="retry">重新加载</text>
+    </view>
+    <view wx:if="{{loading}}" class="result-state">正在加载…</view>
+    <view wx:if="{{!loading && !hasMore && items.length > 0}}" class="result-state">已显示全部 {{total}} 条结果</view>
+  </scroll-view>
+</view>

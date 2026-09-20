@@ -1,0 +1,18 @@
+FROM eclipse-temurin:17-jre-jammy
+
+RUN apt-get update \
+  && apt-get install --yes --no-install-recommends ca-certificates \
+  && update-ca-certificates \
+  && rm -rf /var/lib/apt/lists/* \
+  && groupadd --system fitness \
+  && useradd --system --gid fitness --no-create-home fitness
+
+WORKDIR /app
+COPY app.jar /app/app.jar
+
+ENV USE_SYSTEM_CA_CERTS=1
+USER fitness
+EXPOSE 8080
+
+ENTRYPOINT ["/__cacert_entrypoint.sh"]
+CMD ["java", "-XX:MaxRAMPercentage=75.0", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/app/app.jar"]

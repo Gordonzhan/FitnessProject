@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fitness.mapper.WeightRecordMapper">
+    <resultMap id="WeightRecordResultMap" type="WeightRecord">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="record_date" property="recordDate"/>
+        <result column="weight" property="weight"/>
+        <result column="source" property="source"/>
+        <result column="recorded_at" property="recordedAt"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="WeightRecord" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO weight_records (user_id, record_date, weight, source, recorded_at)
+        VALUES (#{userId}, #{recordDate}, #{weight}, #{source}, NOW(6))
+    </insert>
+
+    <select id="findLatestByDateRange" resultMap="WeightRecordResultMap">
+        SELECT wr.id, wr.user_id, wr.record_date, wr.weight, wr.source, wr.recorded_at
+        FROM weight_records wr
+        INNER JOIN (
+            SELECT record_date, MAX(id) AS latest_id
+            FROM weight_records
+            WHERE user_id = #{userId}
+              AND record_date BETWEEN #{startDate} AND #{endDate}
+            GROUP BY record_date
+        ) latest ON latest.latest_id = wr.id
+        WHERE wr.user_id = #{userId}
+        ORDER BY wr.record_date ASC
+    </select>
+</mapper>

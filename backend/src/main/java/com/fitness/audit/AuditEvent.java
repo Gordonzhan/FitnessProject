@@ -1,0 +1,13 @@
+package com.fitness.audit;
+
+public enum AuditEvent {
+    RECIPE_DELETE,
+    WORKOUT_DELETE,
+    WORKOUT_PLAN_CANCEL,
+    WORKOUT_COMPLETE,
+    DAILY_INTAKE_REMOVE,
+    ACTIVITY_DATA_DELETE,
+    OSS_IMAGE_DELETE,
+    PERMISSION_DENIED,
+    ADMIN_DATA_CHANGE
+}

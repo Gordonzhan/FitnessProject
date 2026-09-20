@@ -1,0 +1,119 @@
+<!-- 训练计划、当天记录和历史补录共用表单 -->
+<view class="page-shell form-page workout-form-page">
+  <view class="training-date-card">
+    <view>
+      <text class="training-kicker">WORKOUT SESSION</text>
+      <text class="training-title">{{formTitle}}</text>
+    </view>
+    <view class="training-date">
+      <text class="training-date-label">训练日期</text>
+      <text class="training-date-value">{{date}}</text>
+    </view>
+  </view>
+
+  <view class="workout-mode-notice {{status === 'PLANNED' ? 'is-plan' : 'is-completed'}}">
+    <text class="mode-notice-tag">{{status === 'PLANNED' ? '训练计划' : (isHistorical ? '历史补录' : '已完成记录')}}</text>
+    <text class="mode-notice-copy">{{modeHint}}</text>
+  </view>
+
+  <!-- 当天可选择先计划或直接记录完成 -->
+  <view wx:if="{{canChooseStatus}}" class="today-status-picker">
+    <view class="status-option {{status === 'PLANNED' ? 'is-active' : ''}}" data-status="PLANNED" bindtap="selectStatus">
+      <text class="status-option-title">待完成计划</text>
+      <text class="status-option-copy">暂不计入能量</text>
+    </view>
+    <view class="status-option {{status === 'COMPLETED' ? 'is-active' : ''}}" data-status="COMPLETED" bindtap="selectStatus">
+      <text class="status-option-title">已完成记录</text>
+      <text class="status-option-copy">保存后计入能量</text>
+    </view>
+  </view>
+
+  <!-- 动作明细编辑区域 -->
+  <view class="section-card exercise-form-card">
+    <view class="form-section-head">
+      <view>
+        <text class="card-kicker">MOVEMENTS</text>
+        <text class="card-title">训练动作</text>
+        <text class="card-copy">填写重量、组数和每组次数</text>
+      </view>
+      <view class="inline-action" bindtap="addExercise">＋ 添加</view>
+    </view>
+
+    <view wx:if="{{exercises.length === 0}}" class="exercise-form-empty">
+      <text class="empty-line"></text>
+      <text>点击“添加”开始记录第一个动作</text>
+    </view>
+
+    <view wx:for="{{exercises}}" wx:key="index" id="exercise-{{index}}" class="exercise-form-block">
+      <view class="exercise-form-head">
+        <view class="exercise-form-index">{{index + 1}}</view>
+        <view class="exercise-form-title-wrap">
+          <text class="exercise-form-title">动作 {{index + 1}}</text>
+          <text class="exercise-form-subtitle">SET {{index + 1}}</text>
+        </view>
+        <view class="remove-text" catchtap="removeExercise" data-index="{{index}}">移除</view>
+      </view>
+
+      <view class="field-group">
+        <text class="field-label">动作名称</text>
+        <view class="database-select-field" bindtap="openExerciseSelector" data-index="{{index}}">
+          <text class="{{item.name ? 'database-select-value' : 'field-placeholder'}}">{{item.name || '搜索并选择训练动作'}}</text>
+          <text class="database-select-action">搜索选择 ›</text>
+        </view>
+        <text wx:if="{{item.name && !item.databaseMatched}}" class="field-error">该动作不在基础数据库中</text>
+      </view>
+
+      <view class="exercise-metrics">
+        <view class="metric-field">
+          <text class="field-label">重量</text>
+          <view class="metric-input-wrap">
+            <input class="metric-input" placeholder="0" placeholder-class="field-placeholder" value="{{item.weight}}" bindinput="inputExerciseWeight" bindkeyboardheightchange="onKeyboardHeightChange" data-index="{{index}}" type="digit"></input>
+            <text class="metric-unit">kg</text>
+          </view>
+        </view>
+        <view class="metric-field">
+          <text class="field-label">组数</text>
+          <view class="metric-input-wrap">
+            <input class="metric-input" placeholder="0" placeholder-class="field-placeholder" value="{{item.sets}}" bindinput="inputExerciseSets" bindkeyboardheightchange="onKeyboardHeightChange" data-index="{{index}}" type="number"></input>
+            <text class="metric-unit">组</text>
+          </view>
+        </view>
+        <view class="metric-field last">
+          <text class="field-label">每组</text>
+          <view class="metric-input-wrap">
+            <input class="metric-input" placeholder="0" placeholder-class="field-placeholder" value="{{item.reps}}" bindinput="inputExerciseReps" bindkeyboardheightchange="onKeyboardHeightChange" data-index="{{index}}" type="number"></input>
+            <text class="metric-unit">次</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="calorie-preview">
+        <text>预计消耗</text>
+        <text class="calorie-preview-value">{{item.calories || 0}} kcal</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="burn-panel">
+    <view>
+      <text class="burn-kicker">TOTAL BURN</text>
+      <text class="burn-title">{{status === 'PLANNED' ? '本次训练预计消耗' : '按动作估算的实际消耗'}}</text>
+    </view>
+    <view class="burn-value-wrap">
+      <text class="burn-value">{{totalCalories}}</text>
+      <text class="burn-unit">kcal</text>
+    </view>
+  </view>
+
+  <!-- 固定快捷新增与保存栏：键盘或选择器出现时隐藏，避免遮挡。 -->
+  <view wx:if="{{!keyboardOpen && !selectorVisible}}" class="sticky-action form-sticky-action">
+    <view class="sticky-add-button {{saving || loadingWorkout || loadFailed ? 'button-disabled' : ''}}" bindtap="quickAddExercise">
+      <text class="sticky-add-label">＋ 添加动作</text>
+      <text class="sticky-add-count">当前 {{exercises.length}} 项</text>
+    </view>
+    <view class="primary-button {{saving || loadingWorkout || loadFailed ? 'button-disabled' : ''}}" bindtap="saveWorkout">{{saving ? '保存中…' : saveText}}</view>
+  </view>
+  <view wx:if="{{showBackToTop && !keyboardOpen && !selectorVisible}}" class="form-back-to-top" bindtap="scrollToTop">↑</view>
+
+  <reference-selector wx:if="{{selectorVisible}}" type="exercise" bindselect="selectExercise" bindclose="closeExerciseSelector"></reference-selector>
+</view>
