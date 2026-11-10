@@ -1,5 +1,7 @@
 # FitnessProject · 健身饮食日记
 
+**简体中文** | [English](README.en.md)
+
 面向日常训练和饮食管理的微信小程序，由 [Gordonzhan](https://github.com/Gordonzhan) 维护。
 项目把饮食记录、训练计划、个人阶段分析与本地模型 Agent 放在同一条使用流程中：
 从记录数据、生成建议，到编辑草稿、确认保存，再回看实际执行结果。
