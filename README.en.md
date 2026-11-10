@@ -124,6 +124,12 @@ These results do not replace real-model evaluation or assessment on a larger dat
 - Further documentation (Chinese): [database design](backend/database-design.md),
   [knowledge corpus](ai-agent/knowledge/README.md), and [security](SECURITY.md).
 
+## Product Requirements
+
+[AI Food Recognition and Confirmed Intake Logging — PRD](PRD_AI_Food_Recognition_and_Intake.en.md) · [简体中文](PRD_AI食物识别与饮食入账_v0.1.md)
+
+User scenarios, interaction flows, business rules, acceptance criteria, and a measurement plan, with current behavior distinguished from proposed improvements.
+
 ## Deployment Status and Limitations
 
 The existing Tencent Cloud service has not been updated to the latest agent version in this repository.

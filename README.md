@@ -112,6 +112,12 @@ make rag-eval
 - `tools/`：运行环境切换、前端测试和参考数据工具。
 - [数据库设计](backend/database-design.md)、[知识语料](ai-agent/knowledge/README.md)、[安全说明](SECURITY.md)。
 
+## 产品需求文档
+
+[AI 食物识别与饮食确认入账 PRD](PRD_AI食物识别与饮食入账_v0.1.md) · [English](PRD_AI_Food_Recognition_and_Intake.en.md)
+
+覆盖用户场景、交互流程、业务规则、验收标准与效果验证方案，并区分现有能力和后续需求。
+
 ## 部署状态与边界
 
 腾讯云上的现有服务尚未更新到本仓库的最新 Agent 版本。本地 Agent 与云端的通信、最新数据库迁移和端到端云端验证仍是部署前提。
