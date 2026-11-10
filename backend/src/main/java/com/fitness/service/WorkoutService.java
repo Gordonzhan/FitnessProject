@@ -1,6 +1,7 @@
 package com.fitness.service;
 
 import com.fitness.entity.Workout;
+import com.fitness.dto.WorkoutEstimateRequest;
 import com.fitness.entity.Exercise;
 
 import java.time.LocalDate;
@@ -12,6 +13,8 @@ public interface WorkoutService {
     List<Workout> getWorkoutsByUserId(Long userId);
     /** 查询用户在指定日期的训练记录。 */
     Workout getWorkoutByDate(Long userId, LocalDate date);
+    /** 只读预估；使用与保存完全相同的 Java 公式。 */
+    Workout estimateWorkout(Long userId, WorkoutEstimateRequest request);
     /** 新建或更新训练记录及其动作明细。 */
     Workout saveWorkout(Workout workout);
     /** 将到期训练计划确认完成，并记录实际热量消耗。 */

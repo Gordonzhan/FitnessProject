@@ -11,6 +11,8 @@
         <result column="total_calories" property="totalCalories"/>
         <result column="status" property="status"/>
         <result column="estimated_calories" property="estimatedCalories"/>
+        <result column="estimated_duration_minutes" property="estimatedDurationMinutes"/>
+        <result column="calorie_reference_weight" property="calorieReferenceWeight"/>
         <result column="actual_calories" property="actualCalories"/>
         <result column="created_at" property="createdAt"/>
         <result column="updated_at" property="updatedAt"/>
@@ -73,11 +75,12 @@
 
     <insert id="insert" parameterType="Workout" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO workouts
-          (user_id, workout_id, date, total_calories, status, estimated_calories, actual_calories,
+          (user_id, workout_id, date, total_calories, status, estimated_calories,
+           estimated_duration_minutes, calorie_reference_weight, actual_calories,
            created_at, updated_at)
         VALUES
           (#{userId}, #{workoutId}, #{date}, #{totalCalories}, #{status}, #{estimatedCalories},
-           #{actualCalories}, NOW(), NOW())
+           #{estimatedDurationMinutes}, #{calorieReferenceWeight}, #{actualCalories}, NOW(), NOW())
         ON DUPLICATE KEY UPDATE
             id = LAST_INSERT_ID(id),
             workout_id = VALUES(workout_id),
@@ -85,6 +88,8 @@
             total_calories = VALUES(total_calories),
             status = VALUES(status),
             estimated_calories = VALUES(estimated_calories),
+            estimated_duration_minutes = VALUES(estimated_duration_minutes),
+            calorie_reference_weight = VALUES(calorie_reference_weight),
             actual_calories = VALUES(actual_calories),
             updated_at = NOW()
     </insert>
@@ -97,6 +102,8 @@
             total_calories = #{totalCalories},
             status = #{status},
             estimated_calories = #{estimatedCalories},
+            estimated_duration_minutes = #{estimatedDurationMinutes},
+            calorie_reference_weight = #{calorieReferenceWeight},
             actual_calories = #{actualCalories},
             updated_at = NOW()
         WHERE id = #{id}

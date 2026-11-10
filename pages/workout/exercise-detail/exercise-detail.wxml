@@ -1,0 +1,33 @@
+<view class="page-shell detail-page">
+  <view wx:if="{{loading}}" class="state-card">正在加载动作说明…</view>
+  <view wx:elif="{{error}}" class="state-card error-card"><text>加载失败：{{error}}</text><text class="retry" bindtap="load">重新加载</text></view>
+  <block wx:elif="{{exercise}}">
+    <view class="detail-hero">
+      <text class="hero-kicker">{{exercise.category}} · {{exercise.exerciseCode}}</text>
+      <text class="hero-title">{{exercise.name}}</text>
+      <text class="hero-meta">{{exercise.primaryMuscles}} · {{exercise.equipment}} · {{exercise.intensity}}</text>
+    </view>
+    <image wx:if="{{exercise.mediaUrl && (exercise.mediaType === 'IMAGE' || exercise.mediaType === 'GIF')}}" class="exercise-media" src="{{exercise.mediaUrl}}" mode="aspectFill"></image>
+    <video wx:if="{{exercise.mediaUrl && exercise.mediaType === 'VIDEO'}}" class="exercise-media" src="{{exercise.mediaUrl}}" controls></video>
+
+    <view class="section-card guidance-card"><text class="card-kicker">HOW TO</text><text class="card-title">动作说明</text><text class="body-copy">{{exercise.instructions || '动作说明正在审核补充中。'}}</text></view>
+    <view class="section-card safety-card"><text class="card-kicker">SAFETY</text><text class="card-title">安全提示</text><text class="body-copy">{{exercise.safetyCues}}</text></view>
+    <view class="section-card guidance-card"><text class="card-kicker">COMMON MISTAKES</text><text class="card-title">常见错误</text><text class="body-copy">{{exercise.commonMistakes}}</text></view>
+
+    <view class="section-card guidance-card">
+      <text class="card-kicker">DEFAULTS</text><text class="card-title">参考参数</text>
+      <view class="metric-grid">
+        <view class="metric"><text>{{exercise.defaultSets || '—'}}</text><text>组数</text></view>
+        <view class="metric"><text>{{exercise.defaultReps || '—'}}</text><text>次数</text></view>
+        <view class="metric"><text>{{exercise.defaultDurationSeconds || '—'}}</text><text>秒</text></view>
+        <view class="metric"><text>{{exercise.defaultRestSeconds || '—'}}</text><text>休息秒</text></view>
+        <view class="metric"><text>{{exercise.defaultRpe || '—'}}</text><text>RPE</text></view>
+        <view class="metric"><text>{{exercise.tempo || '—'}}</text><text>节奏</text></view>
+      </view>
+    </view>
+
+    <view wx:if="{{limitationLabels.length}}" class="section-card guidance-card"><text class="card-kicker">LIMITATIONS</text><text class="card-title">可能需要避开</text><view class="tag-row"><text wx:for="{{limitationLabels}}" wx:key="*this" class="limit-tag">{{item}}</text></view></view>
+    <view wx:if="{{alternatives.length}}" class="section-card guidance-card"><text class="card-kicker">ALTERNATIVES</text><text class="card-title">替代动作</text><view wx:for="{{alternatives}}" wx:key="exerciseCode" class="alternative" data-code="{{item.exerciseCode}}" bindtap="openAlternative"><text>{{item.name}}</text><text>›</text></view></view>
+    <view class="fitness-notice">参数仅供健身参考。请优先保证动作质量；如出现锐痛、胸痛、眩晕或明显呼吸困难，应立即停止。</view>
+  </block>
+</view>

@@ -1,0 +1,38 @@
+<view class="page-shell ai-workout-page">
+  <view class="draft-hero">
+    <text class="hero-kicker">FITNESS AGENT</text><text class="hero-title">{{draft ? draft.title : '今天想怎么练？'}}</text>
+    <text class="hero-note">{{date}} · 先说需求，再结合长期偏好生成；确认前不会保存。</text>
+  </view>
+  <view class="chat-stream"><view wx:for="{{messages}}" wx:key="index" class="message-row {{item.role}}"><view class="message-bubble">{{item.content}}</view></view></view>
+  <scroll-view wx:if="{{!draft && !loading}}" class="quick-prompts" scroll-x enable-flex><view wx:for="{{quickPrompts}}" wx:key="*this" class="quick-prompt" data-value="{{item}}" bindtap="useQuickPrompt">{{item}}</view></scroll-view>
+  <view wx:if="{{loading}}" class="state-card"><view class="loading-dot"></view><text>正在结合本次需求、长期偏好和合规动作库生成…</text></view>
+  <view wx:elif="{{error}}" class="state-card error-card"><text>{{error}}</text><view wx:if="{{activeRequest}}" class="retry-button" bindtap="generate">重试</view></view>
+  <block wx:if="{{draft}}">
+    <view class="section-heading"><text>训练草稿</text><text>基于本次需求</text></view>
+    <view class="draft-summary"><view><text class="summary-value">{{draft.exercises.length}}</text><text class="summary-label">动作</text></view><view><text class="summary-value">{{draft.estimatedDurationMinutes}}</text><text class="summary-label">分钟</text></view><view><text class="summary-value">{{draft.targetRpe}}</text><text class="summary-label">目标 RPE</text></view></view>
+    <view wx:if="{{draft.status === 'FALLBACK'}}" class="fallback-note">模型结果不可用，当前展示动作库默认生成的降级草稿。</view>
+    <view wx:for="{{draft.exercises}}" wx:key="exerciseCode" class="draft-exercise-card">
+      <view class="exercise-head"><view class="exercise-index">{{index + 1}}</view><view class="exercise-copy"><text class="exercise-name">{{item.name}}</text><text class="exercise-meta">{{item.primaryMuscles}} · {{item.equipment}}</text></view><view class="exercise-card-actions"><view class="remove-button {{replacingCode || removingCode ? 'disabled' : ''}}" data-code="{{item.exerciseCode}}" bindtap="removeExercise">{{removingCode === item.exerciseCode ? '删除中…' : '删除'}}</view><view class="replace-button {{replacingCode || removingCode ? 'disabled' : ''}}" data-code="{{item.exerciseCode}}" bindtap="replaceExercise">{{replacingCode === item.exerciseCode ? '替换中…' : '换一个'}}</view></view></view>
+      <view class="prescription-grid"><view><input class="prescription-input" type="number" value="{{item.sets}}" data-index="{{index}}" bindinput="inputExerciseSets"/><text>组（可改）</text></view><view><text>{{item.reps}}</text><text>次/组</text></view><view><text>{{item.restSeconds}}</text><text>秒休息</text></view><view><text>{{item.rpe}}</text><text>RPE</text></view></view>
+      <view class="weight-editor {{item.weightSource === 'UNSET' ? 'needs-weight' : ''}}">
+        <view class="weight-copy"><text class="weight-title">{{item.loadType === 'ASSISTANCE' ? '辅助重量' : (item.loadType === 'OPTIONAL_LOAD' ? '可选负重' : '训练重量')}}</text><text class="weight-note">{{item.weightNote}}</text></view>
+        <view wx:if="{{item.loadType === 'BODYWEIGHT'}}" class="weight-static">自重</view>
+        <view wx:elif="{{item.loadType === 'NO_LOAD'}}" class="weight-static">无需负重</view>
+        <view wx:else class="weight-input-wrap"><input class="weight-input" type="digit" value="{{item.weight}}" placeholder="{{item.loadType === 'OPTIONAL_LOAD' ? '可选' : '待选择'}}" data-index="{{index}}" bindinput="inputExerciseWeight"/><text>kg</text></view>
+      </view>
+      <text wx:if="{{item.rationale}}" class="exercise-reason">{{item.rationale}}</text>
+    </view>
+    <view wx:if="{{invalidSetCount > 0}}" class="weight-reminder">组数必须填写 1～10 之间的整数，修正后才能继续操作。</view>
+    <view wx:if="{{missingWeightCount > 0}}" class="weight-reminder">还有 {{missingWeightCount}} 个负重动作需要填写重量，确认训练前必须完成。</view>
+    <view wx:if="{{draft.warnings.length}}" class="warning-card"><text wx:for="{{draft.warnings}}" wx:key="*this">• {{item}}</text></view><text class="disclaimer">{{draft.disclaimer}}</text>
+    <view wx:if="{{draft.nutritionPlan}}" class="nutrition-card">
+      <view class="section-heading nutrition-heading"><text>饮食计划</text><text>{{canRecordNutrition ? '勾选实际要记录的餐食' : '未来日期仅作建议'}}</text></view>
+      <view class="nutrition-budget"><view><text>{{draft.nutritionPlan.dailyTargetCalories}}</text><text>今日目标 kcal</text></view><view><text>{{draft.nutritionPlan.consumedCalories}}</text><text>已记录 kcal</text></view><view><text>{{draft.nutritionPlan.remainingCalories}}</text><text>剩余额度 kcal</text></view></view>
+      <view wx:for="{{nutritionMeals}}" wx:key="recipeId" class="meal-row {{item.selectedForIntake ? 'selected' : ''}}" data-recipeid="{{item.recipeId}}" bindtap="toggleNutritionMeal"><view class="meal-check">{{item.selectedForIntake ? '✓' : ''}}</view><view class="meal-slot">{{item.mealSlot}}</view><view class="meal-copy"><text>{{item.name}}</text><text>{{item.servingDescription}}</text><text wx:if="{{item.allergenInfo}}" class="allergen">{{item.allergenInfo}}</text></view><view class="meal-macro"><text>{{item.calories}}</text><text>kcal</text><text>{{item.protein}}g 蛋白</text></view></view>
+      <text class="nutrition-note">{{draft.nutritionPlan.note}}</text>
+      <view class="nutrition-accept {{nutritionAccepted ? 'accepted' : ''}} {{recordingNutrition || selectedNutritionCount === 0 || !canRecordNutrition ? 'disabled' : ''}}" bindtap="acceptNutritionPlan">{{nutritionAccepted ? '已加入今日饮食' : (recordingNutrition ? '正在加入…' : (canRecordNutrition ? '将已选 ' + selectedNutritionCount + ' 餐加入今日饮食' : '训练当天可加入今日饮食'))}}</view>
+    </view>
+    <view class="draft-actions"><view class="secondary-action" bindtap="rejectDraft">放弃草稿</view><view class="secondary-action regenerate" bindtap="generate">重新生成</view><view class="primary-action {{confirming || replacingCode || removingCode ? 'disabled' : ''}}" bindtap="confirmDraft">{{confirming ? '保存中…' : '确认训练'}}</view></view>
+  </block>
+  <view class="composer"><textarea class="composer-input" value="{{inputText}}" maxlength="500" auto-height placeholder="例如：今天练胸，45分钟，不要卧推" bindinput="onInput" /><view class="send-button {{!inputText || loading ? 'disabled' : ''}}" bindtap="sendMessage">发送</view></view>
+</view>

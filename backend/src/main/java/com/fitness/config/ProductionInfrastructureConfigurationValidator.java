@@ -46,6 +46,15 @@ public class ProductionInfrastructureConfigurationValidator {
     @Value("${fitness.comparison.hash-secret:}")
     private String comparisonHashSecret;
 
+    @Value("${fitness.agent.enabled:false}")
+    private boolean agentEnabled;
+
+    @Value("${fitness.agent.service-token:}")
+    private String agentServiceToken;
+
+    @Value("${fitness.agent.context-secret:}")
+    private String agentContextSecret;
+
     @PostConstruct
     void validate() {
         if (!productionMode) return;
@@ -63,6 +72,12 @@ public class ProductionInfrastructureConfigurationValidator {
         if (includeSyntheticComparison) problems.add("生产环境必须关闭 R7 合成样本");
         if (realComparisonSnapshotEnabled && byteLength(comparisonHashSecret) < 32) {
             problems.add("启用 R7 真实匿名快照时必须配置至少 32 字节的独立 HMAC 密钥");
+        }
+        if (agentEnabled && byteLength(agentServiceToken) < 32) {
+            problems.add("启用 Agent 时必须配置至少 32 字节的服务令牌");
+        }
+        if (agentEnabled && byteLength(agentContextSecret) < 32) {
+            problems.add("启用 Agent 时必须配置至少 32 字节的用户上下文 HMAC 密钥");
         }
 
         if (!problems.isEmpty()) {

@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.AnnotationTransactionAttribute
 
 import java.lang.reflect.Method;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,6 +24,10 @@ class TransactionPolicyTest {
                 RecipeServiceImpl.class.getMethod("deleteRecipeByRecipeId", Long.class, String.class),
                 CompareService.class.getMethod("addRecipeToDailyIntake", Long.class, LocalDate.class, String.class),
                 CompareService.class.getMethod("addRecipeToDailyIntake", Long.class, LocalDate.class, String.class, String.class),
+                CompareService.class.getMethod("addRecipeToDailyIntake", Long.class, LocalDate.class, String.class,
+                        String.class, String.class, BigDecimal.class, LocalTime.class),
+                RecipeIntakeConfirmationService.class.getMethod("saveAndAddToDailyIntake", Recipe.class,
+                        LocalDate.class, String.class, String.class, BigDecimal.class, LocalTime.class),
                 CompareService.class.getMethod("removeRecipeFromDailyIntake", Long.class, LocalDate.class, String.class),
                 CompareService.class.getMethod("removeDailyIntake", Long.class, LocalDate.class, Long.class));
         var source = new AnnotationTransactionAttributeSource();

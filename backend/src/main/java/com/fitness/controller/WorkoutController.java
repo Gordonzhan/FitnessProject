@@ -8,6 +8,7 @@ import com.fitness.common.BusinessException;
 import com.fitness.common.Response;
 import com.fitness.dto.WorkoutSaveRequest;
 import com.fitness.dto.WorkoutCompleteRequest;
+import com.fitness.dto.WorkoutEstimateRequest;
 import com.fitness.entity.Exercise;
 import com.fitness.entity.Workout;
 import com.fitness.service.WorkoutService;
@@ -53,6 +54,7 @@ public class WorkoutController {
         workout.setDate(params.date());
         workout.setStatus(params.status());
         workout.setTotalCalories(params.totalCalories());
+        workout.setEstimatedDurationMinutes(params.estimatedDurationMinutes());
         workout.setUserId(AuthContext.getUserId(request));
         workout.setExercises(params.exercises().stream().map(item -> {
             Exercise exercise = new Exercise();
@@ -61,9 +63,17 @@ public class WorkoutController {
             exercise.setSets(item.sets());
             exercise.setReps(item.reps());
             exercise.setCalories(item.calories());
+            exercise.setCalorieDurationSeconds(item.calorieDurationSeconds());
+            exercise.setCalorieBasisSets(item.calorieBasisSets());
             return exercise;
         }).toList());
         return Response.success(workoutService.saveWorkout(workout));
+    }
+
+    @PostMapping("/estimate")
+    public Response estimateWorkout(@Valid @RequestBody WorkoutEstimateRequest params,
+                                    HttpServletRequest request) {
+        return Response.success(workoutService.estimateWorkout(AuthContext.getUserId(request), params));
     }
 
     @PostMapping("/complete/{workoutId}")

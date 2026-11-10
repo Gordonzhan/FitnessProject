@@ -1,0 +1,34 @@
+{
+  "documentId": "KB_MAYO_PUSHUP_2025",
+  "title": "Mayo Clinic 俯卧撑与水平推动作技术摘要",
+  "sourceName": "Mayo Clinic",
+  "sourceUrl": "https://www.mayoclinic.org/healthy-lifestyle/fitness/multimedia/modified-pushup/vid-20084674",
+  "publishedOrUpdatedAt": "2025-11-21",
+  "version": "2025-11-project-summary-v1",
+  "topics": [
+    "exercise_technique",
+    "exercise_safety",
+    "movement_push_horizontal",
+    "pushup",
+    "upper_body"
+  ],
+  "language": "zh-CN",
+  "riskLevel": "MODERATE",
+  "reviewStatus": "APPROVED",
+  "reviewedAt": "2026-10-14",
+  "reviewer": "FitnessProject editorial review",
+  "sections": [
+    {
+      "heading": "俯卧撑躯干与手部准备",
+      "content": "双手放在稳定表面，位置可从略宽于肩开始；收紧腹部和臀部，使头、躯干与下肢保持协调。下降和推起过程中避免腰部下沉、臀部过度抬高或头部单独前伸，手掌持续稳定支撑。"
+    },
+    {
+      "heading": "下降与推起",
+      "content": "屈肘缓慢降低身体，再平稳推回起始位置，全程保持躯干控制和自然呼吸。动作幅度以肩部舒适、姿势不变形为准；不要通过快速撞向地面、反弹或突然锁死关节来完成重复。"
+    },
+    {
+      "heading": "墙面和跪姿退阶",
+      "content": "标准俯卧撑无法稳定完成时，可先采用墙面俯卧撑或跪姿版本，降低需要推动的自身体重。退阶不是失败，而是用于建立躯干稳定和推的动作模式；当当前版本可以连续平稳完成后，再逐步降低支撑高度或增加难度。"
+    }
+  ]
+}

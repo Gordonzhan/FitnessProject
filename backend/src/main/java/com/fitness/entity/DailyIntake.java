@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Data
 @Entity
@@ -42,6 +43,18 @@ public class DailyIntake {
     /** 添加饮食时保存的菜谱名称快照。 */
     @Column(name = "meal_type_snapshot", nullable = false, length = 20)
     private String mealTypeSnapshot;
+
+    /** BREAKFAST、LUNCH、DINNER、SNACK；历史数据使用 UNSPECIFIED。 */
+    @Column(name = "meal_slot", nullable = false, length = 20)
+    private String mealSlot = "UNSPECIFIED";
+
+    /** 相对于菜谱整份营养的实际食用份数。 */
+    @Column(name = "serving_count", nullable = false, precision = 4, scale = 2)
+    private BigDecimal servingCount = BigDecimal.ONE;
+
+    /** 用户确认的本地食用时间，不承担时区换算。 */
+    @Column(name = "consumed_time")
+    private LocalTime consumedTime;
 
     /** 添加饮食时保存的蛋白质快照，单位：克。 */
     @Column(name = "protein_snapshot", nullable = false, precision = 10, scale = 2)

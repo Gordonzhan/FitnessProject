@@ -60,6 +60,15 @@ class ImageServiceTest {
         verify(oss, never()).deleteImage(anyString());
     }
 
+    @Test void aiRecognitionAcceptsOnlyOneToThreeCurrentUserUploads() {
+        when(oss.belongsToUser(url, 8L)).thenReturn(true);
+        service.validateAiRecognitionImages(8L, List.of(url));
+        assertThrows(IllegalArgumentException.class,
+                () -> service.validateAiRecognitionImages(7L, List.of(url)));
+        assertThrows(IllegalArgumentException.class,
+                () -> service.validateAiRecognitionImages(8L, Collections.nCopies(4, url)));
+    }
+
     @Test void rollbackNeverDeletesRemoteImages() {
         TransactionSynchronizationManager.initSynchronization();
         service.cleanupAfterCommit(List.of(url));

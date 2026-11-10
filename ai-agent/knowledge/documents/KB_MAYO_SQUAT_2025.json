@@ -1,0 +1,33 @@
+{
+  "documentId": "KB_MAYO_SQUAT_2025",
+  "title": "Mayo Clinic 深蹲动作技术摘要",
+  "sourceName": "Mayo Clinic",
+  "sourceUrl": "https://www.mayoclinic.org/healthy-lifestyle/fitness/multimedia/squat/vid-20084682",
+  "publishedOrUpdatedAt": "2025-11-21",
+  "version": "2025-11-project-summary-v1",
+  "topics": [
+    "exercise_technique",
+    "exercise_safety",
+    "movement_squat",
+    "lower_body"
+  ],
+  "language": "zh-CN",
+  "riskLevel": "MODERATE",
+  "reviewStatus": "APPROVED",
+  "reviewedAt": "2026-10-14",
+  "reviewer": "FitnessProject editorial review",
+  "sections": [
+    {
+      "heading": "深蹲准备与下降",
+      "content": "站距可从约肩宽开始，双脚稳定接触地面，先收紧躯干，再让髋、膝和踝以可控方式共同屈曲。下降时保持脊柱处于自然、稳定的位置，膝盖沿脚的方向移动，不让膝关节突然内扣或外翻。"
+    },
+    {
+      "heading": "深度与起身",
+      "content": "下降深度应服从个人能够稳定控制的活动范围；脚跟抬起、躯干明显塌陷或膝盖失去对齐时，应在更浅的位置停止。起身时保持足部稳定，让髋与躯干协调上升，避免借助弹震或突然加速完成重复。"
+    },
+    {
+      "heading": "退阶与常见错误",
+      "content": "尚不能稳定完成标准深蹲时，可先去掉负重，并使用椅子辅助练习坐下和站起。常见错误包括负荷增加过快、膝盖失去脚部方向、腰背位置无法保持以及疲劳后仍追求深度。动作质量下降时应减轻负荷、缩小幅度或结束该组。"
+    }
+  ]
+}

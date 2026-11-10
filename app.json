@@ -4,11 +4,15 @@
     "pages/recipe/add-recipe/add-recipe",
     "pages/workout/workout",
     "pages/workout/add-workout/add-workout",
+    "pages/workout/ai-draft/ai-draft",
     "pages/compare/compare",
     "pages/profile/profile",
     "pages/profile/analysis/analysis",
     "pages/profile/activity/activity",
-    "pages/profile/comparison/comparison"
+    "pages/profile/comparison/comparison",
+    "pages/profile/training-preferences/training-preferences",
+    "pages/profile/fitness-agent/fitness-agent",
+    "pages/workout/exercise-detail/exercise-detail"
   ],
   "window": {
     "backgroundColor": "#F2F5F0",

@@ -1,0 +1,37 @@
+{
+  "documentId": "KB_AHA_WARMUP_COOLDOWN_2024",
+  "title": "AHA 运动前热身与运动后冷身摘要",
+  "sourceName": "American Heart Association",
+  "sourceUrl": "https://www.heart.org/en/healthy-living/exercise-and-physical-activity/fitness-basics/warm-up-cool-down",
+  "publishedOrUpdatedAt": "2024-01-16",
+  "version": "2024-01-project-summary-v1",
+  "topics": [
+    "warmup_recovery",
+    "aerobic_warmup",
+    "cooldown",
+    "exercise_safety"
+  ],
+  "language": "zh-CN",
+  "riskLevel": "LOW",
+  "reviewStatus": "APPROVED",
+  "reviewedAt": "2026-10-14",
+  "reviewer": "FitnessProject editorial review",
+  "sections": [
+    {
+      "heading": "热身的目标与时长",
+      "content": "热身的作用是让心率、呼吸、循环和肌肉温度逐步进入运动状态，而不是提前把自己练到疲劳。一般可安排约5至10分钟；计划活动越激烈，通常越需要充分、渐进的准备。热身强度应让身体变暖且仍能控制呼吸和动作。"
+    },
+    {
+      "heading": "从低强度进入目标活动",
+      "content": "优先使用与随后训练相近但强度更低的活动，例如跑步前先快走或慢跑、骑行前先低阻力踩踏。力量训练也可遵循同一逻辑：先用轻负荷熟悉目标动作与活动范围，再进入工作组。热身不是额外的高强度训练，不应造成明显力竭。"
+    },
+    {
+      "heading": "冷身与拉伸",
+      "content": "训练结束后可用约5至10分钟逐步降低速度和强度，使心率与呼吸平稳下降，避免突然完全停止。若安排静态拉伸，应在身体仍温暖时缓慢进入舒适张力，保持呼吸，不弹震、不追求疼痛；拉伸强度应明显但不痛。"
+    },
+    {
+      "heading": "停止条件与适用边界",
+      "content": "热身和冷身不能排除所有运动风险，也不能替代医疗评估。出现胸痛、明显呼吸困难、昏厥感、急性疼痛或其他异常不适时，应立即停止训练并按严重程度寻求专业帮助；本摘要不用于诊断、伤病治疗或康复处方。"
+    }
+  ]
+}

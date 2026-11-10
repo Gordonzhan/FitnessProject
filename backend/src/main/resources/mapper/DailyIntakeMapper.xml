@@ -11,6 +11,9 @@
         <result column="request_id" property="requestId"/>
         <result column="recipe_business_id" property="recipeBusinessId"/>
         <result column="meal_type_snapshot" property="mealTypeSnapshot"/>
+        <result column="meal_slot" property="mealSlot"/>
+        <result column="serving_count" property="servingCount"/>
+        <result column="consumed_time" property="consumedTime"/>
         <result column="protein_snapshot" property="proteinSnapshot"/>
         <result column="carb_snapshot" property="carbSnapshot"/>
         <result column="fat_snapshot" property="fatSnapshot"/>
@@ -19,6 +22,7 @@
 
     <select id="findByUserIdAndDate" resultMap="DailyIntakeResultMap">
         SELECT id, user_id, date, recipe_id, request_id, recipe_business_id, meal_type_snapshot,
+               meal_slot, serving_count, consumed_time,
                protein_snapshot, carb_snapshot, fat_snapshot, calorie_snapshot
         FROM daily_intake WHERE user_id = #{userId} AND date = #{date} ORDER BY id ASC
     </select>
@@ -26,9 +30,11 @@
     <insert id="insertIfAbsent" parameterType="DailyIntake">
         INSERT INTO daily_intake
           (user_id, date, recipe_id, request_id, recipe_business_id, meal_type_snapshot,
+           meal_slot, serving_count, consumed_time,
            protein_snapshot, carb_snapshot, fat_snapshot, calorie_snapshot)
         VALUES
           (#{userId}, #{date}, #{recipeDbId}, #{requestId}, #{recipeBusinessId}, #{mealTypeSnapshot},
+           #{mealSlot}, #{servingCount}, #{consumedTime},
            #{proteinSnapshot}, #{carbSnapshot}, #{fatSnapshot}, #{calorieSnapshot})
         ON DUPLICATE KEY UPDATE request_id = VALUES(request_id)
     </insert>

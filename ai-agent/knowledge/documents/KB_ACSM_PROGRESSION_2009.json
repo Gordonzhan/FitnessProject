@@ -1,0 +1,28 @@
+{
+  "documentId": "KB_ACSM_PROGRESSION_2009",
+  "title": "ACSM 健康成年人抗阻训练渐进模型摘要",
+  "sourceName": "American College of Sports Medicine",
+  "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/19204579/",
+  "publishedOrUpdatedAt": "2009-03-01",
+  "version": "2009-position-stand-project-summary-v1",
+  "topics": ["sets_reps", "rest_intervals", "frequency", "progression", "rpe"],
+  "language": "zh-CN",
+  "riskLevel": "MODERATE",
+  "reviewStatus": "APPROVED",
+  "reviewedAt": "2026-10-12",
+  "reviewer": "FitnessProject editorial review",
+  "sections": [
+    {
+      "heading": "初学者组次、频率与渐进",
+      "content": "初学者可从每周2至3天抗阻训练和大约8至12次重复的负荷范围开始。若同一负荷能够稳定超过目标重复次数1至2次，可考虑小幅增加负荷；原立场声明给出的常见增幅是约2%至10%，实际应依据动作、器械和个人控制能力调整。渐进不等于每次都必须加重，也可通过动作质量、重复次数或训练量逐步改善。"
+    },
+    {
+      "heading": "组间休息与训练目标",
+      "content": "组间休息应服务于训练目标与动作质量。偏重力量的高负荷组通常需要约3至5分钟恢复；以增肌为主要目标的传统中等重复训练常采用约1至2分钟；较轻负荷的局部肌耐力训练可使用少于90秒的较短休息。若下一组技术明显下降、无法完成计划或呼吸尚未恢复，应延长休息，而不是机械追随计时器。"
+    },
+    {
+      "heading": "RPE 的一般使用",
+      "content": "RPE 是主观用力程度量表，可辅助自我调节，但不是医疗评估。数值越高代表越接近个人当下极限；一般训练无需每组达到最高用力程度。RPE 必须与动作技术、实际完成次数、恢复状态和既定强度范围一起判断，不能只依据单次数值盲目加重。"
+    }
+  ]
+}

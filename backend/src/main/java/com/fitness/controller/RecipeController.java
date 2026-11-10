@@ -9,10 +9,13 @@ import com.fitness.common.Response;
 import com.fitness.common.PageResult;
 import com.fitness.dto.RecipeCatalogItem;
 import com.fitness.dto.RecipeSaveRequest;
+import com.fitness.dto.RecipeIntakeConfirmRequest;
 import com.fitness.entity.Ingredient;
 import com.fitness.entity.Recipe;
 import com.fitness.entity.RecipeImage;
 import com.fitness.service.RecipeService;
+import com.fitness.service.RecipeNutritionCalculator;
+import com.fitness.service.RecipeIntakeConfirmationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
@@ -32,9 +35,14 @@ import java.util.List;
 @RequestMapping("/recipe")
 public class RecipeController {
     private final RecipeService recipeService;
+    private final RecipeNutritionCalculator nutritionCalculator;
+    private final RecipeIntakeConfirmationService intakeConfirmationService;
 
-    public RecipeController(RecipeService recipeService) {
+    public RecipeController(RecipeService recipeService, RecipeNutritionCalculator nutritionCalculator,
+                            RecipeIntakeConfirmationService intakeConfirmationService) {
         this.recipeService = recipeService;
+        this.nutritionCalculator = nutritionCalculator;
+        this.intakeConfirmationService = intakeConfirmationService;
     }
 
     @GetMapping("/list")
@@ -74,11 +82,29 @@ public class RecipeController {
 
     @PostMapping("/save")
     public Response saveRecipe(@Valid @RequestBody RecipeSaveRequest params, HttpServletRequest request) {
+        Recipe recipe = toRecipe(params, AuthContext.getUserId(request));
+        nutritionCalculator.recalculate(recipe);
+        return Response.success(recipeService.saveRecipe(recipe));
+    }
+
+    /** 用户明确确认后，原子保存菜谱并按份数写入指定日期的饮食快照。 */
+    @PostMapping("/save-and-add-intake")
+    public Response saveAndAddIntake(@Valid @RequestBody RecipeIntakeConfirmRequest params,
+                                     HttpServletRequest request) {
+        Recipe recipe = toRecipe(params.recipe(), AuthContext.getUserId(request));
+        nutritionCalculator.recalculate(recipe);
+        return Response.success(intakeConfirmationService.saveAndAddToDailyIntake(
+                recipe, params.date(), params.requestId(), params.mealSlot(),
+                params.servingCount(), params.consumedTime()));
+    }
+
+    private Recipe toRecipe(RecipeSaveRequest params, Long userId) {
         Recipe recipe = new Recipe();
         recipe.setRecipeId(params.recipeId());
-        recipe.setUserId(AuthContext.getUserId(request));
+        recipe.setUserId(userId);
         recipe.setMealType(params.name().trim());
         recipe.setSteps(params.steps() == null ? "" : params.steps());
+        // 客户端营养值仅供页面即时展示，正式保存前由服务端食材库统一覆盖。
         recipe.setProtein(params.protein());
         recipe.setCarb(params.carb());
         recipe.setFat(params.fat());
@@ -97,6 +123,10 @@ public class RecipeController {
         recipe.setIngredients(params.ingredients().stream().map(item -> {
             Ingredient ingredient = new Ingredient();
             ingredient.setFoodName(item.foodName().trim());
+            ingredient.setRecognizedName(item.recognizedName() == null || item.recognizedName().isBlank()
+                    ? null : item.recognizedName().trim());
+            ingredient.setFoodDatabaseId(item.foodDatabaseId());
+            ingredient.setMappingSource(item.mappingSource() == null ? "MANUAL" : item.mappingSource());
             ingredient.setWeight(item.weight());
             ingredient.setProtein(item.protein() == null ? java.math.BigDecimal.ZERO : item.protein());
             ingredient.setCarb(item.carb() == null ? java.math.BigDecimal.ZERO : item.carb());
@@ -105,7 +135,7 @@ public class RecipeController {
             return ingredient;
         }).toList());
 
-        return Response.success(recipeService.saveRecipe(recipe));
+        return recipe;
     }
 
     @DeleteMapping("/delete/{recipeId}")

@@ -92,7 +92,10 @@
     <view wx:elif="{{selectedRecipes.length > 0}}" class="meal-list">
       <view wx:for="{{selectedRecipes}}" wx:key="intakeId" class="meal-row">
         <view class="meal-index">{{index + 1}}</view>
-        <text class="meal-name">{{item.mealType}}</text>
+        <view class="meal-copy">
+          <text class="meal-name">{{item.mealType}}</text>
+          <text wx:if="{{item.mealSlotLabel || item.consumedTime || item.servingCount != 1}}" class="meal-meta">{{item.mealSlotLabel}} {{item.consumedTime}} · {{item.servingCount}} 份</text>
+        </view>
         <view class="meal-energy">
           <text>{{item.calorie}}</text>
           <text class="meal-unit"> kcal</text>

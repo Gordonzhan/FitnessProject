@@ -4,6 +4,7 @@ import com.fitness.common.ApiErrorCode;
 import com.fitness.common.BusinessException;
 import com.fitness.common.Response;
 import com.fitness.dto.NamesRequest;
+import com.fitness.dto.ExerciseCodesRequest;
 import com.fitness.entity.FoodDatabase;
 import com.fitness.entity.ExerciseDatabase;
 import com.fitness.service.DatabaseService;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import java.util.List;
@@ -50,6 +52,14 @@ public class DatabaseController {
         return Response.success(exercise);
     }
 
+    @GetMapping("/exercise/code/{exerciseCode}")
+    public Response getExerciseByCode(
+            @PathVariable @Pattern(regexp = "[A-Za-z0-9_-]{3,32}", message = "动作编号格式无效") String exerciseCode) {
+        ExerciseDatabase exercise = databaseService.getExerciseByCode(exerciseCode);
+        if (exercise == null) throw new BusinessException(ApiErrorCode.NOT_FOUND, "训练动作不存在");
+        return Response.success(exercise);
+    }
+
     @GetMapping("/food/search")
     public Response searchFoods(@RequestParam(defaultValue = "") @Size(max = 50, message = "搜索词不能超过50个字符") String keyword,
                                 @RequestParam(defaultValue = "") @Size(max = 30, message = "分类不能超过30个字符") String category,
@@ -62,10 +72,13 @@ public class DatabaseController {
     @GetMapping("/exercise/search")
     public Response searchExercises(@RequestParam(defaultValue = "") @Size(max = 50, message = "搜索词不能超过50个字符") String keyword,
                                     @RequestParam(defaultValue = "") @Size(max = 30, message = "分类不能超过30个字符") String category,
+                                    @RequestParam(defaultValue = "") @Size(max = 500, message = "器械筛选参数过长") String equipment,
+                                    @RequestParam(defaultValue = "") @Size(max = 300, message = "限制标签参数过长") String excludedLimitations,
                                     @RequestParam(defaultValue = "0") @Min(value = 0, message = "页码不能为负数") int page,
                                     @RequestParam(defaultValue = "20") @Min(value = 1, message = "每页至少1条")
                                     @Max(value = 50, message = "每页最多50条") int size) {
-        return Response.success(databaseService.searchExercises(keyword, category, page, size));
+        return Response.success(databaseService.searchExercises(
+                keyword, category, equipment, excludedLimitations, page, size));
     }
 
     @GetMapping("/food/categories")
@@ -86,5 +99,10 @@ public class DatabaseController {
     @PostMapping("/exercise/resolve")
     public Response resolveExercises(@Valid @RequestBody NamesRequest body) {
         return Response.success(databaseService.resolveExercises(body.names()));
+    }
+
+    @PostMapping("/exercise/resolve-codes")
+    public Response resolveExerciseCodes(@Valid @RequestBody ExerciseCodesRequest body) {
+        return Response.success(databaseService.resolveExerciseCodes(body.exerciseCodes()));
     }
 }

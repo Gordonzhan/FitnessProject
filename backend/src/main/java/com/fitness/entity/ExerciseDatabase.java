@@ -12,6 +12,10 @@ public class ExerciseDatabase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    /** 面向客户端和 Agent 的稳定业务编号，不使用数据库自增主键。 */
+    @Column(name = "exercise_code", unique = true, nullable = false, length = 32)
+    private String exerciseCode;
     
     /** 训练动作标准名称。 */
     @Column(name = "name", unique = true, nullable = false, length = 50)
@@ -60,4 +64,55 @@ public class ExerciseDatabase {
     /** 默认排序权重，数值越大越靠前。 */
     @Column(name = "sort_order", nullable = false)
     private Integer sortOrder;
+
+    /** 面向跟练展示的动作步骤说明。 */
+    @Column(name = "instructions", columnDefinition = "TEXT")
+    private String instructions;
+
+    /** 动作执行时必须展示的安全提示。 */
+    @Column(name = "safety_cues", columnDefinition = "TEXT")
+    private String safetyCues;
+
+    /** 常见错误，用于动作详情和后续计划校验说明。 */
+    @Column(name = "common_mistakes", columnDefinition = "TEXT")
+    private String commonMistakes;
+
+    /** 标准限制标签，使用逗号分隔的稳定英文编码。 */
+    @Column(name = "limitation_tags", length = 255)
+    private String limitationTags;
+
+    /** 可替代动作的稳定业务编号，使用逗号分隔。 */
+    @Column(name = "alternative_exercise_codes", length = 500)
+    private String alternativeExerciseCodes;
+
+    @Column(name = "cover_url", length = 500)
+    private String coverUrl;
+
+    @Column(name = "media_url", length = 500)
+    private String mediaUrl;
+
+    @Column(name = "media_type", nullable = false, length = 20)
+    private String mediaType;
+
+    @Column(name = "default_sets")
+    private Integer defaultSets;
+
+    @Column(name = "default_reps")
+    private Integer defaultReps;
+
+    @Column(name = "default_duration_seconds")
+    private Integer defaultDurationSeconds;
+
+    @Column(name = "default_rest_seconds")
+    private Integer defaultRestSeconds;
+
+    @Column(name = "default_rpe")
+    private Integer defaultRpe;
+
+    @Column(name = "tempo", length = 20)
+    private String tempo;
+
+    /** 只有适合在跟练页面展示的动作才允许进入后续生成流程。 */
+    @Column(name = "follow_along_enabled", nullable = false)
+    private Boolean followAlongEnabled;
 }

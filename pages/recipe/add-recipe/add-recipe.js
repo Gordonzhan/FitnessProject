@@ -1,6 +1,22 @@
 const app = getApp();
-const { RecipeAPI, DatabaseAPI, ImageAPI } = require('../../../utils/api');
+const { RecipeAPI, DatabaseAPI, ImageAPI, AiAPI } = require('../../../utils/api');
 const { createUploadBatch } = require('../../../utils/image-upload');
+
+function twoDigits(value) { return String(value).padStart(2, '0'); }
+/** 使用设备本地日期，避免 UTC 日期在亚洲凌晨偏移到前一天。 */
+function localDateString(now = new Date()) {
+  return now.getFullYear() + '-' + twoDigits(now.getMonth() + 1) + '-' + twoDigits(now.getDate());
+}
+function localTimeString(now = new Date()) {
+  return twoDigits(now.getHours()) + ':' + twoDigits(now.getMinutes());
+}
+function defaultMealSlot(now = new Date()) {
+  const hour = now.getHours();
+  if (hour < 10) return 'BREAKFAST';
+  if (hour < 14) return 'LUNCH';
+  if (hour < 19) return 'DINNER';
+  return 'SNACK';
+}
 
 Page({
   data: {
@@ -18,7 +34,14 @@ Page({
     uploadCompleted: 0,
     uploadTotal: 0,
     uploadMessage: '',
+    aiRecognizing: false,
+    aiDraftReady: false,
+    aiWarnings: [],
+    aiRequestId: '',
+    aiRecipeSuggested: false,
+    aiRecipeDisclaimer: '',
     saving: false,
+    savingAction: '',
     removingImage: false,
     loadingRecipe: false,
     loadFailed: false,
@@ -29,6 +52,16 @@ Page({
     showBackToTop: false,
     ingredients: [],
     steps: '',
+    intakeMealSlots: [
+      { value: 'BREAKFAST', label: '早餐' },
+      { value: 'LUNCH', label: '午餐' },
+      { value: 'DINNER', label: '晚餐' },
+      { value: 'SNACK', label: '加餐' }
+    ],
+    intakeMealSlot: defaultMealSlot(),
+    intakeServingOptions: ['0.5', '1', '1.5', '2'],
+    intakeServingIndex: 1,
+    intakeTime: localTimeString(),
     totalNutrients: {
       protein: 0,
       carb: 0,
@@ -41,6 +74,7 @@ Page({
     this._pendingUploads = new Set();
     this._unloaded = false;
     this._saveAttempted = false;
+    this._intakeRequestId = '';
     const lookupId = options.recipeId || options.templateId || '';
     this._lookupRecipeId = lookupId;
     if (lookupId) {
@@ -171,7 +205,101 @@ Page({
   /** 判断保存或上传期间是否应锁定图片增删操作。 */
   imageActionsBlocked() {
     return this._unloaded || this.data.uploading || this.data.choosingImages || this.data.saving
-      || this.data.removingImage || this.data.loadingRecipe || this.data.loadFailed || this.data.selectorVisible;
+      || this.data.removingImage || this.data.aiRecognizing || this.data.loadingRecipe
+      || this.data.loadFailed || this.data.selectorVisible;
+  },
+  /** 调用 Java 产品接口；Java 会校验图片归属、匹配食材库并重算草稿营养。 */
+  recognizeFood() {
+    if (this.imageActionsBlocked()) return;
+    if (!this.data.images.length) {
+      wx.showToast({ title: '请先上传食物图片', icon: 'none' });
+      return;
+    }
+    this.setData({ aiRecognizing: true, aiWarnings: [], aiDraftReady: false });
+    return AiAPI.createFoodDraft({
+      imageUrls: this.data.images.slice(0, 3),
+      userContext: { dietaryRestrictions: [] },
+      dishHint: (this.data.recipeName || '').trim() || null
+    }).then((draft) => {
+      if (this._unloaded) return;
+      const ingredients = (draft.items || []).map(item => {
+        const matched = this.aiFoodReference(item.matchedFood);
+        return {
+          foodName: matched ? matched.foodName : item.recognizedName,
+          recognizedName: item.recognizedName,
+          weight: item.estimatedWeightGrams,
+          minimumWeightGrams: item.minimumWeightGrams,
+          maximumWeightGrams: item.maximumWeightGrams,
+          confidencePercent: Math.round(Number(item.confidence || 0) * 100),
+          aiMatchStatus: item.matchStatus,
+          aiCandidates: (item.candidates || []).map(candidate => this.aiFoodReference(candidate)),
+          databaseMatched: Boolean(matched),
+          foodReference: matched,
+          protein: 0,
+          carb: 0,
+          fat: 0,
+          calorie: 0
+        };
+      });
+      const suggestion = draft.recipeSuggestion;
+      const suggestedSteps = suggestion && Array.isArray(suggestion.steps)
+        ? suggestion.steps.map((step, index) => (index + 1) + '. ' + step).join('\n')
+        : '';
+      // 只填充空字段，避免重新识别时覆盖用户已经编辑的菜名或真实做法。
+      const recipeName = (this.data.recipeName || '').trim()
+        ? this.data.recipeName : (suggestion && suggestion.name || '');
+      const steps = (this.data.steps || '').trim() ? this.data.steps : suggestedSteps;
+      const aiRecipeSuggested = Boolean(suggestion)
+        && (recipeName !== this.data.recipeName || steps !== this.data.steps);
+      this.setData({
+        ingredients,
+        recipeName,
+        steps,
+        aiDraftReady: true,
+        aiRequestId: draft.requestId || '',
+        aiWarnings: draft.warnings || [],
+        aiRecipeSuggested,
+        aiRecipeDisclaimer: suggestion && suggestion.disclaimer || ''
+      });
+      this.calculateNutrients();
+      if (!ingredients.length) wx.showToast({ title: '未识别到食物，请手动添加', icon: 'none' });
+    }).catch((error) => {
+      if (!this._unloaded) wx.showToast({ title: 'AI识别失败：' + error, icon: 'none', duration: 3500 });
+    }).finally(() => {
+      if (!this._unloaded) this.setData({ aiRecognizing: false });
+    });
+  },
+  /** 将草稿中的精简食材 DTO 转为页面既有的每 100 克营养结构。 */
+  aiFoodReference(food) {
+    if (!food) return null;
+    return {
+      id: food.id,
+      foodName: food.foodName,
+      category: food.category,
+      servingState: food.servingState,
+      protein: food.proteinPer100g,
+      carb: food.carbohydratePer100g,
+      fat: food.fatPer100g,
+      calorie: food.caloriesPer100g,
+      genericFallback: Boolean(food.genericFallback)
+    };
+  },
+  /** 模糊匹配只展示候选；点击即代表用户确认具体基础食材。 */
+  applyAiCandidate(e) {
+    const index = Number(e.currentTarget.dataset.index);
+    const candidateIndex = Number(e.currentTarget.dataset.candidateIndex);
+    const ingredients = [...this.data.ingredients];
+    const candidate = ingredients[index] && ingredients[index].aiCandidates[candidateIndex];
+    if (!candidate) return;
+    ingredients[index] = {
+      ...ingredients[index],
+      foodName: candidate.foodName,
+      foodReference: candidate,
+      databaseMatched: true,
+      aiMatchStatus: 'USER_SELECTED'
+    };
+    this.setData({ ingredients });
+    this.calculateNutrients();
   },
   /**
    * 从表单移除图片；新上传且未保存的图片立即请求清理，
@@ -273,7 +401,10 @@ Page({
       return;
     }
     const index = this.data.ingredients.length;
-    const ingredients = [...this.data.ingredients, { foodName: '', weight: '', databaseMatched: true, foodReference: null, protein: 0, carb: 0, fat: 0, calorie: 0 }];
+    const ingredients = [...this.data.ingredients, {
+      foodName: '', weight: '', databaseMatched: true, foodReference: null,
+      mappingSource: 'MANUAL', protein: 0, carb: 0, fat: 0, calorie: 0
+    }];
     const update = { ingredients };
     if (openSelector) {
       update.selectorVisible = true;
@@ -304,7 +435,11 @@ Page({
     const selected = e.detail.item;
     if (index < 0 || !selected) return;
     const ingredients = [...this.data.ingredients];
-    ingredients[index] = { ...ingredients[index], foodName: selected.foodName, databaseMatched: true, foodReference: selected };
+    ingredients[index] = {
+      ...ingredients[index], foodName: selected.foodName, databaseMatched: true,
+      foodReference: selected, aiMatchStatus: 'USER_SELECTED', aiCandidates: [],
+      mappingSource: ingredients[index].recognizedName ? 'AI_USER_SELECTED' : 'MANUAL'
+    };
     this.setData({ ingredients, selectorVisible: false, selectingIngredientIndex: -1 });
     this.calculateNutrients();
   },
@@ -369,8 +504,25 @@ Page({
     if (hour < 18) return '晚餐';
     return '加餐';
   },
+  /** 保存并入账时使用的餐次、份数和本地食用时间由用户明确确认。 */
+  selectIntakeMealSlot(e) {
+    this.setData({ intakeMealSlot: e.currentTarget.dataset.value });
+  },
+  changeIntakeServing(e) {
+    this.setData({ intakeServingIndex: Number(e.detail.value) });
+  },
+  changeIntakeTime(e) {
+    this.setData({ intakeTime: e.detail.value });
+  },
   /** 校验表单、保存用户菜谱，并确认哪些已上传图片已经被正式引用。 */
   saveRecipe() {
+    return this.submitRecipe(false);
+  },
+  /** 只有用户点击此入口时，才把营养快照计入今天。 */
+  saveAndAddToday() {
+    return this.submitRecipe(true);
+  },
+  submitRecipe(addToToday) {
     if (this.imageActionsBlocked()) {
       wx.showToast({ title: this.data.loadFailed ? '菜谱加载失败，请返回重试' : '请等待图片操作或保存完成', icon: 'none' });
       return;
@@ -378,7 +530,7 @@ Page({
     // 验证：至少需要有一个食材
     const validIngredients = this.data.ingredients
       .filter(item => item.foodName && item.weight)
-      .map(({ foodReference, databaseMatched, ...item }) => item);
+      .map(item => this.ingredientSavePayload(item));
     if (validIngredients.length === 0) {
       wx.showToast({
         title: '请至少添加一个食材',
@@ -408,27 +560,59 @@ Page({
     };
 
     // 首次失败后重试也复用业务ID，避免网络响应丢失时创建第二份菜谱。
-    this.setData({ recipeId: recipe.recipeId, saving: true });
+    this.setData({ recipeId: recipe.recipeId, saving: true, savingAction: addToToday ? 'intake' : 'recipe' });
     this._saveAttempted = true;
 
-    // 调用API保存菜谱
-    RecipeAPI.save(recipe)
+    // 网络结果未知时保留同一编号，重试不会重复生成饮食记录。
+    if (addToToday && !this._intakeRequestId) {
+      this._intakeRequestId = 'intake-' + Date.now().toString(36)
+        + '-' + Math.random().toString(36).slice(2, 10);
+    }
+    const operation = addToToday ? RecipeAPI.saveAndAddIntake({
+      recipe,
+      date: localDateString(),
+      requestId: this._intakeRequestId,
+      mealSlot: this.data.intakeMealSlot,
+      servingCount: Number(this.data.intakeServingOptions[this.data.intakeServingIndex]),
+      consumedTime: this.data.intakeTime
+    }) : RecipeAPI.save(recipe);
+
+    return operation
       .then(() => {
+        if (addToToday) this._intakeRequestId = '';
         images.forEach(url => this._pendingUploads.delete(url));
         this.cleanupPendingUploads();
         if (this._unloaded) return;
-        wx.showToast({ title: '保存成功' });
+        wx.showToast({ title: addToToday ? '已保存并记入今日饮食' : '保存成功' });
         setTimeout(() => {
           if (!this._unloaded) wx.navigateBack();
         }, 1000);
       })
       .catch((error) => {
         if (this._unloaded) return;
-        this.setData({ saving: false });
+        this.setData({ saving: false, savingAction: '' });
         wx.showToast({
-          title: '保存失败：' + error,
+          title: (addToToday ? '保存或入账结果未确认，可重试：' : '保存失败：') + error,
           icon: 'none'
         });
       });
+  },
+  /** 只提交保存契约需要的字段，同时保留 AI 原名到标准食材的映射来源。 */
+  ingredientSavePayload(item) {
+    const reference = item.foodReference;
+    const recognizedName = (item.recognizedName || '').trim();
+    return {
+      foodName: item.foodName,
+      recognizedName: recognizedName || null,
+      foodDatabaseId: reference && reference.id || null,
+      mappingSource: item.mappingSource
+        || (recognizedName ? (item.aiMatchStatus === 'USER_SELECTED'
+          ? 'AI_USER_SELECTED' : 'AI_AUTO_MATCHED') : 'MANUAL'),
+      weight: item.weight,
+      protein: item.protein,
+      carb: item.carb,
+      fat: item.fat,
+      calorie: item.calorie
+    };
   }
 })

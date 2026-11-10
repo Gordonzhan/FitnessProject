@@ -48,10 +48,12 @@ class CompareControllerTest {
     }
 
     @Test void dailyDataIncludesSeparateIdsForRepeatedRecipes() throws Exception {
-        var first = new DailyIntakeItem("101", "recipe-business-id", "鸡胸饭", BigDecimal.TEN,
-                BigDecimal.TEN, BigDecimal.TEN, new BigDecimal("300"));
-        var second = new DailyIntakeItem("102", "recipe-business-id", "鸡胸饭", BigDecimal.TEN,
-                BigDecimal.TEN, BigDecimal.TEN, new BigDecimal("300"));
+        var first = new DailyIntakeItem("101", "recipe-business-id", "鸡胸饭",
+                "LUNCH", "午餐", BigDecimal.ONE, "12:00",
+                BigDecimal.TEN, BigDecimal.TEN, BigDecimal.TEN, new BigDecimal("300"));
+        var second = new DailyIntakeItem("102", "recipe-business-id", "鸡胸饭",
+                "LUNCH", "午餐", BigDecimal.ONE, "12:00",
+                BigDecimal.TEN, BigDecimal.TEN, BigDecimal.TEN, new BigDecimal("300"));
         when(compare.getSelectedRecipes(1L, LocalDate.of(2026, 9, 5))).thenReturn(List.of(first, second));
         mvc.perform(post("/compare/get-daily-data").requestAttr(AuthContext.USER_ID_ATTRIBUTE, 1L)
                         .contentType(MediaType.APPLICATION_JSON).content("{\"date\":\"2026-09-05\"}"))

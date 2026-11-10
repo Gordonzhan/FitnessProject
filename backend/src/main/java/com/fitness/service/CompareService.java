@@ -13,11 +13,15 @@ import com.fitness.mapper.RecipeMapper;
 import com.fitness.mapper.WorkoutMapper;
 import com.fitness.mapper.SystemRecipeTemplateMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,6 +37,8 @@ public class CompareService {
     private UserService userService;
     @Autowired
     private SystemRecipeTemplateMapper systemRecipeTemplateMapper;
+    @Value("${fitness.business-zone:Asia/Shanghai}")
+    private String businessZone;
     
     /** 汇总用户指定日期的全部饮食热量快照，单位：千卡。 */
     public double calculateDailyIntake(Long userId, LocalDate date) {
@@ -64,9 +70,31 @@ public class CompareService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void addRecipeToDailyIntake(Long userId, LocalDate date, String recipeId, String requestId) {
+        addRecipeToDailyIntake(userId, date, recipeId, requestId, null, BigDecimal.ONE, null);
+    }
+
+    /**
+     * 保存用户确认的餐次、份数和食用时间；营养快照按实际份数缩放。
+     * 旧入口可省略这些字段并保持一份菜谱的历史行为。
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void addRecipeToDailyIntake(Long userId, LocalDate date, String recipeId, String requestId,
+                                       String mealSlot, BigDecimal servingCount, LocalTime consumedTime) {
         if (date == null || recipeId == null || recipeId.isBlank()
                 || requestId == null || requestId.isBlank() || requestId.length() > 64) {
             throw new IllegalArgumentException("饮食记录参数无效");
+        }
+        LocalTime normalizedTime = consumedTime == null
+                ? LocalTime.now(ZoneId.of(businessZone)).withSecond(0).withNano(0) : consumedTime;
+        String normalizedSlot = mealSlot == null || mealSlot.isBlank()
+                ? inferMealSlot(normalizedTime) : mealSlot;
+        if (!List.of("UNSPECIFIED", "BREAKFAST", "LUNCH", "DINNER", "SNACK").contains(normalizedSlot)) {
+            throw new IllegalArgumentException("餐次无效");
+        }
+        BigDecimal normalizedServing = servingCount == null ? BigDecimal.ONE : servingCount;
+        if (normalizedServing.compareTo(new BigDecimal("0.25")) < 0
+                || normalizedServing.compareTo(BigDecimal.TEN) > 0) {
+            throw new IllegalArgumentException("食用份数必须在0.25到10之间");
         }
         // 根据 recipe_id 查询菜谱，获取自增主键 id
         Recipe recipe = recipeMapper.findByUserIdAndRecipeId(userId, recipeId);
@@ -82,11 +110,29 @@ public class CompareService {
         dailyIntake.setRequestId(requestId);
         dailyIntake.setRecipeBusinessId(recipeId);
         dailyIntake.setMealTypeSnapshot(recipe == null ? template.getMealType() : recipe.getMealType());
-        dailyIntake.setProteinSnapshot(recipe == null ? template.getProtein() : recipe.getProtein());
-        dailyIntake.setCarbSnapshot(recipe == null ? template.getCarb() : recipe.getCarb());
-        dailyIntake.setFatSnapshot(recipe == null ? template.getFat() : recipe.getFat());
-        dailyIntake.setCalorieSnapshot(recipe == null ? template.getCalorie() : recipe.getCalorie());
+        dailyIntake.setMealSlot(normalizedSlot);
+        dailyIntake.setServingCount(normalizedServing.setScale(2, RoundingMode.HALF_UP));
+        dailyIntake.setConsumedTime(normalizedTime);
+        dailyIntake.setProteinSnapshot(scaleSnapshot(
+                recipe == null ? template.getProtein() : recipe.getProtein(), normalizedServing));
+        dailyIntake.setCarbSnapshot(scaleSnapshot(
+                recipe == null ? template.getCarb() : recipe.getCarb(), normalizedServing));
+        dailyIntake.setFatSnapshot(scaleSnapshot(
+                recipe == null ? template.getFat() : recipe.getFat(), normalizedServing));
+        dailyIntake.setCalorieSnapshot(scaleSnapshot(
+                recipe == null ? template.getCalorie() : recipe.getCalorie(), normalizedServing));
         dailyIntakeMapper.insertIfAbsent(dailyIntake);
+    }
+
+    private BigDecimal scaleSnapshot(BigDecimal value, BigDecimal servingCount) {
+        return value.multiply(servingCount).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    private String inferMealSlot(LocalTime time) {
+        if (time.isBefore(LocalTime.of(10, 0))) return "BREAKFAST";
+        if (time.isBefore(LocalTime.of(14, 0))) return "LUNCH";
+        if (time.isBefore(LocalTime.of(19, 0))) return "DINNER";
+        return "SNACK";
     }
     
     /** 删除指定日期中某菜谱产生的全部饮食记录，保留菜谱本身。 */

@@ -1,0 +1,33 @@
+{
+  "documentId": "KB_RESISTANCE_WARMUP_REVIEW_2021",
+  "title": "抗阻训练热身与力量表现系统综述摘要",
+  "sourceName": "Ribeiro et al., Motricidade",
+  "sourceUrl": "https://scielo.pt/scielo.php?pid=S1646-107X2021000100087&script=sci_arttext",
+  "publishedOrUpdatedAt": "2021-03-01",
+  "version": "2021-review-project-summary-v1",
+  "topics": [
+    "warmup_recovery",
+    "resistance_warmup",
+    "strength_basics",
+    "evidence_limits"
+  ],
+  "language": "zh-CN",
+  "riskLevel": "MODERATE",
+  "reviewStatus": "APPROVED",
+  "reviewedAt": "2026-10-14",
+  "reviewer": "FitnessProject editorial review",
+  "sections": [
+    {
+      "heading": "力量训练优先采用专项热身",
+      "content": "系统综述显示，抗阻训练热身的研究数量有限，结论并不完全一致；专项热身通常能够为随后的力量动作提供必要准备。实用做法是先用计划动作或相近动作的轻负荷版本练习技术，再逐步接近工作负荷，而不是从静止状态直接进入最重工作组。"
+    },
+    {
+      "heading": "热身组应准备动作而非制造疲劳",
+      "content": "专项热身的次数、负荷和速度会影响后续表现，但现有证据不足以支持一个适用于所有人的固定组数和百分比。应以动作稳定、关节活动舒适和没有明显疲劳为准；负荷提高时可相应减少热身重复次数，并在工作组前留出必要恢复。"
+    },
+    {
+      "heading": "证据边界与个体调整",
+      "content": "综述纳入研究较少，样本和方案差异较大，因此不能把某一种热身流程宣传为唯一最优方案。训练经验、环境温度、动作复杂度、目标负荷和当天状态都会影响需要的准备量；技术开始下降或热身已造成疲劳时，不应继续机械增加热身量。"
+    }
+  ]
+}

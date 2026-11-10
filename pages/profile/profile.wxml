@@ -43,6 +43,26 @@
     <text class="analysis-entry-arrow">›</text>
   </view>
 
+  <view class="analysis-entry training-preference-entry" bindtap="goToTrainingPreferences">
+    <view class="analysis-entry-icon training-preference-icon">训</view>
+    <view class="analysis-entry-copy">
+      <text class="analysis-entry-kicker">TRAINING PROFILE</text>
+      <text class="analysis-entry-title">设置训练偏好与动作限制</text>
+      <text class="analysis-entry-note">器械、时长、RPE、偏好和排除动作</text>
+    </view>
+    <text class="analysis-entry-arrow">›</text>
+  </view>
+
+  <view class="analysis-entry" bindtap="goToFitnessAgent">
+    <view class="analysis-entry-icon">AI</view>
+    <view class="analysis-entry-copy">
+      <text class="analysis-entry-kicker">FITNESS AGENT</text>
+      <text class="analysis-entry-title">继续训练与饮食对话</text>
+      <text class="analysis-entry-note">基于当前记录回答，训练草稿仍需确认保存</text>
+    </view>
+    <text class="analysis-entry-arrow">›</text>
+  </view>
+
   <!-- 身体基础数据表单 -->
   <view class="section-card profile-card">
     <view class="profile-section-head">

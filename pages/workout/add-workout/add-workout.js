@@ -7,6 +7,8 @@ Page({
     date: '',
     exercises: [],
     totalCalories: 0,
+    estimatedDurationMinutes: null,
+    calorieDurationMinutes: null,
     workoutId: '',
     status: 'COMPLETED',
     isFuture: false,
@@ -23,6 +25,7 @@ Page({
     loadingWorkout: false,
     loadFailed: false,
     saving: false,
+    estimatingCalories: false,
     keyboardOpen: false,
     showBackToTop: false
   },
@@ -70,10 +73,13 @@ Page({
           this.setData({
             exercises,
             totalCalories: workout.estimatedCalories ?? workout.actualCalories ?? workout.totalCalories ?? 0,
+            estimatedDurationMinutes: workout.estimatedDurationMinutes || null,
+            calorieDurationMinutes: workout.estimatedDurationMinutes || null,
+            unknownExercises: exercises.filter(item => item.name && !item.databaseMatched)
+              .map(item => item.name),
             workoutId: workout.workoutId
           });
           this.setPageMode(editableStatus, existingStatus);
-          this.calculateCalories();
         }
       })
       .catch((error) => {
@@ -90,7 +96,8 @@ Page({
       const references = new Map((items || []).map(item => [item.name, item]));
       return exercises.map(exercise => {
         const reference = references.get((exercise.name || '').trim());
-        return { ...exercise, databaseMatched: Boolean(reference), exerciseReference: reference || null };
+        return { ...exercise, calorieBasisSets: Number(exercise.sets) || null,
+          databaseMatched: Boolean(reference), exerciseReference: reference || null };
       });
     });
   },
@@ -156,7 +163,9 @@ Page({
       return;
     }
     const index = this.data.exercises.length;
-    const exercises = [...this.data.exercises, { name: '', weight: '', sets: '', reps: '', calories: 0, databaseMatched: true, exerciseReference: null }];
+    const exercises = [...this.data.exercises, { name: '', weight: '', sets: '', reps: '', calories: 0,
+      calorieDurationSeconds: null, calorieBasisSets: null,
+      databaseMatched: true, exerciseReference: null }];
     const update = { exercises };
     if (openSelector) {
       update.selectorVisible = true;
@@ -171,7 +180,7 @@ Page({
     const index = e.currentTarget.dataset.index;
     const exercises = this.data.exercises.filter((_, i) => i !== index);
     this.setData({ exercises });
-    this.calculateCalories();
+    this.scheduleCalorieEstimate();
   },
   /** 为指定动作行打开分页搜索选择器。 */
   openExerciseSelector(e) {
@@ -187,9 +196,11 @@ Page({
     const selected = e.detail.item;
     if (index < 0 || !selected) return;
     const exercises = [...this.data.exercises];
-    exercises[index] = { ...exercises[index], name: selected.name, databaseMatched: true, exerciseReference: selected };
+    exercises[index] = { ...exercises[index], name: selected.name, calories: 0,
+      calorieDurationSeconds: null, calorieBasisSets: null,
+      databaseMatched: true, exerciseReference: selected };
     this.setData({ exercises, selectorVisible: false, selectingExerciseIndex: -1 });
-    this.calculateCalories();
+    this.scheduleCalorieEstimate();
   },
   /** 更新动作负重并重新估算热量。 */
   inputExerciseWeight(e) {
@@ -198,7 +209,7 @@ Page({
     const exercises = [...this.data.exercises];
     exercises[index].weight = value;
     this.setData({ exercises });
-    this.calculateCalories();
+    this.scheduleCalorieEstimate();
   },
   /** 更新动作组数并重新估算热量。 */
   inputExerciseSets(e) {
@@ -207,7 +218,7 @@ Page({
     const exercises = [...this.data.exercises];
     exercises[index].sets = value;
     this.setData({ exercises });
-    this.calculateCalories();
+    this.scheduleCalorieEstimate();
   },
   /** 更新每组次数并重新估算热量。 */
   inputExerciseReps(e) {
@@ -216,41 +227,63 @@ Page({
     const exercises = [...this.data.exercises];
     exercises[index].reps = value;
     this.setData({ exercises });
-    this.calculateCalories();
+    this.scheduleCalorieEstimate();
   },
-  /** 使用动作 MET、用户体重和估算时长汇总训练消耗。 */
+
+  /** 输入连续变化时只提交最后一次 Java 预估，避免用小程序本地公式形成第二套口径。 */
+  scheduleCalorieEstimate() {
+    if (this._calorieEstimateTimer) clearTimeout(this._calorieEstimateTimer);
+    this._calorieEstimateTimer = setTimeout(() => this.calculateCalories(), 250);
+  },
+
+  /** Java 使用动作库 MET、参考体重和完整计划时长返回唯一预计消耗。 */
   calculateCalories() {
-    const userWeight = wx.getStorageSync('userWeight') || 70;
-    let total = 0;
-
-    const unknownExercises = [];
-    const exercises = this.data.exercises.map(exercise => {
-      const name = (exercise.name || '').trim();
-      const exerciseData = exercise.exerciseReference;
-      const calculated = { ...exercise, databaseMatched: !name || Boolean(exerciseData), calories: 0 };
-      if (name && !exerciseData) unknownExercises.push(name);
-      if (exercise.name && exercise.sets && exercise.reps) {
-        if (!exerciseData) return calculated;
-        const met = exerciseData.met;
-        const sets = parseInt(exercise.sets);
-        // 估算每组30秒，组间休息60秒
-        const durationHours = (sets * (30 + 60)) / 3600;
-        const calories = met * userWeight * durationHours;
-        calculated.calories = calories.toFixed(1);
-        total += calories;
+    const unknownExercises = this.data.exercises.filter(item => item.name && !item.exerciseReference)
+      .map(item => item.name);
+    const complete = this.data.exercises.map((item, index) => ({ item, index })).filter(({ item }) =>
+      item.name && item.exerciseReference && Number(item.sets) > 0 && Number(item.reps) > 0);
+    if (unknownExercises.length || !complete.length) {
+      this.setData({ unknownExercises: [...new Set(unknownExercises)],
+        totalCalories: complete.length ? this.data.totalCalories : '0.0' });
+      return Promise.resolve();
+    }
+    const sequence = (this._calorieEstimateSequence || 0) + 1;
+    this._calorieEstimateSequence = sequence;
+    this.setData({ estimatingCalories: true, unknownExercises: [] });
+    const payload = {
+      workoutId: this.data.workoutId || null,
+      estimatedDurationMinutes: this.data.calorieDurationMinutes || null,
+      exercises: complete.map(({ item }) => ({
+        name: item.name.trim(), weight: item.weight === '' ? null : Number(item.weight),
+        sets: Number(item.sets), reps: Number(item.reps),
+        calorieDurationSeconds: item.calorieDurationSeconds || null,
+        calorieBasisSets: item.calorieBasisSets || null
+      }))
+    };
+    return WorkoutAPI.estimate(payload).then((estimate) => {
+      if (sequence !== this._calorieEstimateSequence) return;
+      const exercises = [...this.data.exercises];
+      complete.forEach(({ index }, position) => {
+        exercises[index] = { ...exercises[index], calories: estimate.exercises[position].calories,
+          calorieDurationSeconds: estimate.exercises[position].calorieDurationSeconds,
+          calorieBasisSets: Number(exercises[index].sets) };
+      });
+      this.setData({
+        exercises,
+        totalCalories: Number(estimate.estimatedCalories ?? estimate.totalCalories ?? 0).toFixed(1),
+        estimatedDurationMinutes: estimate.estimatedDurationMinutes
+      });
+    }).catch((error) => {
+      if (sequence === this._calorieEstimateSequence) {
+        wx.showToast({ title: '热量估算失败：' + error, icon: 'none' });
       }
-      return calculated;
-    });
-
-    this.setData({
-      exercises,
-      unknownExercises: [...new Set(unknownExercises)],
-      totalCalories: total.toFixed(1)
+    }).finally(() => {
+      if (sequence === this._calorieEstimateSequence) this.setData({ estimatingCalories: false });
     });
   },
   /** 校验动作完整性和基础库匹配情况，然后保存训练计划或完成记录。 */
   saveWorkout() {
-    if (this.data.saving || this.data.loadingWorkout || this.data.loadFailed) {
+    if (this.data.saving || this.data.loadingWorkout || this.data.loadFailed || this.data.estimatingCalories) {
       wx.showToast({ title: this.data.loadFailed ? '训练加载失败，请返回重试' : '请等待训练记录加载完成', icon: 'none' });
       return;
     }
@@ -268,11 +301,12 @@ Page({
       return;
     }
 
-    const { date, exercises, totalCalories, workoutId, status } = this.data;
+    const { date, exercises, totalCalories, workoutId, status, estimatedDurationMinutes } = this.data;
     const workout = {
       date: date,
       workoutId: workoutId || String(Date.now()),
       status,
+      estimatedDurationMinutes,
       exercises: validExercises.map(({ exerciseReference, databaseMatched, ...item }) => item),
       totalCalories: parseFloat(totalCalories)
     };

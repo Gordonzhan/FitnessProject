@@ -7,6 +7,8 @@ CREATE TABLE workouts (
     total_calories DECIMAL(10,2) NOT NULL,
     status VARCHAR(20) NOT NULL DEFAULT 'COMPLETED',
     estimated_calories DECIMAL(10,2) NOT NULL DEFAULT 0,
+    estimated_duration_minutes INT NOT NULL DEFAULT 1,
+    calorie_reference_weight DECIMAL(5,2) NOT NULL DEFAULT 70,
     actual_calories DECIMAL(10,2),
     created_at TIMESTAMP, updated_at TIMESTAMP,
     UNIQUE (user_id, workout_id), UNIQUE (user_id, date)
@@ -16,7 +18,8 @@ CREATE TABLE exercises (
     workout_id BIGINT NOT NULL REFERENCES workouts(id),
     name VARCHAR(50) NOT NULL,
     weight DECIMAL(10,2), sets INT NOT NULL, reps INT NOT NULL,
-    calories DECIMAL(10,2) NOT NULL
+    calories DECIMAL(10,2) NOT NULL,
+    calorie_duration_seconds INT NOT NULL DEFAULT 1
 );
 -- 故障注入：阻止删除父记录，验证此前已删除的明细能够恢复。
 CREATE TABLE workout_delete_guard (workout_id BIGINT REFERENCES workouts(id));
@@ -37,7 +40,9 @@ CREATE TABLE recipe_images (
 CREATE TABLE ingredients (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     recipe_id BIGINT NOT NULL REFERENCES recipes(id),
-    food_name VARCHAR(50) NOT NULL, weight DECIMAL(10,2) NOT NULL,
+    food_name VARCHAR(50) NOT NULL, recognized_name VARCHAR(100),
+    food_database_id BIGINT, mapping_source VARCHAR(30) NOT NULL DEFAULT 'MANUAL',
+    weight DECIMAL(10,2) NOT NULL,
     protein DECIMAL(10,2) NOT NULL, carb DECIMAL(10,2) NOT NULL,
     fat DECIMAL(10,2) NOT NULL, calorie DECIMAL(10,2) NOT NULL
 );
@@ -67,6 +72,9 @@ CREATE TABLE daily_intake (
     request_id VARCHAR(64) NOT NULL,
     recipe_business_id VARCHAR(50) NOT NULL,
     meal_type_snapshot VARCHAR(20) NOT NULL,
+    meal_slot VARCHAR(20) NOT NULL DEFAULT 'UNSPECIFIED',
+    serving_count DECIMAL(4,2) NOT NULL DEFAULT 1.00,
+    consumed_time TIME,
     protein_snapshot DECIMAL(10,2) NOT NULL,
     carb_snapshot DECIMAL(10,2) NOT NULL,
     fat_snapshot DECIMAL(10,2) NOT NULL,

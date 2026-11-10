@@ -30,6 +30,10 @@
     <view class="inline-action" bindtap="addWorkout">＋ {{isFuture ? '安排' : '记录'}}</view>
   </view>
 
+  <view wx:if="{{canGenerateAi && !currentWorkout && !loadingWorkout && !workoutError}}" class="ai-draft-entry" bindtap="openAiDraft">
+    <view class="ai-entry-copy"><text class="ai-entry-kicker">AI WORKOUT</text><text class="ai-entry-title">根据训练偏好生成计划</text><text class="ai-entry-note">先查看和替换动作，确认后才会保存为训练计划</text></view><text class="ai-entry-arrow">›</text>
+  </view>
+
   <view wx:if="{{loadingWorkout}}" class="section-card workout-message">正在加载训练数据…</view>
   <view wx:elif="{{workoutError}}" class="section-card workout-message workout-error">
     <text>{{workoutError}}</text>
@@ -48,7 +52,8 @@
         <view class="exercise-content">
           <text class="exercise-name">{{item.name}}</text>
           <view class="exercise-prescription">
-            <text>{{item.weight}} kg</text>
+            <text wx:if="{{item.weight == null}}">自重</text>
+            <text wx:else>{{item.weight}} kg</text>
             <text class="exercise-dot">×</text>
             <text>{{item.sets}} 组</text>
             <text class="exercise-dot">×</text>
@@ -78,8 +83,9 @@
       <view wx:if="{{!isFuture}}" class="plan-primary" bindtap="completePlan">{{updatingStatus ? '处理中…' : '确认已完成'}}</view>
       <view wx:else class="plan-primary" bindtap="addWorkout">编辑计划</view>
     </view>
-    <view wx:elif="{{currentWorkout.status === 'CANCELLED'}}" class="plan-actions single-action">
-      <view class="plan-primary" bindtap="addWorkout">{{isFuture ? '重新安排' : '记录实际训练'}}</view>
+    <view wx:elif="{{currentWorkout.status === 'CANCELLED'}}" class="plan-actions {{canGenerateAi ? '' : 'single-action'}}">
+      <view class="{{canGenerateAi ? 'plan-secondary plan-manual' : 'plan-primary'}}" bindtap="addWorkout">{{isFuture ? '手动安排' : (canGenerateAi ? '记录实际训练' : '补录实际训练')}}</view>
+      <view wx:if="{{canGenerateAi}}" class="plan-primary" bindtap="openAiDraft">AI 重新生成</view>
     </view>
     <view wx:else class="plan-actions single-action">
       <view class="plan-primary" bindtap="addWorkout">编辑训练记录</view>

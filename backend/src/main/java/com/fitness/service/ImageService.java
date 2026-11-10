@@ -55,6 +55,18 @@ public class ImageService {
         }
     }
 
+    /** AI 识别只接受当前用户刚上传的 OSS 图片，拒绝任意外链和系统封面。 */
+    public void validateAiRecognitionImages(Long userId, Collection<String> urls) {
+        if (urls == null || urls.isEmpty() || urls.size() > 3) {
+            throw new IllegalArgumentException("单次识别需要1至3张图片");
+        }
+        for (String url : urls) {
+            if (url == null || url.isBlank() || !ossUtil.belongsToUser(url, userId)) {
+                throw new IllegalArgumentException("只能识别当前用户上传的图片");
+            }
+        }
+    }
+
     /** 在菜谱事务提交成功后异步清理已经失去引用的旧图片。 */
     public void cleanupAfterCommit(Collection<String> urls) {
         List<String> candidates = urls.stream().distinct().toList();

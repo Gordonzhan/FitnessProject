@@ -36,6 +36,7 @@ class ListQueryOptimizationTest {
 
     @Mock WorkoutMapper workoutMapper;
     @Mock ExerciseMapper exerciseMapper;
+    @Mock WorkoutCalorieEstimationService workoutCalorieEstimationService;
     @InjectMocks WorkoutServiceImpl workoutService;
 
     @Test

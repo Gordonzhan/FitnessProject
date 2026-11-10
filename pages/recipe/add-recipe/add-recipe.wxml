@@ -37,6 +37,17 @@
     <text wx:if="{{uploading}}" class="upload-status">上传进度 {{uploadCompleted}} / {{uploadTotal}}，最多同时上传2张，请稍候</text>
     <text wx:if="{{uploadMessage}}" class="upload-status">{{uploadMessage}}</text>
     <text class="upload-tip">加载失败可能是网络或OSS服务异常，不会自动删除图片；移除已有图片需保存后才生效。</text>
+    <view class="ai-recognition-box">
+      <view>
+        <text class="ai-recognition-title">AI 食物识别</text>
+        <text class="ai-recognition-copy">最多读取前3张图片，结果只生成草稿，不会自动保存。</text>
+      </view>
+      <view class="ai-recognition-button {{images.length === 0 || aiRecognizing || uploading ? 'button-disabled' : ''}}" bindtap="recognizeFood">
+        {{aiRecognizing ? '识别中…' : (aiDraftReady ? '重新识别' : '生成草稿')}}
+      </view>
+    </view>
+    <text wx:if="{{aiRecognizing}}" class="upload-status">本地视觉模型首次加载可能需要较长时间，请勿离开页面。</text>
+    <text wx:for="{{aiWarnings}}" wx:key="index" class="ai-warning">{{item}}</text>
   </view>
 
   <!-- 菜谱名称与制作步骤 -->
@@ -56,6 +67,7 @@
     <view class="field-group">
       <text class="field-label">制作步骤</text>
       <textarea class="field" placeholder="分步骤写下做法，支持换行" placeholder-class="field-placeholder" value="{{steps}}" bindinput="inputSteps" bindkeyboardheightchange="onKeyboardHeightChange" maxlength="-1"></textarea>
+      <text wx:if="{{aiRecipeSuggested}}" class="ai-recipe-note">{{aiRecipeDisclaimer || 'AI 根据图片和识别食材推测，请按实际做法修改。'}}</text>
     </view>
   </view>
 
@@ -86,6 +98,17 @@
           <text class="database-select-action">搜索选择 ›</text>
         </view>
         <text wx:if="{{item.foodName && !item.databaseMatched}}" class="field-error">该食材不在基础数据库中</text>
+        <text wx:if="{{item.recognizedName && item.confidencePercent >= 0}}" class="ai-item-meta">AI 识别：{{item.recognizedName}} · 置信度 {{item.confidencePercent}}% · 估重 {{item.minimumWeightGrams}}–{{item.maximumWeightGrams}}g</text>
+        <text wx:elif="{{item.recognizedName}}" class="ai-item-meta">AI 原始识别：{{item.recognizedName}} · 已映射为 {{item.foodName}}</text>
+        <view wx:if="{{!item.databaseMatched && item.aiCandidates && item.aiCandidates.length}}" class="ai-candidates">
+          <text class="ai-candidate-label">请选择最接近的基础食材</text>
+          <view class="ai-candidate-row">
+            <view wx:for="{{item.aiCandidates}}" wx:for-item="candidate" wx:for-index="candidateIndex" wx:key="id" class="ai-candidate"
+              bindtap="applyAiCandidate" data-index="{{index}}" data-candidate-index="{{candidateIndex}}">
+              {{candidate.foodName}} · {{candidate.servingState}}<text wx:if="{{candidate.genericFallback}}" class="ai-generic-tag">通用估算</text>
+            </view>
+          </view>
+        </view>
       </view>
       <view class="field-group compact">
         <text class="field-label">重量</text>
@@ -93,6 +116,37 @@
           <input class="field" placeholder="0" placeholder-class="field-placeholder" value="{{item.weight}}" bindinput="inputIngredientWeight" bindkeyboardheightchange="onKeyboardHeightChange" data-index="{{index}}" type="digit"></input>
           <text class="field-unit">克</text>
         </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="section-card intake-confirm-card">
+    <view class="form-section-head">
+      <view>
+        <text class="card-kicker">04 · TODAY</text>
+        <text class="card-title">记入今日饮食</text>
+      </view>
+      <text class="optional-tag">确认后入账</text>
+    </view>
+    <text class="intake-confirm-copy">以下信息只在点击“保存并入账”时使用；“仅保存菜谱”不会改变今日营养。</text>
+    <text class="field-label intake-field-label">餐次</text>
+    <view class="meal-slot-row">
+      <view wx:for="{{intakeMealSlots}}" wx:key="value"
+        class="meal-slot-chip {{intakeMealSlot === item.value ? 'selected' : ''}}"
+        bindtap="selectIntakeMealSlot" data-value="{{item.value}}">{{item.label}}</view>
+    </view>
+    <view class="intake-fields">
+      <view class="intake-field">
+        <text class="field-label">食用份数</text>
+        <picker mode="selector" range="{{intakeServingOptions}}" value="{{intakeServingIndex}}" bindchange="changeIntakeServing">
+          <view class="intake-picker">{{intakeServingOptions[intakeServingIndex]}} 份 <text>›</text></view>
+        </picker>
+      </view>
+      <view class="intake-field">
+        <text class="field-label">食用时间</text>
+        <picker mode="time" value="{{intakeTime}}" bindchange="changeIntakeTime">
+          <view class="intake-picker">{{intakeTime}} <text>›</text></view>
+        </picker>
       </view>
     </view>
   </view>
@@ -129,11 +183,12 @@
 
   <!-- 固定快捷新增与保存栏：键盘或选择器出现时隐藏，避免遮挡。 -->
   <view wx:if="{{!keyboardOpen && !selectorVisible}}" class="sticky-action form-sticky-action">
-    <view class="sticky-add-button {{uploading || saving || choosingImages || removingImage || loadingRecipe || loadFailed ? 'button-disabled' : ''}}" bindtap="quickAddIngredient">
+    <view class="sticky-add-button compact-add {{uploading || saving || choosingImages || removingImage || loadingRecipe || loadFailed ? 'button-disabled' : ''}}" bindtap="quickAddIngredient">
       <text class="sticky-add-label">＋ 添加食材</text>
       <text class="sticky-add-count">当前 {{ingredients.length}} 项</text>
     </view>
-    <view class="primary-button {{uploading || saving || choosingImages || removingImage || loadingRecipe || loadFailed ? 'button-disabled' : ''}}" bindtap="saveRecipe">{{saving ? '保存中…' : (uploading ? '图片上传中…' : (recipeId ? '保存修改' : '保存菜谱'))}}</view>
+    <view class="secondary-button save-recipe-button {{uploading || saving || aiRecognizing || choosingImages || removingImage || loadingRecipe || loadFailed ? 'button-disabled' : ''}}" bindtap="saveRecipe">{{savingAction === 'recipe' ? '保存中…' : (recipeId ? '保存修改' : '仅保存菜谱')}}</view>
+    <view class="primary-button intake-save-button {{uploading || saving || aiRecognizing || choosingImages || removingImage || loadingRecipe || loadFailed ? 'button-disabled' : ''}}" bindtap="saveAndAddToday">{{savingAction === 'intake' ? '入账中…' : '保存并入账'}}</view>
   </view>
   <view wx:if="{{showBackToTop && !keyboardOpen && !selectorVisible}}" class="form-back-to-top" bindtap="scrollToTop">↑</view>
 

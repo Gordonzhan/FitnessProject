@@ -1,0 +1,34 @@
+{
+  "documentId": "KB_MAYO_SEATED_ROW_2025",
+  "title": "Mayo Clinic 坐姿划船与水平拉动作技术摘要",
+  "sourceName": "Mayo Clinic",
+  "sourceUrl": "https://www.mayoclinic.org/healthy-lifestyle/fitness/multimedia/seated-row/vid-20084688",
+  "publishedOrUpdatedAt": "2025-11-21",
+  "version": "2025-11-project-summary-v1",
+  "topics": [
+    "exercise_technique",
+    "exercise_safety",
+    "movement_pull_horizontal",
+    "row",
+    "upper_body"
+  ],
+  "language": "zh-CN",
+  "riskLevel": "MODERATE",
+  "reviewStatus": "APPROVED",
+  "reviewedAt": "2026-10-14",
+  "reviewer": "FitnessProject editorial review",
+  "sections": [
+    {
+      "heading": "坐姿划船准备",
+      "content": "坐稳并保持膝盖适度弯曲，握住把手后让手臂伸展，但不要为了追求幅度而大幅含胸或向前塌腰。躯干保持稳定，起始位置只需要上背部出现温和拉伸。"
+    },
+    {
+      "heading": "拉与返回",
+      "content": "以可控速度把把手拉向腰部附近，让肘部向后移动、肩胛骨自然靠近；不要用身体后仰制造惯性。返回时缓慢伸展手臂，保持躯干和腰背位置，不让重量突然把肩膀向前扯走。"
+    },
+    {
+      "heading": "常见错误与调整",
+      "content": "常见错误包括耸肩、过度后仰、腰背反复屈伸、回程失控以及用过大负荷缩短动作。应先减轻重量并恢复平稳轨迹；若器械尺寸或座椅设置使肩部无法舒适移动，应先调整设备，而不是强行完成。"
+    }
+  ]
+}

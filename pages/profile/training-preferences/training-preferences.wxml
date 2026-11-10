@@ -1,0 +1,77 @@
+<view class="page-shell preference-page">
+  <view class="preference-hero">
+    <text class="hero-kicker">TRAINING PROFILE</text>
+    <text class="hero-title">我的训练偏好</text>
+    <text class="hero-note">用于筛选合适动作和后续生成训练草稿；保存偏好不会自动创建训练。</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="state-card">正在加载训练偏好…</view>
+  <view wx:elif="{{error}}" class="state-card error-card">
+    <text>加载失败：{{error}}</text><text class="retry" bindtap="load">重新加载</text>
+  </view>
+
+  <block wx:else>
+    <view class="section-card form-card">
+      <text class="card-kicker">BASICS</text><text class="card-title">训练安排</text>
+      <view class="form-row"><text>训练经验</text><picker range="{{experienceOptions}}" range-key="label" value="{{experienceIndex}}" bindchange="changeExperience"><view class="picker-value">{{experienceOptions[experienceIndex].label}} ›</view></picker></view>
+      <view class="form-row"><text>训练地点</text><picker range="{{locationOptions}}" range-key="label" value="{{locationIndex}}" bindchange="changeLocation"><view class="picker-value">{{locationOptions[locationIndex].label}} ›</view></picker></view>
+      <view class="form-row"><text>主要目标</text><picker range="{{goalOptions}}" range-key="label" value="{{goalIndex}}" bindchange="changeGoal"><view class="picker-value">{{goalOptions[goalIndex].label}} ›</view></picker></view>
+      <view class="number-grid">
+        <view class="number-field"><text>每周天数</text><input type="number" value="{{weeklyDays}}" bindinput="inputWeeklyDays"></input><text>天</text></view>
+        <view class="number-field"><text>单次时长</text><input type="number" value="{{sessionMinutes}}" bindinput="inputSessionMinutes"></input><text>分钟</text></view>
+      </view>
+      <view class="number-grid">
+        <view class="number-field"><text>最低 RPE</text><input type="number" value="{{targetRpeMin}}" bindinput="inputRpeMin"></input></view>
+        <view class="number-field"><text>最高 RPE</text><input type="number" value="{{targetRpeMax}}" bindinput="inputRpeMax"></input></view>
+      </view>
+    </view>
+
+    <view class="section-card form-card compact-card" bindtap="openEquipmentSelector">
+      <view class="card-head"><view><text class="card-kicker">EQUIPMENT</text><text class="card-title">可用器械</text></view><text class="edit-action">编辑 ›</text></view>
+      <text class="summary-count">已选 {{selectedEquipment.length}} 项</text>
+      <view class="summary-chips">
+        <text wx:for="{{equipmentPreview}}" wx:key="*this" class="summary-chip">{{item}}</text>
+        <text wx:if="{{equipmentOverflowCount}}" class="summary-chip more">+{{equipmentOverflowCount}}</text>
+      </view>
+    </view>
+
+    <view class="section-card form-card">
+      <text class="card-kicker">LIMITS</text><text class="card-title">需要避开的动作限制</text>
+      <text class="card-note">这里只保存标准化标签，不填写病史；如有疼痛、孕期或医疗问题，请先咨询专业人士。</text>
+      <view class="chip-list"><view wx:for="{{limitationOptions}}" wx:key="value" class="choice-chip warning {{item.selected ? 'active' : ''}}" data-value="{{item.value}}" bindtap="toggleLimitation">{{item.label}}</view></view>
+    </view>
+
+    <view class="section-card form-card">
+      <view class="card-head"><view><text class="card-kicker">PREFERENCES</text><text class="card-title">动作偏好</text></view><view class="edit-action" data-mode="preferred" bindtap="openExerciseSelector">编辑 ›</view></view>
+      <view wx:if="{{!preferredExercises.length}}" class="empty-note">可选：添加希望优先考虑的动作</view>
+      <block wx:else><text class="summary-count">已选 {{preferredExercises.length}} 项</text><view class="summary-chips"><text wx:for="{{preferredExercisePreview}}" wx:key="exerciseCode" class="summary-chip">{{item.name}}</text><text wx:if="{{preferredExerciseOverflowCount}}" class="summary-chip more">+{{preferredExerciseOverflowCount}}</text></view></block>
+    </view>
+
+    <view class="section-card form-card">
+      <view class="card-head"><view><text class="card-kicker">EXCLUSIONS</text><text class="card-title">排除动作</text></view><view class="edit-action danger" data-mode="excluded" bindtap="openExerciseSelector">编辑 ›</view></view>
+      <view wx:if="{{!excludedExercises.length}}" class="empty-note">可选：添加不希望进入计划的动作</view>
+      <block wx:else><text class="summary-count">已选 {{excludedExercises.length}} 项</text><view class="summary-chips"><text wx:for="{{excludedExercisePreview}}" wx:key="exerciseCode" class="summary-chip warning">{{item.name}}</text><text wx:if="{{excludedExerciseOverflowCount}}" class="summary-chip more warning">+{{excludedExerciseOverflowCount}}</text></view></block>
+    </view>
+
+    <view class="save-button {{saving ? 'disabled' : ''}}" bindtap="save">{{saving ? '正在保存…' : '保存训练偏好'}}</view>
+  </block>
+
+  <view wx:if="{{equipmentSelectorVisible}}" class="equipment-modal">
+    <view class="equipment-mask" bindtap="closeEquipmentSelector" catchtouchmove="noop"></view>
+    <view class="equipment-sheet" catchtap="noop">
+      <view class="sheet-handle"></view>
+      <view class="sheet-head"><view><text class="sheet-title">选择可用器械</text><text class="sheet-note">器械用途仅在这里展示，主页面保持简洁</text></view><text class="sheet-close" bindtap="closeEquipmentSelector">×</text></view>
+      <scroll-view scroll-x class="equipment-tabs" enhanced show-scrollbar="{{false}}">
+        <view class="equipment-tab-row"><text wx:for="{{equipmentGroups}}" wx:key="name" class="equipment-tab {{index === activeEquipmentGroupIndex ? 'active' : ''}}" data-index="{{index}}" bindtap="switchEquipmentGroup">{{item.name}}</text></view>
+      </scroll-view>
+      <scroll-view scroll-y class="equipment-options">
+        <view wx:for="{{activeEquipmentItems}}" wx:key="value" class="equipment-option {{item.selected ? 'active' : ''}}" data-value="{{item.value}}" bindtap="toggleEquipment">
+          <view class="equipment-option-copy"><text class="equipment-option-name">{{item.value}}</text><text class="equipment-option-purpose">{{item.purpose}}</text></view><text class="equipment-check">{{item.selected ? '✓' : ''}}</text>
+        </view>
+      </scroll-view>
+      <view class="sheet-footer"><text>已选 {{selectedEquipment.length}} 项</text><view class="sheet-done" bindtap="closeEquipmentSelector">完成</view></view>
+    </view>
+  </view>
+
+  <reference-selector wx:if="{{selectorVisible}}" type="exercise" equipment="{{equipmentFilter}}" excluded-limitations="{{limitationFilter}}" multi="{{true}}" selected-codes="{{selectorSelectedCodes}}" blocked-codes="{{selectorBlockedCodes}}" bindselect="selectExercise" binddone="closeExerciseSelector" bindclose="closeExerciseSelector"></reference-selector>
+</view>

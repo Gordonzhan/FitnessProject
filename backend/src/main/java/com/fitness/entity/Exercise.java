@@ -39,6 +39,15 @@ public class Exercise {
     /** 该动作估算的热量消耗，单位：千卡。 */
     @Column(name = "calories", nullable = false, precision = 10, scale = 2)
     private BigDecimal calories;
+
+    /** 该动作热量公式使用的总秒数快照；组数编辑只调整本动作，不再挤占其他动作。 */
+    @Column(name = "calorie_duration_seconds", nullable = false)
+    private Integer calorieDurationSeconds;
+
+    /** 仅用于接收编辑请求中的时长基准组数，不写入数据库也不返回客户端。 */
+    @Transient
+    @JsonIgnore
+    private Integer calorieBasisSets;
     
     /** 所属训练对象，供 JPA 关联查询使用。 */
     @ManyToOne

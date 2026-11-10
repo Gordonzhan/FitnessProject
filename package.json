@@ -4,7 +4,12 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "node --test tools/tests/*.test.js"
+    "test": "node --test tools/tests/*.test.js",
+    "env:local": "node tools/select-runtime.js local",
+    "env:production": "node tools/select-runtime.js production",
+    "env:check": "node tools/check-runtime.js",
+    "dev:prepare": "npm run env:local && npm run env:check -- --expect local",
+    "release:prepare": "npm run env:production && npm run env:check -- --expect production && npm test"
   },
   "keywords": [],
   "author": "",

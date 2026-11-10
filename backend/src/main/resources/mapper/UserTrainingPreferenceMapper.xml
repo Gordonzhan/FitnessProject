@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fitness.mapper.UserTrainingPreferenceMapper">
+    <resultMap id="PreferenceMap" type="com.fitness.entity.UserTrainingPreference">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="experience_level" property="experienceLevel"/>
+        <result column="weekly_days" property="weeklyDays"/>
+        <result column="session_minutes" property="sessionMinutes"/>
+        <result column="training_location" property="trainingLocation"/>
+        <result column="training_goal" property="trainingGoal"/>
+        <result column="equipment_tags" property="equipmentTags"/>
+        <result column="limitation_tags" property="limitationTags"/>
+        <result column="preferred_exercise_codes" property="preferredExerciseCodes"/>
+        <result column="excluded_exercise_codes" property="excludedExerciseCodes"/>
+        <result column="target_rpe_min" property="targetRpeMin"/>
+        <result column="target_rpe_max" property="targetRpeMax"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <select id="findByUserId" resultMap="PreferenceMap">
+        SELECT * FROM user_training_preferences WHERE user_id = #{userId}
+    </select>
+
+    <insert id="upsert" parameterType="com.fitness.entity.UserTrainingPreference">
+        INSERT INTO user_training_preferences
+        (user_id, experience_level, weekly_days, session_minutes, training_location, training_goal,
+         equipment_tags, limitation_tags, preferred_exercise_codes, excluded_exercise_codes,
+         target_rpe_min, target_rpe_max, created_at, updated_at)
+        VALUES
+        (#{userId}, #{experienceLevel}, #{weeklyDays}, #{sessionMinutes}, #{trainingLocation}, #{trainingGoal},
+         #{equipmentTags}, #{limitationTags}, #{preferredExerciseCodes}, #{excludedExerciseCodes},
+         #{targetRpeMin}, #{targetRpeMax}, NOW(), NOW())
+        ON DUPLICATE KEY UPDATE
+          experience_level = VALUES(experience_level), weekly_days = VALUES(weekly_days),
+          session_minutes = VALUES(session_minutes), training_location = VALUES(training_location),
+          training_goal = VALUES(training_goal), equipment_tags = VALUES(equipment_tags),
+          limitation_tags = VALUES(limitation_tags), preferred_exercise_codes = VALUES(preferred_exercise_codes),
+          excluded_exercise_codes = VALUES(excluded_exercise_codes), target_rpe_min = VALUES(target_rpe_min),
+          target_rpe_max = VALUES(target_rpe_max), updated_at = NOW()
+    </insert>
+</mapper>

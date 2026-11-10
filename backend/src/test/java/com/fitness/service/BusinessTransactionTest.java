@@ -49,7 +49,7 @@ public class BusinessTransactionTest {
     @EnableTransactionManagement
     @MapperScan("com.fitness.mapper")
     @Import({WorkoutServiceImpl.class, RecipeServiceImpl.class, CompareService.class,
-            ImageService.class, OperationLogServiceImpl.class})
+            RecipeIntakeConfirmationService.class, ImageService.class, OperationLogServiceImpl.class})
     static class Config {
         @Bean DataSource dataSource() {
             JdbcDataSource ds = new JdbcDataSource();
@@ -88,6 +88,16 @@ public class BusinessTransactionTest {
 
         @Bean OSSUtil ossUtil() { return mock(OSSUtil.class); }
         @Bean UserService userService() { return mock(UserService.class); }
+        @Bean WorkoutCalorieEstimationService workoutCalorieEstimationService() {
+            WorkoutCalorieEstimationService service = mock(WorkoutCalorieEstimationService.class);
+            doAnswer(invocation -> {
+                Workout workout = invocation.getArgument(1);
+                workout.setEstimatedDurationMinutes(30);
+                workout.setCalorieReferenceWeight(new BigDecimal("70"));
+                return workout;
+            }).when(service).estimate(anyLong(), any(Workout.class));
+            return service;
+        }
         @Bean JdbcTemplate jdbcTemplate(DataSource ds) { return new JdbcTemplate(ds); }
     }
 
@@ -101,6 +111,7 @@ public class BusinessTransactionTest {
     @Autowired WorkoutService workouts;
     @Autowired RecipeService recipes;
     @Autowired CompareService compare;
+    @Autowired RecipeIntakeConfirmationService intakeConfirmation;
     @Autowired OperationLogService operationLogs;
     @Autowired OSSUtil oss;
     @Autowired JdbcTemplate jdbc;
@@ -384,6 +395,31 @@ public class BusinessTransactionTest {
         compare.addRecipeToDailyIntake(1L, date, "idempotent-meal", "another-request");
         assertEquals(2, count("daily_intake"));
         assertEquals(600, compare.calculateDailyIntake(1L, date), 0.001);
+    }
+
+    @Test void confirmationAtomicallySavesRecipeAndScaledIntake() {
+        LocalDate date = LocalDate.of(2026, 10, 7);
+        intakeConfirmation.saveAndAddToDailyIntake(recipe("confirmed-meal", "鸡胸肉"), date,
+                "confirm-request", "LUNCH", new BigDecimal("1.50"), java.time.LocalTime.of(12, 30));
+        // 网络重试复用同一 requestId，只更新同一菜谱，不重复生成饮食记录。
+        intakeConfirmation.saveAndAddToDailyIntake(recipe("confirmed-meal", "鸡胸肉"), date,
+                "confirm-request", "LUNCH", new BigDecimal("1.50"), java.time.LocalTime.of(12, 30));
+
+        assertEquals(1, count("recipes"));
+        assertEquals(1, count("daily_intake"));
+        assertEquals(450, compare.calculateDailyIntake(1L, date), 0.001);
+        assertEquals("LUNCH", jdbc.queryForObject("SELECT meal_slot FROM daily_intake", String.class));
+        assertEquals(new BigDecimal("1.50"),
+                jdbc.queryForObject("SELECT serving_count FROM daily_intake", BigDecimal.class));
+    }
+
+    @Test void confirmationRollsBackRecipeWhenIntakeIsInvalid() {
+        assertThrows(IllegalArgumentException.class, () -> intakeConfirmation.saveAndAddToDailyIntake(
+                recipe("rollback-confirm", "鸡胸肉"), LocalDate.of(2026, 10, 7),
+                "rollback-request", "LUNCH", BigDecimal.ZERO, java.time.LocalTime.NOON));
+
+        assertEquals(0, count("recipes"));
+        assertEquals(0, count("daily_intake"));
     }
 
     @Test void operationLogUsesIndependentTransactionWhenBusinessRollsBack() {

@@ -1,0 +1,28 @@
+{
+  "documentId": "KB_HHS_PHYSICAL_ACTIVITY_2018",
+  "title": "美国身体活动指南第二版：成人活动与力量训练摘要",
+  "sourceName": "U.S. Department of Health and Human Services",
+  "sourceUrl": "https://odphp.health.gov/sites/default/files/2019-09/Physical_Activity_Guidelines_2nd_edition.pdf",
+  "publishedOrUpdatedAt": "2018-11-12",
+  "version": "2018-2ed-project-summary-v1",
+  "topics": ["strength_basics", "frequency", "warmup_recovery", "fat_loss"],
+  "language": "zh-CN",
+  "riskLevel": "LOW",
+  "reviewStatus": "APPROVED",
+  "reviewedAt": "2026-10-12",
+  "reviewer": "FitnessProject editorial review",
+  "sections": [
+    {
+      "heading": "成人活动与力量训练频率",
+      "content": "成年人应每周累计至少150至300分钟中等强度有氧活动，或75至150分钟高强度有氧活动，并在每周至少2天进行覆盖主要肌群的力量训练。初学者可从较少活动量和较低强度开始，再逐步增加频率、强度或训练量。任何可完成的活动通常都比完全不活动更有益。"
+    },
+    {
+      "heading": "组次与渐进原则",
+      "content": "力量训练需要让肌肉承担高于日常水平的负荷。以提升一般力量为目标时，每个动作一组8至12次可以有效，2至3组可能带来更多收益。进步来自长期渐进增加阻力、训练次数或每周频率，而不是一次性大幅加量。各主要肌群都应得到训练，动作选择应保持平衡。"
+    },
+    {
+      "heading": "热身、冷身与体重管理",
+      "content": "热身可用较慢速度、较低强度或较轻重量，让心率、呼吸与目标动作逐步进入工作状态；冷身则逐步降低强度。体重管理需要饮食摄入与身体活动共同作用，个体所需活动量差异很大。力量训练有助于在减重期间维持肌肉，但不能替代整体饮食与活动安排。"
+    }
+  ]
+}

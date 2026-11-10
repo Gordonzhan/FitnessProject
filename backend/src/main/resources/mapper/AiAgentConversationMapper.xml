@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fitness.mapper.AiAgentConversationMapper">
+  <resultMap id="SessionMap" type="com.fitness.entity.AiAgentSession">
+    <id column="id" property="id"/><result column="session_id" property="sessionId"/>
+    <result column="user_id" property="userId"/><result column="status" property="status"/>
+    <result column="title" property="title"/><result column="created_at" property="createdAt"/>
+    <result column="updated_at" property="updatedAt"/>
+  </resultMap>
+  <resultMap id="MessageMap" type="com.fitness.entity.AiAgentMessage">
+    <id column="id" property="id"/><result column="message_id" property="messageId"/>
+    <result column="session_db_id" property="sessionDbId"/><result column="role" property="role"/>
+    <result column="content" property="content"/><result column="provider" property="provider"/>
+    <result column="tool_summary" property="toolSummary"/><result column="action_type" property="actionType"/>
+    <result column="action_payload" property="actionPayload"/><result column="created_at" property="createdAt"/>
+  </resultMap>
+  <select id="findLatestActive" resultMap="SessionMap">
+    SELECT * FROM ai_agent_sessions WHERE user_id=#{userId} AND status='ACTIVE'
+    ORDER BY updated_at DESC, id DESC LIMIT 1
+  </select>
+  <select id="findOwnedSession" resultMap="SessionMap">
+    SELECT * FROM ai_agent_sessions WHERE user_id=#{userId} AND session_id=#{sessionId} LIMIT 1
+  </select>
+  <insert id="insertSession" parameterType="com.fitness.entity.AiAgentSession" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO ai_agent_sessions(session_id,user_id,status,title,created_at,updated_at)
+    VALUES(#{sessionId},#{userId},#{status},#{title},NOW(),NOW())
+  </insert>
+  <update id="touchSession">UPDATE ai_agent_sessions SET updated_at=NOW() WHERE id=#{id}</update>
+  <insert id="insertMessage" parameterType="com.fitness.entity.AiAgentMessage" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO ai_agent_messages(message_id,session_db_id,role,content,provider,tool_summary,action_type,action_payload,created_at)
+    VALUES(#{messageId},#{sessionDbId},#{role},#{content},#{provider},#{toolSummary},#{actionType},#{actionPayload},NOW())
+  </insert>
+  <delete id="deleteMessages">
+    DELETE FROM ai_agent_messages WHERE session_db_id=#{sessionDbId}
+  </delete>
+  <select id="findMessages" resultMap="MessageMap">
+    SELECT * FROM ai_agent_messages WHERE session_db_id=#{sessionDbId} ORDER BY id ASC LIMIT 200
+  </select>
+  <select id="findRecentMessages" resultMap="MessageMap">
+    SELECT * FROM (SELECT * FROM ai_agent_messages WHERE session_db_id=#{sessionDbId}
+      ORDER BY id DESC LIMIT #{limit}) recent ORDER BY id ASC
+  </select>
+</mapper>

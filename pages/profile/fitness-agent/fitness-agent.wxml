@@ -1,0 +1,47 @@
+<view class="agent-page">
+  <view class="agent-hero">
+    <view class="hero-heading">
+      <text class="hero-kicker">YOUR FITNESS AGENT</text>
+      <view wx:if="{{messages.length}}" class="clear-chat {{sending || clearing ? 'disabled' : ''}}" bindtap="clearConversation">{{clearing ? '清空中…' : '清空对话'}}</view>
+    </view>
+    <text class="hero-title">基于真实记录，持续聊下去</text>
+    <text class="hero-note">我会按需查询你的档案、偏好、训练、饮食与体重趋势。保存或修改数据仍需你在页面明确确认。</text>
+  </view>
+
+  <view wx:if="{{loading && !messages.length}}" class="state-card">正在恢复历史对话…</view>
+  <view wx:if="{{error}}" class="state-card error-card">{{error}}<view class="retry" bindtap="loadSession">重新加载</view></view>
+
+  <view class="chat-stream">
+    <view wx:if="{{!messages.length && !loading}}" class="welcome-card">可以问我：“最近训练是否太少？”、“今天蛋白质记录怎么样？”或直接让我生成训练草稿。</view>
+    <view wx:for="{{messages}}" wx:key="messageId" class="message-row {{item.role}}">
+      <view class="message-bubble">
+        <text>{{item.content}}</text>
+        <text wx:if="{{item.pending}}" class="pending">正在发送…</text>
+        <view wx:if="{{item.action === 'WORKOUT_DRAFT' && item.actionPayload}}" class="draft-card">
+          <text class="draft-title">{{item.actionPayload.title || '训练草稿'}}</text>
+          <text class="draft-meta">{{item.actionPayload.exercises.length}} 个动作 · {{item.actionPayload.estimatedDurationMinutes}} 分钟 · 确认前不会保存</text>
+          <view class="draft-button" data-index="{{index}}" bindtap="openWorkoutDraft">查看并编辑草稿</view>
+        </view>
+        <text wx:if="{{item.role === 'assistant' && item.toolsUsed.length}}" class="basis">依据：已查询 {{item.toolsUsed.length}} 项当前数据</text>
+        <view wx:if="{{item.role === 'assistant' && item.citations.length}}" class="citations">
+          <text class="citation-heading">通用知识来源</text>
+          <view wx:for="{{item.citations}}" wx:for-item="citation" wx:key="documentId" class="citation-item">
+            <text class="citation-title">{{citation.title}}</text>
+            <text class="citation-meta">{{citation.sourceName}} · {{citation.version}}</text>
+            <view wx:if="{{citation.sourceUrl}}" class="citation-link" data-url="{{citation.sourceUrl}}" bindtap="copyCitationLink">复制来源链接</view>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view wx:if="{{sending}}" class="typing">正在查询并整理你的数据…</view>
+  </view>
+
+  <scroll-view wx:if="{{!sending}}" class="quick-prompts" scroll-x enable-flex>
+    <view wx:for="{{quickPrompts}}" wx:key="*this" class="quick-prompt" data-value="{{item}}" bindtap="useQuickPrompt">{{item}}</view>
+  </scroll-view>
+  <view class="safety-note">仅供健身参考，不构成医疗诊断；胸痛、呼吸困难、昏厥或急性疼痛请停止训练并及时寻求专业帮助。</view>
+  <view class="composer">
+    <textarea class="composer-input" maxlength="1000" auto-height value="{{inputText}}" bindinput="onInput" placeholder="问训练、饮食或阶段趋势…"></textarea>
+    <view class="send-button {{sending ? 'disabled' : ''}}" bindtap="sendMessage">{{sending ? '查询中' : '发送'}}</view>
+  </view>
+</view>

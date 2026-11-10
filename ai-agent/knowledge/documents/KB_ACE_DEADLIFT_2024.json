@@ -1,0 +1,38 @@
+{
+  "documentId": "KB_ACE_DEADLIFT_2024",
+  "title": "ACE 硬拉与髋铰链动作技术摘要",
+  "sourceName": "American Council on Exercise",
+  "sourceUrl": "https://www.acefitness.org/continuing-education/certified/december-2024/8762/the-ace-do-it-better-series-the-deadlift/",
+  "publishedOrUpdatedAt": "2024-12-01",
+  "version": "2024-12-project-summary-v1",
+  "topics": [
+    "exercise_technique",
+    "exercise_safety",
+    "movement_hinge",
+    "deadlift",
+    "posterior_chain"
+  ],
+  "language": "zh-CN",
+  "riskLevel": "MODERATE",
+  "reviewStatus": "APPROVED",
+  "reviewedAt": "2026-10-14",
+  "reviewer": "FitnessProject editorial review",
+  "sections": [
+    {
+      "heading": "先掌握髋铰链",
+      "content": "硬拉的核心动作模式是髋铰链：膝盖保持适度屈曲，髋部向后移动，同时维持躯干稳定和脊柱自然位置。初学者应先用墙触髋、臀桥或轻负荷罗马尼亚硬拉练习髋部主导，而不是用腰背把重量硬拉起来。"
+    },
+    {
+      "heading": "起拉与下降",
+      "content": "起拉前先建立足部、躯干和上背张力，让负重靠近身体；髋部和肩部应协调上升。站直后保持稳定，不用过度后仰完成动作；下降时先把髋部向后送，再以可控速度把重量放回，而不是突然失去张力。"
+    },
+    {
+      "heading": "退阶与器械选择",
+      "content": "现有髋部活动范围不足或难以保持脊柱位置时，可以把负重垫高、使用壶铃或从较短行程开始。选择哪种硬拉变式应服从个人技术和可控范围，不应为了从地面启动而牺牲姿势；熟练前先使用能够轻松控制的负荷。"
+    },
+    {
+      "heading": "常见错误与安全边界",
+      "content": "常见错误包括用背部代替髋部发力、脊柱明显弯曲、重量离身体过远、准备不足和过早加重。出现动作无法保持、负重轨迹失控或异常疼痛时应停止并降低难度。本摘要用于健康成年人的一般技术教育，不用于腰背伤病评估或康复。"
+    }
+  ]
+}

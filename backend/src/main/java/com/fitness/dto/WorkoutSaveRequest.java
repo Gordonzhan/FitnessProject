@@ -22,6 +22,8 @@ public record WorkoutSaveRequest(
         WorkoutStatus status,
         @NotNull(message = "训练消耗不能为空") @DecimalMin(value = "0", message = "训练消耗不能为负数")
         @DecimalMax(value = "99999999.99", message = "训练消耗数值过大") BigDecimal totalCalories,
+        @Min(value = 1, message = "训练预计时长至少为1分钟")
+        @Max(value = 1440, message = "训练预计时长不能超过1440分钟") Integer estimatedDurationMinutes,
         @NotEmpty(message = "请至少添加一个训练动作") @Size(max = 100, message = "每次训练最多保存100个动作")
         List<@Valid ExerciseRequest> exercises) {
 
@@ -34,5 +36,9 @@ public record WorkoutSaveRequest(
             @NotNull(message = "每组次数不能为空") @Min(value = 1, message = "每组次数至少为1")
             @Max(value = 1000, message = "每组次数不能超过1000") Integer reps,
             @NotNull(message = "动作消耗不能为空") @DecimalMin(value = "0", message = "动作消耗不能为负数")
-            @DecimalMax(value = "99999999.99", message = "动作消耗数值过大") BigDecimal calories) {}
+            @DecimalMax(value = "99999999.99", message = "动作消耗数值过大") BigDecimal calories,
+            @Min(value = 1, message = "动作计算时长至少为1秒")
+            @Max(value = 86400, message = "动作计算时长不能超过86400秒") Integer calorieDurationSeconds,
+            @Min(value = 1, message = "动作时长基准组数至少为1")
+            @Max(value = 100, message = "动作时长基准组数不能超过100") Integer calorieBasisSets) {}
 }

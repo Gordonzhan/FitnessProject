@@ -17,19 +17,19 @@ public class Workout {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore
     private Long id;
-    
+
     /** 训练所属用户的数据库主键。 */
     @Column(name = "user_id", nullable = false)
     private Long userId;
-    
+
     /** 对外使用的训练业务编号。 */
     @Column(name = "workout_id", nullable = false, length = 50)
     private String workoutId;
-    
+
     /** 训练计划或实际发生的业务日期。 */
     @Column(name = "date", nullable = false)
     private LocalDate date;
-    
+
     /** 兼容旧版本的热量字段；新逻辑应根据状态读取预计或实际热量。 */
     @Column(name = "total_calories", nullable = false, precision = 10, scale = 2)
     private BigDecimal totalCalories;
@@ -43,18 +43,26 @@ public class Workout {
     @Column(name = "estimated_calories", nullable = false, precision = 10, scale = 2)
     private BigDecimal estimatedCalories;
 
+    /** 预计消耗覆盖的完整训练时长；历史记录由迁移根据热量快照反推。 */
+    @Column(name = "estimated_duration_minutes", nullable = false)
+    private Integer estimatedDurationMinutes;
+
+    /** 预计消耗使用的体重快照，避免档案体重变化后历史计划漂移。 */
+    @Column(name = "calorie_reference_weight", nullable = false, precision = 5, scale = 2)
+    private BigDecimal calorieReferenceWeight;
+
     /** 用户确认完成后的实际消耗，单位：千卡；未完成时为空。 */
     @Column(name = "actual_calories", precision = 10, scale = 2)
     private BigDecimal actualCalories;
-    
+
     /** 训练记录创建时间。 */
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
-    
+
     /** 训练记录最后更新时间。 */
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private LocalDateTime updatedAt;
-    
+
     /** 本次训练包含的动作明细。 */
     @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Exercise> exercises;

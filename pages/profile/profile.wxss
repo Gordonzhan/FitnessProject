@@ -62,6 +62,8 @@
 .activity-entry-icon { background: #bef260; color: #172019; font-size: 24rpx; }
 .comparison-entry { margin-top: -10rpx; }
 .comparison-entry-icon { background: #e8f0ff; color: #315fa8; font-size: 27rpx; }
+.training-preference-entry { margin-top: -10rpx; }
+.training-preference-icon { background: #172019; color: #bef260; font-size: 23rpx; }
 
 .profile-avatar {
   position: relative;

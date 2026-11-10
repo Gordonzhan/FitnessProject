@@ -29,4 +29,7 @@ public interface FoodDatabaseRepository extends JpaRepository<FoodDatabase, Long
     List<String> findEnabledCategories();
 
     List<FoodDatabase> findByFoodNameInAndEnabledTrue(List<String> foodNames);
+
+    /** AI 名称匹配需要同时检查标准名和逗号分隔别名；结果按产品排序稳定返回。 */
+    List<FoodDatabase> findByEnabledTrueOrderBySortOrderDescFoodNameAsc();
 }

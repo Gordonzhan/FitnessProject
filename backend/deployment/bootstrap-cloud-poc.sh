@@ -71,6 +71,11 @@ migrations=(
   20260918_population_comparison.sql
   20260919_comparison_masked_display_name.sql
   20260920_image_upload_tickets.sql
+  20261006_ai_food_candidate_mapping.sql
+  20261007_ai_food_intake_confirmation.sql
+  20261008_expand_common_food_catalog.sql
+  20261009_training_preferences_and_exercise_guidance.sql
+  20261010_expand_professional_equipment_catalog.sql
 )
 
 echo "[2/4] 按发布顺序应用增量迁移"
@@ -90,14 +95,15 @@ SELECT CONCAT(
   (SELECT COUNT(*) FROM exercise_database), '|',
   (SELECT COUNT(*) FROM system_recipe_templates), '|',
   (SELECT COUNT(*) FROM system_recipe_ingredients), '|',
-  (SELECT COUNT(*) FROM users WHERE openid='test_openid')
+  (SELECT COUNT(*) FROM users WHERE openid='test_openid'), '|',
+  (SELECT COUNT(*) FROM exercise_database WHERE data_version='professional-equipment-v1' AND enabled=1)
 )")"
 
-IFS='|' read -r table_count food_count exercise_count template_count ingredient_count test_user_count <<<"${validation}"
+IFS='|' read -r table_count food_count exercise_count template_count ingredient_count test_user_count professional_equipment_count <<<"${validation}"
 if (( table_count < 14 || food_count < 70 || exercise_count < 50 || template_count < 40 || ingredient_count < 100 )) \
-  || [[ "${test_user_count}" != "0" ]]; then
-  echo "初始化校验失败：tables=${table_count}, foods=${food_count}, exercises=${exercise_count}, templates=${template_count}, ingredients=${ingredient_count}, testUsers=${test_user_count}" >&2
+  || (( professional_equipment_count < 19 )) || [[ "${test_user_count}" != "0" ]]; then
+  echo "初始化校验失败：tables=${table_count}, foods=${food_count}, exercises=${exercise_count}, templates=${template_count}, ingredients=${ingredient_count}, testUsers=${test_user_count}, professionalEquipment=${professional_equipment_count}" >&2
   exit 4
 fi
 
-echo "初始化成功：tables=${table_count}, foods=${food_count}, exercises=${exercise_count}, templates=${template_count}, ingredients=${ingredient_count}, testUsers=${test_user_count}"
+echo "初始化成功：tables=${table_count}, foods=${food_count}, exercises=${exercise_count}, templates=${template_count}, ingredients=${ingredient_count}, testUsers=${test_user_count}, professionalEquipment=${professional_equipment_count}"

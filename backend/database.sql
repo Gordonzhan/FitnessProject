@@ -90,6 +90,8 @@ CREATE TABLE `workouts` (
   `total_calories` DECIMAL(10,2) NOT NULL,
   `status` VARCHAR(20) NOT NULL DEFAULT 'COMPLETED' COMMENT 'PLANNED、COMPLETED或CANCELLED',
   `estimated_calories` DECIMAL(10,2) NOT NULL DEFAULT 0 COMMENT '计划或动作计算的预计消耗',
+  `estimated_duration_minutes` SMALLINT UNSIGNED NOT NULL COMMENT '预计消耗覆盖的完整训练时长',
+  `calorie_reference_weight` DECIMAL(5,2) NOT NULL COMMENT '预计消耗使用的体重快照',
   `actual_calories` DECIMAL(10,2) NULL COMMENT '确认完成后计入统计的实际消耗',
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -108,6 +110,7 @@ CREATE TABLE `exercises` (
   `sets` INT NOT NULL,
   `reps` INT NOT NULL,
   `calories` DECIMAL(10,2) NOT NULL,
+  `calorie_duration_seconds` INT UNSIGNED NOT NULL COMMENT '该动作热量计算使用的总秒数快照',
   PRIMARY KEY (`id`),
   KEY `idx_workout_id` (`workout_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

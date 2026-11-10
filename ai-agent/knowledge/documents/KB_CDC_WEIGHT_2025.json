@@ -1,0 +1,24 @@
+{
+  "documentId": "KB_CDC_WEIGHT_2025",
+  "title": "CDC 健康减重与体重管理基础摘要",
+  "sourceName": "U.S. Centers for Disease Control and Prevention",
+  "sourceUrl": "https://www.cdc.gov/healthy-weight-growth/losing-weight/index.html",
+  "publishedOrUpdatedAt": "2025-01-17",
+  "version": "2025-01-project-summary-v1",
+  "topics": ["fat_loss", "nutrition", "recovery"],
+  "language": "zh-CN",
+  "riskLevel": "LOW",
+  "reviewStatus": "APPROVED",
+  "reviewedAt": "2026-10-12",
+  "reviewer": "FitnessProject editorial review",
+  "sections": [
+    {
+      "heading": "减脂的基础原则",
+      "content": "体重下降需要一段时间内形成能量缺口，饮食调整与身体活动都可以参与。健康体重管理还包括可持续的饮食模式、规律活动、足够睡眠和压力管理。体重变化同时受药物、疾病、遗传、激素、环境和年龄等因素影响，因此不能把短期体重波动简单归因于意志力。"
+    },
+    {
+      "heading": "渐进、可持续与记录",
+      "content": "CDC 将每周约1至2磅的缓慢稳定下降作为常见可持续参考，而不是鼓励快速减重。实际目标需结合个人起点和专业建议。可通过记录饮食、活动与体重趋势观察计划是否可执行，但单日数字不足以下结论。极端节食、脱水、催吐或药物减重不属于普通健身建议。"
+    }
+  ]
+}

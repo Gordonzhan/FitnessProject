@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fitness.mapper.FoodDatabaseCandidateMapper">
+    <!-- 唯一键 upsert 防止并发识别同一名称时产生重复候选记录。 -->
+    <insert id="observe">
+        INSERT INTO food_database_candidates
+            (normalized_name, recognized_name, occurrence_count, last_cooking_method,
+             review_status, first_seen_at, last_seen_at)
+        VALUES
+            (#{normalizedName}, #{recognizedName}, 1, #{cookingMethod},
+             'PENDING', CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6))
+        ON DUPLICATE KEY UPDATE
+            recognized_name = VALUES(recognized_name),
+            occurrence_count = occurrence_count + 1,
+            last_cooking_method = COALESCE(VALUES(last_cooking_method), last_cooking_method),
+            last_seen_at = VALUES(last_seen_at)
+    </insert>
+</mapper>

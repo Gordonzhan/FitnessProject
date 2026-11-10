@@ -1,0 +1,34 @@
+{
+  "documentId": "KB_MAYO_LUNGE_2025",
+  "title": "Mayo Clinic 弓步动作技术摘要",
+  "sourceName": "Mayo Clinic",
+  "sourceUrl": "https://www.mayoclinic.org/healthy-lifestyle/fitness/multimedia/lunge/vid-20084662",
+  "publishedOrUpdatedAt": "2025-11-21",
+  "version": "2025-11-project-summary-v1",
+  "topics": [
+    "exercise_technique",
+    "exercise_safety",
+    "movement_lunge",
+    "single_leg",
+    "lower_body"
+  ],
+  "language": "zh-CN",
+  "riskLevel": "MODERATE",
+  "reviewStatus": "APPROVED",
+  "reviewedAt": "2026-10-14",
+  "reviewer": "FitnessProject editorial review",
+  "sections": [
+    {
+      "heading": "弓步准备与下降",
+      "content": "从稳定站姿进入分腿站位，躯干保持自然中立，前脚完整落地。缓慢屈曲双膝并向下移动，前膝保持朝向前脚方向，不向内或向外偏移；下降幅度以能够维持平衡和控制为准。"
+    },
+    {
+      "heading": "返回与动作控制",
+      "content": "以前脚稳定发力回到起始位置，避免身体左右摇摆或用冲量弹回。行进弓步比原地弓步需要更高的平衡与制动能力，应在原地版本稳定后再进阶；负重也应在徒手动作可控之后逐步加入。"
+    },
+    {
+      "heading": "退阶与停止标准",
+      "content": "无法下降到较深位置时不必勉强，可缩短步幅或减小深度，并借助固定支撑保持平衡。身体摇晃时应先退阶到更浅的原地弓步，而不是立即增加负重。疲劳导致膝盖偏移、躯干失控或脚部不稳时应停止该组。异常疼痛不属于正常训练刺激，不应依靠调整动作继续硬撑。"
+    }
+  ]
+}

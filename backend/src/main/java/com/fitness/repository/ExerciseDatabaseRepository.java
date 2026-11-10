@@ -2,6 +2,7 @@ package com.fitness.repository;
 
 import com.fitness.entity.ExerciseDatabase;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,8 +12,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 @Repository
-public interface ExerciseDatabaseRepository extends JpaRepository<ExerciseDatabase, Long> {
+public interface ExerciseDatabaseRepository extends JpaRepository<ExerciseDatabase, Long>, JpaSpecificationExecutor<ExerciseDatabase> {
     ExerciseDatabase findByName(String name);
+    ExerciseDatabase findByExerciseCodeAndEnabledTrue(String exerciseCode);
     List<ExerciseDatabase> findAllByOrderByNameAsc();
 
     @Query("select e from ExerciseDatabase e where e.enabled = true " +
@@ -31,4 +33,6 @@ public interface ExerciseDatabaseRepository extends JpaRepository<ExerciseDataba
     List<String> findEnabledCategories();
 
     List<ExerciseDatabase> findByNameInAndEnabledTrue(List<String> names);
+    List<ExerciseDatabase> findByExerciseCodeInAndEnabledTrue(List<String> exerciseCodes);
+    List<ExerciseDatabase> findByEnabledTrueAndFollowAlongEnabledTrueOrderBySortOrderDescNameAsc();
 }

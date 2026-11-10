@@ -82,6 +82,17 @@ fitness:
     snapshot-cron: ${FITNESS_COMPARISON_SNAPSHOT_CRON:0 10 4 * * *}
   upload:
     path: /uploads
+  agent:
+    # 默认关闭，避免现有线上服务在 Agent 未部署时产生额外依赖。
+    enabled: ${FITNESS_AGENT_ENABLED:false}
+    base-url: ${FITNESS_AGENT_BASE_URL:http://127.0.0.1:8000}
+    service-token: ${FITNESS_AGENT_SERVICE_TOKEN:}
+    # 短时效签名用户上下文；正式环境使用独立的至少32字节随机值。
+    context-secret: ${FITNESS_AGENT_CONTEXT_SECRET:}
+    context-ttl-seconds: ${FITNESS_AGENT_CONTEXT_TTL_SECONDS:300}
+    connect-timeout-ms: ${FITNESS_AGENT_CONNECT_TIMEOUT_MS:2000}
+    # 与小程序 AI 请求超时对齐，覆盖 Ollama 首次加载模型的耗时。
+    read-timeout-ms: ${FITNESS_AGENT_READ_TIMEOUT_MS:180000}
   oss:
     endpoint: ${FITNESS_OSS_ENDPOINT:https://oss-cn-beijing.aliyuncs.com}
     region: ${FITNESS_OSS_REGION:cn-beijing}

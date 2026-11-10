@@ -69,12 +69,20 @@
   font-weight: 750;
 }
 .result-item { margin-bottom: 14rpx; padding: 22rpx; border-radius: 20rpx; background: #ffffff; box-shadow: 0 7rpx 20rpx rgba(20,32,25,.05); }
+.result-item-selected { box-shadow: inset 0 0 0 3rpx #19aa66, 0 7rpx 20rpx rgba(20,32,25,.05); }
+.result-item-blocked { opacity: .48; }
 .result-main { flex: 1; min-width: 0; }
 .result-name { display: block; color: #172019; font-size: 28rpx; font-weight: 850; }
 .result-meta, .result-alias { display: block; margin-top: 7rpx; color: #7b867e; font-size: 21rpx; }
 .result-alias { color: #9aa49c; }
 .result-value { margin-left: 18rpx; color: #ef7544; font-size: 28rpx; font-weight: 900; white-space: nowrap; }
 .result-unit { font-size: 18rpx; }
+.exercise-detail-link { display: block; margin-top: 10rpx; color: #159255; font-size: 20rpx; text-align: right; }
+.selection-mark { color: #159255; font-size: 21rpx; }
+.result-item-blocked .selection-mark { color: #9a6c5a; }
 .result-state { padding: 34rpx 12rpx; color: #89938c; font-size: 23rpx; text-align: center; }
 .result-error { color: #ba4d3b; }
 .retry-button { display: block; margin: 18rpx auto 0; color: #159255; font-weight: 850; }
+.selector-sheet-multi .result-list { height: calc(78vh - 352rpx - env(safe-area-inset-bottom)); }
+.selector-multi-footer { display: flex; align-items: center; justify-content: space-between; min-height: 88rpx; padding-top: 14rpx; color: #657169; font-size: 22rpx; font-weight: 750; }
+.selector-done { min-width: 150rpx; padding: 18rpx 28rpx; border-radius: 999rpx; background: #172019; color: #bef260; text-align: center; font-size: 24rpx; font-weight: 900; }

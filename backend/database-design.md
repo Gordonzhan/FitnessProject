@@ -62,6 +62,8 @@
 | `total_calories` | `DECIMAL(10,2)` | `NOT NULL` | 兼容字段：计划为预计值，完成后为实际值 |
 | `status` | `VARCHAR(20)` | `NOT NULL DEFAULT 'COMPLETED'` | PLANNED / COMPLETED / CANCELLED |
 | `estimated_calories` | `DECIMAL(10,2)` | `NOT NULL DEFAULT 0` | 动作和时长计算的预计消耗 |
+| `estimated_duration_minutes` | `SMALLINT UNSIGNED` | `NOT NULL` | 当前动作时长快照合计后的预计分钟数 |
+| `calorie_reference_weight` | `DECIMAL(5,2)` | `NOT NULL` | 预计热量计算使用的体重快照 |
 | `actual_calories` | `DECIMAL(10,2)` | `NULL` | 确认完成后计入能量分析的实际消耗 |
 | `created_at` | `TIMESTAMP` | `DEFAULT CURRENT_TIMESTAMP` | 创建时间 |
 | `updated_at` | `TIMESTAMP` | `DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP` | 更新时间 |
@@ -76,6 +78,7 @@
 | `sets` | `INT` | `NOT NULL` | 组数 |
 | `reps` | `INT` | `NOT NULL` | 次数 |
 | `calories` | `DECIMAL(10,2)` | `NOT NULL` | 消耗热量 |
+| `calorie_duration_seconds` | `INT UNSIGNED` | `NOT NULL` | 当前动作热量计算使用的总秒数快照 |
 
 ### 1.7 今日饮食表 (daily_intake)
 | 字段名 | 数据类型 | 约束 | 描述 |

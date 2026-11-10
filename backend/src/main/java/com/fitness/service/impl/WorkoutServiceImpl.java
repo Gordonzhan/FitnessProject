@@ -8,6 +8,9 @@ import com.fitness.entity.WorkoutStatus;
 import com.fitness.mapper.WorkoutMapper;
 import com.fitness.mapper.ExerciseMapper;
 import com.fitness.service.WorkoutService;
+import com.fitness.service.WorkoutCalorieEstimationService;
+import com.fitness.service.WorkoutCalorieFormula;
+import com.fitness.dto.WorkoutEstimateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -28,6 +31,8 @@ public class WorkoutServiceImpl implements WorkoutService {
     private WorkoutMapper workoutMapper;
     @Autowired
     private ExerciseMapper exerciseMapper;
+    @Autowired
+    private WorkoutCalorieEstimationService calorieEstimation;
     @Value("${fitness.business-zone:Asia/Shanghai}")
     private String businessZone;
     
@@ -48,10 +53,16 @@ public class WorkoutServiceImpl implements WorkoutService {
     public Workout getWorkoutByDate(Long userId, LocalDate date) {
         return workoutMapper.findByDate(userId, date);
     }
+
+    @Override
+    public Workout estimateWorkout(Long userId, WorkoutEstimateRequest request) {
+        return calorieEstimation.estimate(userId, request);
+    }
     
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Workout saveWorkout(Workout workout) {
+        calorieEstimation.estimate(workout.getUserId(), workout);
         prepareForSave(workout);
         // workoutId 是公开业务标识，id 仅作为数据库内部主键使用。
         if (workout.getWorkoutId() == null || workout.getWorkoutId().isBlank()) {
@@ -81,6 +92,11 @@ public class WorkoutServiceImpl implements WorkoutService {
         if (workout.getExercises() != null) {
             for (Exercise exercise : workout.getExercises()) {
                 exercise.setWorkoutDbId(workout.getId());
+                // 正常请求已由估算服务赋值；测试替身或旧内部调用缺失时使用确定性回退，避免写入空快照。
+                if (exercise.getCalorieDurationSeconds() == null || exercise.getCalorieDurationSeconds() <= 0) {
+                    exercise.setCalorieDurationSeconds(
+                            WorkoutCalorieFormula.structuralDurationSeconds(exercise.getSets()));
+                }
                 exerciseMapper.insert(exercise);
             }
         }

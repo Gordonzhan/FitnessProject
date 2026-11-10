@@ -5,7 +5,18 @@ const SEARCH_DELAY_MS = 300;
 
 Component({
   properties: {
-    type: { type: String, value: 'food' }
+    type: { type: String, value: 'food' },
+    equipment: { type: String, value: '' },
+    excludedLimitations: { type: String, value: '' },
+    multi: { type: Boolean, value: false },
+    selectedCodes: { type: Array, value: [] },
+    blockedCodes: { type: Array, value: [] }
+  },
+
+  observers: {
+    'selectedCodes, blockedCodes': function () {
+      this.refreshSelectionState();
+    }
   },
 
   data: {
@@ -82,10 +93,17 @@ Component({
         ? DatabaseAPI.searchExercises
         : DatabaseAPI.searchFoods;
 
-      api((this.data.keyword || '').trim(), this.data.category || '', page, PAGE_SIZE)
+      const filters = this.properties.type === 'exercise' ? {
+        equipment: this.properties.equipment || '',
+        excludedLimitations: this.properties.excludedLimitations || ''
+      } : {};
+      const request = this.properties.type === 'exercise'
+        ? api((this.data.keyword || '').trim(), this.data.category || '', page, PAGE_SIZE, filters)
+        : api((this.data.keyword || '').trim(), this.data.category || '', page, PAGE_SIZE);
+      request
         .then((result) => {
           if (requestVersion !== this._requestVersion) return;
-          const newItems = result && Array.isArray(result.items) ? result.items : [];
+          const newItems = this.decorateItems(result && Array.isArray(result.items) ? result.items : []);
           this.setData({
             items: reset ? newItems : this.data.items.concat(newItems),
             page: Number(result.page) || 0,
@@ -114,12 +132,46 @@ Component({
     /** 将用户选中的食材或动作对象通知给父页面。 */
     selectItem(e) {
       const item = this.data.items[Number(e.currentTarget.dataset.index)];
-      if (item) this.triggerEvent('select', { item });
+      if (!item) return;
+      if (this.properties.multi && item.selectionBlocked) {
+        wx.showToast({ title: '该动作已在另一列表中', icon: 'none' });
+        return;
+      }
+      this.triggerEvent('select', { item });
+    },
+
+    decorateItems(items) {
+      if (!this.properties.multi) return items;
+      const selected = new Set(this.properties.selectedCodes || []);
+      const blocked = new Set(this.properties.blockedCodes || []);
+      return items.map(item => ({
+        ...item,
+        selectionSelected: selected.has(item.exerciseCode),
+        selectionBlocked: blocked.has(item.exerciseCode)
+      }));
+    },
+
+    refreshSelectionState() {
+      if (!this.properties.multi || !Array.isArray(this.data.items)) return;
+      this.setData({ items: this.decorateItems(this.data.items) });
+    },
+
+    /** 查看动作说明不会触发选择，返回后仍保留当前搜索状态。 */
+    viewExerciseDetail(e) {
+      const item = this.data.items[Number(e.currentTarget.dataset.index)];
+      if (!item || !item.exerciseCode) return;
+      wx.navigateTo({
+        url: '/pages/workout/exercise-detail/exercise-detail?exerciseCode=' + encodeURIComponent(item.exerciseCode)
+      });
     },
 
     /** 通知父页面关闭选择器。 */
     close() {
       this.triggerEvent('close');
+    },
+
+    completeSelection() {
+      this.triggerEvent('done');
     },
 
     /** 拦截弹层内触摸移动，防止底层页面跟随滚动。 */

@@ -1,0 +1,150 @@
+[
+  {
+    "caseId": "frequency-001",
+    "query": "成年人每周应该做几次力量训练？",
+    "expectedDocumentIds": ["KB_HHS_PHYSICAL_ACTIVITY_2018"],
+    "expectedChunkIds": [],
+    "topic": "frequency",
+    "shouldRefuse": false
+  },
+  {
+    "caseId": "sets-001",
+    "query": "新手力量训练一组做多少次，做几组？",
+    "expectedDocumentIds": ["KB_HHS_PHYSICAL_ACTIVITY_2018", "KB_ACSM_PROGRESSION_2009"],
+    "expectedChunkIds": [],
+    "topic": "sets_reps",
+    "shouldRefuse": false
+  },
+  {
+    "caseId": "rest-001",
+    "query": "增肌训练组间休息多久？大重量力量训练呢？",
+    "expectedDocumentIds": ["KB_ACSM_PROGRESSION_2009"],
+    "expectedChunkIds": [],
+    "topic": "rest_intervals",
+    "shouldRefuse": false,
+    "expectedTop1DocumentId": "KB_ACSM_PROGRESSION_2009",
+    "forbiddenDocumentIdsInTopK": [
+      "KB_AHA_WARMUP_COOLDOWN_2024",
+      "KB_RESISTANCE_WARMUP_REVIEW_2021"
+    ],
+    "forbiddenTopK": 3
+  },
+  {
+    "caseId": "rest-ranking-002",
+    "query": "力量训练组间应该休息多久？",
+    "expectedDocumentIds": ["KB_ACSM_PROGRESSION_2009"],
+    "expectedChunkIds": [],
+    "topic": "rest_intervals",
+    "shouldRefuse": false,
+    "expectedTop1DocumentId": "KB_ACSM_PROGRESSION_2009",
+    "forbiddenDocumentIdsInTopK": [
+      "KB_AHA_WARMUP_COOLDOWN_2024",
+      "KB_RESISTANCE_WARMUP_REVIEW_2021"
+    ],
+    "forbiddenTopK": 3
+  },
+  {
+    "caseId": "warmup-001",
+    "query": "力量训练应该如何热身和冷身？",
+    "expectedDocumentIds": ["KB_AHA_WARMUP_COOLDOWN_2024"],
+    "expectedChunkIds": [],
+    "topic": "warmup_recovery",
+    "shouldRefuse": false
+  },
+  {
+    "caseId": "warmup-002",
+    "query": "力量训练工作组之前应该怎样做专项热身组？",
+    "expectedDocumentIds": ["KB_RESISTANCE_WARMUP_REVIEW_2021"],
+    "expectedChunkIds": [],
+    "topic": "resistance_warmup",
+    "shouldRefuse": false
+  },
+  {
+    "caseId": "squat-technique-001",
+    "query": "深蹲时膝盖和腰背应该怎么控制？",
+    "expectedDocumentIds": ["KB_MAYO_SQUAT_2025"],
+    "expectedChunkIds": [],
+    "topic": "movement_squat",
+    "shouldRefuse": false
+  },
+  {
+    "caseId": "lunge-technique-001",
+    "query": "弓步怎么做，身体摇晃时应该如何退阶？",
+    "expectedDocumentIds": ["KB_MAYO_LUNGE_2025"],
+    "expectedChunkIds": [],
+    "topic": "movement_lunge",
+    "shouldRefuse": false
+  },
+  {
+    "caseId": "deadlift-technique-001",
+    "query": "硬拉中的髋铰链是什么，常见错误有哪些？",
+    "expectedDocumentIds": ["KB_ACE_DEADLIFT_2024"],
+    "expectedChunkIds": [],
+    "topic": "movement_hinge",
+    "shouldRefuse": false
+  },
+  {
+    "caseId": "pushup-technique-001",
+    "query": "标准俯卧撑做不了时怎么退阶？",
+    "expectedDocumentIds": ["KB_MAYO_PUSHUP_2025"],
+    "expectedChunkIds": [],
+    "topic": "movement_push_horizontal",
+    "shouldRefuse": false
+  },
+  {
+    "caseId": "row-technique-001",
+    "query": "坐姿划船为什么不能大幅后仰借力？",
+    "expectedDocumentIds": ["KB_MAYO_SEATED_ROW_2025"],
+    "expectedChunkIds": [],
+    "topic": "movement_pull_horizontal",
+    "shouldRefuse": false
+  },
+  {
+    "caseId": "pulldown-technique-001",
+    "query": "高位下拉应该拉到胸前还是颈后？",
+    "expectedDocumentIds": ["KB_MAYO_LAT_PULLDOWN_2025"],
+    "expectedChunkIds": [],
+    "topic": "movement_pull_vertical",
+    "shouldRefuse": false
+  },
+  {
+    "caseId": "hypertrophy-001",
+    "query": "增肌是不是每一组都必须做到力竭？",
+    "expectedDocumentIds": ["KB_ACSM_RESISTANCE_2026"],
+    "expectedChunkIds": [],
+    "topic": "hypertrophy",
+    "shouldRefuse": false
+  },
+  {
+    "caseId": "protein-001",
+    "query": "经常运动的人每天蛋白质吃多少？一定要喝蛋白粉吗？",
+    "expectedDocumentIds": ["KB_ISSN_PROTEIN_2017"],
+    "expectedChunkIds": [],
+    "topic": "protein",
+    "shouldRefuse": false
+  },
+  {
+    "caseId": "fat-loss-001",
+    "query": "健康减脂有哪些基础原则？",
+    "expectedDocumentIds": ["KB_CDC_WEIGHT_2025"],
+    "expectedChunkIds": [],
+    "topic": "fat_loss",
+    "shouldRefuse": false
+  },
+  {
+    "caseId": "medical-refusal-001",
+    "query": "膝关节半月板撕裂后应该做什么康复处方？",
+    "expectedDocumentIds": [],
+    "expectedChunkIds": [],
+    "topic": "medical",
+    "shouldRefuse": true
+  },
+  {
+    "caseId": "unknown-refusal-001",
+    "query": "2028年火星健身房的官方训练标准是什么？",
+    "expectedDocumentIds": [],
+    "expectedChunkIds": [],
+    "topic": "unknown",
+    "shouldRefuse": true
+  }
+]

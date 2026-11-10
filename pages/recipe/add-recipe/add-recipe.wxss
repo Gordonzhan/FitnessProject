@@ -94,6 +94,42 @@
 .upload-status { display: block; margin-top: 12rpx; color: #14824c; font-size: 23rpx; }
 .button-disabled { opacity: 0.55; }
 
+.ai-recognition-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 24rpx;
+  padding: 22rpx;
+  border-radius: 20rpx;
+  background: #edf8f1;
+}
+
+.ai-recognition-title { display: block; color: #173c29; font-size: 26rpx; font-weight: 850; }
+.ai-recognition-copy { display: block; max-width: 390rpx; margin-top: 6rpx; color: #668071; font-size: 21rpx; }
+.ai-recognition-button { flex-shrink: 0; margin-left: 18rpx; padding: 18rpx 22rpx; border-radius: 16rpx; background: #172019; color: #bef260; font-size: 23rpx; font-weight: 800; }
+.ai-warning { display: block; margin-top: 10rpx; color: #a86624; font-size: 22rpx; }
+.ai-recipe-note { display: block; margin-top: 10rpx; color: #a86624; font-size: 21rpx; line-height: 1.5; }
+.ai-item-meta { display: block; margin-top: 10rpx; color: #718078; font-size: 21rpx; line-height: 1.5; }
+.ai-candidates { margin-top: 14rpx; }
+.ai-candidate-label { display: block; color: #a86624; font-size: 21rpx; font-weight: 700; }
+.ai-candidate-row { display: flex; flex-wrap: wrap; margin-top: 8rpx; }
+.ai-candidate { margin: 0 10rpx 10rpx 0; padding: 12rpx 16rpx; border: 2rpx solid #b8dbc7; border-radius: 999rpx; background: #ffffff; color: #167147; font-size: 21rpx; font-weight: 700; }
+.ai-generic-tag { margin-left: 8rpx; color: #a86624; font-size: 19rpx; }
+
+.intake-confirm-copy { display: block; color: #718078; font-size: 22rpx; line-height: 1.6; }
+.intake-field-label { display: block; margin-top: 22rpx; }
+.meal-slot-row { display: flex; margin-top: 12rpx; gap: 10rpx; }
+.meal-slot-chip { flex: 1; padding: 16rpx 8rpx; border: 2rpx solid #e2e9e3; border-radius: 16rpx; color: #66746b; font-size: 23rpx; font-weight: 750; text-align: center; }
+.meal-slot-chip.selected { border-color: #19955a; background: #e8f7ee; color: #137747; }
+.intake-fields { display: flex; margin-top: 22rpx; gap: 18rpx; }
+.intake-field { flex: 1; min-width: 0; }
+.intake-picker { display: flex; align-items: center; justify-content: space-between; margin-top: 10rpx; min-height: 78rpx; padding: 0 20rpx; border: 2rpx solid #e7ece7; border-radius: 17rpx; background: #ffffff; color: #24322a; font-size: 25rpx; font-weight: 700; }
+.intake-picker text { color: #159255; }
+
+.form-sticky-action .compact-add { width: 150rpx; }
+.form-sticky-action .save-recipe-button,
+.form-sticky-action .intake-save-button { flex: 1; min-width: 0; min-height: 92rpx; padding: 0 12rpx; font-size: 23rpx; text-align: center; }
+
 .remove-image {
   position: absolute;
   top: 10rpx;

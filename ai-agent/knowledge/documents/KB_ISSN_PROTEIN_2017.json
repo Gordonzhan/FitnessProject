@@ -1,0 +1,28 @@
+{
+  "documentId": "KB_ISSN_PROTEIN_2017",
+  "title": "ISSN 蛋白质与运动立场声明摘要",
+  "sourceName": "International Society of Sports Nutrition",
+  "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/28642676/",
+  "publishedOrUpdatedAt": "2017-06-20",
+  "version": "2017-position-stand-project-summary-v1",
+  "topics": ["protein", "nutrition", "hypertrophy", "recovery"],
+  "language": "zh-CN",
+  "riskLevel": "MODERATE",
+  "reviewStatus": "APPROVED",
+  "reviewedAt": "2026-10-12",
+  "reviewer": "FitnessProject editorial review",
+  "sections": [
+    {
+      "heading": "运动人群每日蛋白质",
+      "content": "对健康且经常运动的人群，每日约1.4至2.0克每公斤体重的蛋白质通常足以支持肌肉维持或增长。该范围是一般运动营养参考，不是针对肾脏、肝脏疾病、孕期或其他临床情况的处方；有相关状况时应由医生或注册营养专业人员个体化评估。"
+    },
+    {
+      "heading": "单餐分配与食物优先",
+      "content": "一般可把全天蛋白质分散到多餐。立场声明给出的常见单次参考约为每公斤体重0.25克，或约20至40克高质量蛋白质，但年龄、体重、训练量和饮食结构都会影响需求。大多数人可以通过完整食物满足需要，补充剂只是便利选择，并非增肌的必要条件。"
+    },
+    {
+      "heading": "训练与总能量仍是基础",
+      "content": "蛋白质摄入与抗阻训练共同支持肌肉蛋白合成。只增加蛋白质而缺少合适训练、足够总能量与恢复，并不能保证增肌。减脂阶段仍需整体能量管理；蛋白质可帮助维持瘦体重，但不应把极高蛋白或补充剂当成替代均衡饮食的捷径。"
+    }
+  ]
+}

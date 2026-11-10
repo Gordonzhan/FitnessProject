@@ -317,7 +317,6 @@
 }
 
 .meal-name {
-  flex: 1;
   min-width: 0;
   overflow-wrap: break-word;
   padding: 12rpx 10rpx 12rpx 0;
@@ -325,6 +324,9 @@
   font-size: 26rpx;
   font-weight: 700;
 }
+
+.meal-copy { display: flex; flex: 1; min-width: 0; flex-direction: column; }
+.meal-meta { margin-top: -8rpx; padding-bottom: 12rpx; color: #89938c; font-size: 20rpx; }
 
 .meal-energy {
   flex-shrink: 0;

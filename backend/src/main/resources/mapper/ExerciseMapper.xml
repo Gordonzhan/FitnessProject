@@ -11,6 +11,7 @@
         <result column="sets" property="sets"/>
         <result column="reps" property="reps"/>
         <result column="calories" property="calories"/>
+        <result column="calorie_duration_seconds" property="calorieDurationSeconds"/>
     </resultMap>
 
     <select id="findByWorkoutDbId" parameterType="Long" resultMap="ExerciseResultMap">
@@ -26,9 +27,24 @@
         ORDER BY workout_id ASC, id ASC
     </select>
 
+    <select id="findCompletedLoadsByNames" resultMap="ExerciseResultMap">
+        SELECT e.*
+        FROM exercises e
+        INNER JOIN workouts w ON w.id = e.workout_id
+        WHERE w.user_id = #{userId}
+          AND w.status = 'COMPLETED'
+          AND e.weight IS NOT NULL
+          AND e.weight &gt; 0
+          AND e.name IN
+        <foreach collection="names" item="name" open="(" separator="," close=")">
+            #{name}
+        </foreach>
+        ORDER BY w.date DESC, w.id DESC, e.id DESC
+    </select>
+
     <insert id="insert" parameterType="Exercise">
-        INSERT INTO exercises (workout_id, name, weight, sets, reps, calories)
-        VALUES (#{workoutDbId}, #{name}, #{weight}, #{sets}, #{reps}, #{calories})
+        INSERT INTO exercises (workout_id, name, weight, sets, reps, calories, calorie_duration_seconds)
+        VALUES (#{workoutDbId}, #{name}, #{weight}, #{sets}, #{reps}, #{calories}, #{calorieDurationSeconds})
     </insert>
 
     <update id="update" parameterType="Exercise">
@@ -38,7 +54,8 @@
             weight = #{weight},
             sets = #{sets},
             reps = #{reps},
-            calories = #{calories}
+            calories = #{calories},
+            calorie_duration_seconds = #{calorieDurationSeconds}
         WHERE id = #{id}
     </update>
 

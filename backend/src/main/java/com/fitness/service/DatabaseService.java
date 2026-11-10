@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -50,6 +52,12 @@ public class DatabaseService {
         return exerciseDatabaseRepository.findByName(name);
     }
 
+    /** 使用稳定业务编号查询可跟练动作详情。 */
+    public ExerciseDatabase getExerciseByCode(String exerciseCode) {
+        if (exerciseCode == null) return null;
+        return exerciseDatabaseRepository.findByExerciseCodeAndEnabledTrue(exerciseCode.trim().toUpperCase());
+    }
+
     /** 按名称、别名或分类分页搜索启用状态的食材。 */
     public PageResult<FoodDatabase> searchFoods(String keyword, String category, int page, int size) {
         Page<FoodDatabase> result = foodDatabaseRepository.searchEnabled(
@@ -60,9 +68,48 @@ public class DatabaseService {
 
     /** 按名称、别名、分类、肌群或器械分页搜索启用状态的动作。 */
     public PageResult<ExerciseDatabase> searchExercises(String keyword, String category, int page, int size) {
-        Page<ExerciseDatabase> result = exerciseDatabaseRepository.searchEnabled(
-                normalizeKeyword(keyword), normalizeCategory(category),
-                PageRequest.of(normalizePage(page), normalizeSize(size)));
+        return searchExercises(keyword, category, "", "", page, size);
+    }
+
+    /**
+     * 按用户可用器械和限制标签在数据库层过滤，保持分页总数和结果一致。
+     * limitationTags 使用稳定英文编码，避免把自由文本病史拼入查询。
+     */
+    public PageResult<ExerciseDatabase> searchExercises(String keyword, String category,
+                                                        String equipment, String excludedLimitations,
+                                                        int page, int size) {
+        String normalizedKeyword = normalizeKeyword(keyword);
+        String normalizedCategory = normalizeCategory(category);
+        List<String> equipmentValues = normalizeCsv(equipment, 20, 50, false);
+        List<String> limitationValues = normalizeCsv(excludedLimitations, 10, 30, true);
+        if (!equipmentValues.isEmpty() && !equipmentValues.contains("无")) {
+            equipmentValues = new java.util.ArrayList<>(equipmentValues);
+            equipmentValues.add("无");
+        }
+
+        List<String> finalEquipmentValues = equipmentValues;
+        Specification<ExerciseDatabase> specification = (root, query, cb) -> {
+            List<jakarta.persistence.criteria.Predicate> predicates = new java.util.ArrayList<>();
+            predicates.add(cb.isTrue(root.get("enabled")));
+            if (!normalizedCategory.isEmpty()) predicates.add(cb.equal(root.get("category"), normalizedCategory));
+            if (!normalizedKeyword.isEmpty()) {
+                String pattern = "%" + normalizedKeyword + "%";
+                predicates.add(cb.or(cb.like(root.get("name"), pattern),
+                        cb.like(cb.coalesce(root.get("aliases"), ""), pattern),
+                        cb.like(root.get("category"), pattern),
+                        cb.like(root.get("primaryMuscles"), pattern),
+                        cb.like(root.get("equipment"), pattern)));
+            }
+            if (!finalEquipmentValues.isEmpty()) predicates.add(root.get("equipment").in(finalEquipmentValues));
+            for (String limitation : limitationValues) {
+                var padded = cb.concat(cb.concat(",", cb.coalesce(root.get("limitationTags"), "")), ",");
+                predicates.add(cb.notLike(padded, "%," + limitation + ",%"));
+            }
+            return cb.and(predicates.toArray(jakarta.persistence.criteria.Predicate[]::new));
+        };
+        PageRequest pageable = PageRequest.of(normalizePage(page), normalizeSize(size),
+                Sort.by(Sort.Order.desc("sortOrder"), Sort.Order.asc("name")));
+        Page<ExerciseDatabase> result = exerciseDatabaseRepository.findAll(specification, pageable);
         return new PageResult<>(result.getContent(), result.getTotalElements(), result.getNumber(), result.getSize());
     }
 
@@ -76,6 +123,13 @@ public class DatabaseService {
     public List<ExerciseDatabase> resolveExercises(List<String> names) {
         List<String> normalized = normalizeNames(names);
         return normalized.isEmpty() ? List.of() : exerciseDatabaseRepository.findByNameInAndEnabledTrue(normalized);
+    }
+
+    /** 按稳定业务编号批量恢复动作详情，供训练偏好和后续草稿页面使用。 */
+    public List<ExerciseDatabase> resolveExerciseCodes(List<String> exerciseCodes) {
+        List<String> normalized = normalizeCodes(exerciseCodes);
+        return normalized.isEmpty() ? List.of()
+                : exerciseDatabaseRepository.findByExerciseCodeInAndEnabledTrue(normalized);
     }
 
     /** 查询启用食材的分类列表，并使用短时内存缓存降低数据库压力。 */
@@ -155,6 +209,22 @@ public class DatabaseService {
                 .distinct()
                 .limit(100)
                 .toList();
+    }
+
+    private List<String> normalizeCodes(List<String> values) {
+        if (values == null) return List.of();
+        return values.stream().filter(value -> value != null && !value.isBlank())
+                .map(value -> value.trim().toUpperCase()).distinct().limit(100).toList();
+    }
+
+    private List<String> normalizeCsv(String value, int maxItems, int maxLength, boolean uppercase) {
+        if (value == null || value.isBlank()) return List.of();
+        return java.util.Arrays.stream(value.split(","))
+                .map(String::trim).filter(item -> !item.isEmpty())
+                .map(item -> item.length() > maxLength ? item.substring(0, maxLength) : item)
+                .map(item -> uppercase ? item.toUpperCase() : item)
+                .filter(item -> !uppercase || item.matches("[A-Z_]+"))
+                .distinct().limit(maxItems).toList();
     }
 
     /** 根据当前单调时钟计算分类缓存失效时间。 */

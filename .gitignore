@@ -9,6 +9,15 @@ deploy/
 # Local secret files
 .env
 backend/.env
+ai-agent/.venv/
+ai-agent/.env
+ai-agent/.pytest_cache/
+ai-agent/.ruff_cache/
+ai-agent/.mypy_cache/
+ai-agent/*.egg-info/
+ai-agent/logs/
+__pycache__/
+*.py[cod]
 *.pem
 *.key
 *.p12
@@ -23,3 +32,31 @@ config/runtime.js
 .idea/
 .vscode/
 .DS_Store
+
+# Local discussion, planning, handoff and acceptance notes
+/AI_AGENT_IMPLEMENTATION_PLAN.md
+/MINIPROGRAM_RELEASE_CHECKLIST.md
+/TECHNICAL_CHALLENGES.md
+/ITEM10_*_PLAN.md
+/PROJECT_HANDOFF.md
+/健身饮食日记小程序需求文档.md
+/backend/CLOUD_HOSTING_POC.md
+/backend/CLOUD_HOSTING_ALERTS.md
+/backend/U1_OSS_DIRECT_UPLOAD_ACCEPTANCE.md
+AGENTS.md
+.agents/
+.codex/
+
+# Local reports, scratch files, caches and database exports
+/output/
+/tmp/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+node_modules/
+.env.*
+!.env.example
+*.sqlite
+*.sqlite3
+*.db
+*.dump

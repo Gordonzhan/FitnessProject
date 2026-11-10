@@ -184,5 +184,13 @@ Page({
   /** 进入 R7 匿名人群训练百分位对比。 */
   goToPopulationComparison() {
     wx.navigateTo({ url: '/pages/profile/comparison/comparison' });
+  },
+  /** 进入 A4 训练偏好设置；保存后供动作筛选和后续训练草稿使用。 */
+  goToTrainingPreferences() {
+    wx.navigateTo({ url: '/pages/profile/training-preferences/training-preferences' });
+  },
+  /** 进入 A7 可持续对话 Fitness Agent。 */
+  goToFitnessAgent() {
+    wx.navigateTo({ url: '/pages/profile/fitness-agent/fitness-agent' });
   }
 })

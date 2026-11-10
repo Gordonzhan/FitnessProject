@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "训练偏好",
+  "usingComponents": {
+    "reference-selector": "/components/reference-selector/reference-selector"
+  }
+}

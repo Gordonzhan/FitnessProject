@@ -1,0 +1,20 @@
+{
+  "documentId": "CANDIDATE_NHS_COOLDOWN_2023",
+  "title": "NHS 冷身练习页面候选摘要",
+  "sourceName": "National Health Service (UK)",
+  "sourceUrl": "https://www.nhs.uk/live-well/exercise/strength-and-resistance/body-blast-cool-down/",
+  "publishedOrUpdatedAt": "2023-12-08",
+  "version": "2023-12-candidate-v1",
+  "topics": ["warmup_recovery", "exercise_safety"],
+  "language": "zh-CN",
+  "riskLevel": "MODERATE",
+  "reviewStatus": "CANDIDATE",
+  "reviewedAt": null,
+  "reviewer": null,
+  "sections": [
+    {
+      "heading": "候选内容",
+      "content": "该页面包含一般冷身练习和出现疼痛或不适时停止运动的提示。尚未完成项目审核，仅作为候选来源保存，不得进入正式索引或用于回答。"
+    }
+  ]
+}

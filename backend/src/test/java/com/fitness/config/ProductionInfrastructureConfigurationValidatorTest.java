@@ -69,6 +69,26 @@ class ProductionInfrastructureConfigurationValidatorTest {
         assertDoesNotThrow(validator::validate);
     }
 
+    @Test
+    void enabledAgentRequiresStrongServiceAndContextSecrets() {
+        ProductionInfrastructureConfigurationValidator validator = validator(true);
+        set(validator, "datasourceUrl", "jdbc:mysql://mysql.internal:3306/fitness_diary");
+        set(validator, "datasourceUsername", "fitness_app");
+        set(validator, "datasourcePassword", "database-secret");
+        set(validator, "ossEndpoint", "https://oss-cn-beijing.aliyuncs.com");
+        set(validator, "ossAccessKeyId", "access-key-id");
+        set(validator, "ossAccessKeySecret", "access-key-secret");
+        set(validator, "ossBucketName", "fitness-images");
+        set(validator, "agentEnabled", true);
+        set(validator, "agentServiceToken", "short");
+        set(validator, "agentContextSecret", "short");
+
+        IllegalStateException error = assertThrows(IllegalStateException.class, validator::validate);
+        assertTrue(error.getMessage().contains("服务令牌"));
+        assertTrue(error.getMessage().contains("用户上下文 HMAC 密钥"));
+        assertFalse(error.getMessage().contains("short"));
+    }
+
     private ProductionInfrastructureConfigurationValidator validator(boolean productionMode) {
         ProductionInfrastructureConfigurationValidator validator =
                 new ProductionInfrastructureConfigurationValidator();
@@ -83,6 +103,9 @@ class ProductionInfrastructureConfigurationValidatorTest {
         set(validator, "includeSyntheticComparison", false);
         set(validator, "realComparisonSnapshotEnabled", false);
         set(validator, "comparisonHashSecret", "");
+        set(validator, "agentEnabled", false);
+        set(validator, "agentServiceToken", "");
+        set(validator, "agentContextSecret", "");
         return validator;
     }
 

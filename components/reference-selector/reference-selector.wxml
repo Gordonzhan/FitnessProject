@@ -1,6 +1,6 @@
 <!-- 食材/动作通用选择器：遮罩、搜索条件和分页结果 -->
 <view class="selector-mask" catchtouchmove="preventMove" catchtap="close"></view>
-<view class="selector-sheet">
+<view class="selector-sheet {{multi ? 'selector-sheet-multi' : ''}}">
   <view class="selector-head">
     <view>
       <text class="selector-kicker">DATABASE SEARCH</text>
@@ -28,7 +28,7 @@
       <text>{{keyword || category ? '筛选结果' : '常用推荐'}}</text>
       <text>{{total}} 项</text>
     </view>
-    <view wx:for="{{items}}" wx:key="id" class="result-item" bindtap="selectItem" data-index="{{index}}">
+    <view wx:for="{{items}}" wx:key="id" class="result-item {{item.selectionSelected ? 'result-item-selected' : ''}} {{item.selectionBlocked ? 'result-item-blocked' : ''}}" bindtap="selectItem" data-index="{{index}}">
       <view class="result-main">
         <text class="result-name">{{type === 'exercise' ? item.name : item.foodName}}</text>
         <text class="result-meta" wx:if="{{type === 'exercise'}}">{{item.category}} · {{item.primaryMuscles}} · {{item.equipment}}</text>
@@ -36,7 +36,9 @@
         <text class="result-alias" wx:if="{{item.aliases}}">别名：{{item.aliases}}</text>
       </view>
       <view class="result-value" wx:if="{{type === 'exercise'}}">
-        <text>{{item.met}}</text><text class="result-unit"> MET</text>
+        <block wx:if="{{multi}}"><text class="selection-mark">{{item.selectionBlocked ? '已排除' : (item.selectionSelected ? '✓ 已选' : '+ 选择')}}</text></block>
+        <block wx:else><text>{{item.met}}</text><text class="result-unit"> MET</text></block>
+        <text class="exercise-detail-link" catchtap="viewExerciseDetail" data-index="{{index}}">详情</text>
       </view>
       <view class="result-value" wx:else>
         <text>{{item.calorie}}</text><text class="result-unit"> kcal/100g</text>
@@ -51,4 +53,8 @@
     <view wx:if="{{loading}}" class="result-state">正在加载…</view>
     <view wx:if="{{!loading && !hasMore && items.length > 0}}" class="result-state">已显示全部 {{total}} 条结果</view>
   </scroll-view>
+  <view wx:if="{{multi}}" class="selector-multi-footer">
+    <text>已选 {{selectedCodes.length}} 个动作</text>
+    <view class="selector-done" bindtap="completeSelection">完成</view>
+  </view>
 </view>

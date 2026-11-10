@@ -64,7 +64,8 @@ public class CompareController {
         Long userId = AuthContext.getUserId(request);
         String requestId = params.requestId() == null || params.requestId().isBlank()
                 ? UUID.randomUUID().toString() : params.requestId();
-        compareService.addRecipeToDailyIntake(userId, params.date(), normalizeRecipeId(params.recipeId()), requestId);
+        compareService.addRecipeToDailyIntake(userId, params.date(), normalizeRecipeId(params.recipeId()), requestId,
+                params.mealSlot(), params.servingCount(), params.consumedTime());
         return Response.success();
     }
 

@@ -1,0 +1,28 @@
+{
+  "documentId": "KB_ACSM_RESISTANCE_2026",
+  "title": "ACSM 2026 健康成年人抗阻训练处方立场声明摘要",
+  "sourceName": "American College of Sports Medicine",
+  "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41843416/",
+  "publishedOrUpdatedAt": "2026-03-05",
+  "version": "2026-position-stand-project-summary-v1",
+  "topics": ["strength_basics", "frequency", "sets_reps", "hypertrophy", "exercise_safety"],
+  "language": "zh-CN",
+  "riskLevel": "MODERATE",
+  "reviewStatus": "APPROVED",
+  "reviewedAt": "2026-10-12",
+  "reviewer": "FitnessProject editorial review",
+  "sections": [
+    {
+      "heading": "一致性、频率与力量发展",
+      "content": "对健康成年人，规律且渐进的抗阻训练能改善力量、肌肉量、功率、肌耐力和平衡等结果。证据综述强调持续执行比复杂方案更重要。力量提升在每周至少2次训练、动作采用完整可控活动范围、主要动作安排在训练前段以及每个动作2至3组时通常更有利。"
+    },
+    {
+      "heading": "增肌训练量与力竭",
+      "content": "肌肉增长通常受益于更高的每周训练量，综述中每个肌群每周至少约10组与更好的增肌结果相关，但应结合经验、恢复和耐受逐步达到。每组都做到瞬时力竭并非获得进步的必要条件；保留可控余力有助于管理疲劳与技术质量。"
+    },
+    {
+      "heading": "常见动作安全边界",
+      "content": "选择能够稳定控制的负荷与活动范围，优先保持动作技术和目标肌群发力，再逐步加重。大肌群、多关节或高强度动作通常放在小肌群、单关节或低强度动作之前。突然改变训练量、在明显疼痛或身体不适时勉强继续，都不属于一般健身建议；需要医学判断的疼痛、伤病或特殊状况应转交专业人员。"
+    }
+  ]
+}

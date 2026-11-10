@@ -23,6 +23,18 @@ public class Ingredient {
     /** 食材名称快照。 */
     @Column(name = "food_name", nullable = false, length = 50)
     private String foodName;
+
+    /** AI 最初识别出的展示名称；手工添加食材时为空。 */
+    @Column(name = "recognized_name", length = 100)
+    private String recognizedName;
+
+    /** 用于营养计算的标准食材主键，保留名称快照的同时记录明确映射。 */
+    @Column(name = "food_database_id")
+    private Long foodDatabaseId;
+
+    /** MANUAL、AI_AUTO_MATCHED 或 AI_USER_SELECTED。 */
+    @Column(name = "mapping_source", nullable = false, length = 30)
+    private String mappingSource = "MANUAL";
     
     /** 食材用量，单位：克。 */
     @Column(name = "weight", nullable = false, precision = 10, scale = 2)

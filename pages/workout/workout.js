@@ -8,6 +8,7 @@ Page({
     today: '',
     maxPlanDate: '',
     isFuture: false,
+    canGenerateAi: true,
     dateContextLabel: '今天',
     currentWorkout: null,
     loadingWorkout: false,
@@ -60,6 +61,7 @@ Page({
     const comparison = compareLocalDates(this.data.currentDate, this.data.today);
     this.setData({
       isFuture: comparison > 0,
+      canGenerateAi: comparison >= 0,
       dateContextLabel: comparison > 0 ? '训练计划' : (comparison < 0 ? '历史记录' : '今天')
     });
   },
@@ -105,6 +107,23 @@ Page({
     this._navigatingToEditor = true;
     wx.navigateTo({
       url: 'add-workout/add-workout?date=' + this.data.currentDate,
+      fail: () => { this._navigatingToEditor = false; }
+    });
+  },
+  /** 进入 A5 训练草稿页；AI 只支持今天或未来计划。 */
+  openAiDraft() {
+    if (!this.data.canGenerateAi) {
+      wx.showToast({ title: '历史日期只能补录实际训练', icon: 'none' });
+      return;
+    }
+    const currentWorkout = this.data.currentWorkout;
+    const canReplaceCancelled = currentWorkout && currentWorkout.status === 'CANCELLED';
+    if ((currentWorkout && !canReplaceCancelled)
+        || this.data.loadingWorkout || this.data.updatingStatus || this._navigatingToEditor) return;
+    this._navigatingToEditor = true;
+    wx.navigateTo({
+      url: 'ai-draft/ai-draft?date=' + this.data.currentDate
+        + (canReplaceCancelled ? '&replaceCancelled=1' : ''),
       fail: () => { this._navigatingToEditor = false; }
     });
   },

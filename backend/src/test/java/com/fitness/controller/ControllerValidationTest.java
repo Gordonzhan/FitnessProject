@@ -3,6 +3,8 @@ package com.fitness.controller;
 import com.fitness.auth.AuthContext;
 import com.fitness.service.DatabaseService;
 import com.fitness.service.RecipeService;
+import com.fitness.service.RecipeNutritionCalculator;
+import com.fitness.service.RecipeIntakeConfirmationService;
 import com.fitness.service.WorkoutService;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -23,7 +25,9 @@ class ControllerValidationTest {
     @Test
     void invalidRecipeIsRejectedBeforeServiceCall() throws Exception {
         RecipeService recipes = mock(RecipeService.class);
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new RecipeController(recipes))
+        MockMvc mvc = MockMvcBuilders.standaloneSetup(
+                        new RecipeController(recipes, mock(RecipeNutritionCalculator.class),
+                                mock(RecipeIntakeConfirmationService.class)))
                 .setControllerAdvice(advice).build();
 
         mvc.perform(post("/recipe/save").requestAttr(AuthContext.USER_ID_ATTRIBUTE, 1L)
@@ -32,6 +36,29 @@ class ControllerValidationTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(400));
         verifyNoInteractions(recipes);
+    }
+
+    @Test
+    void invalidIntakeConfirmationIsRejectedBeforeSave() throws Exception {
+        RecipeService recipes = mock(RecipeService.class);
+        RecipeNutritionCalculator calculator = mock(RecipeNutritionCalculator.class);
+        RecipeIntakeConfirmationService confirmations = mock(RecipeIntakeConfirmationService.class);
+        MockMvc mvc = MockMvcBuilders.standaloneSetup(
+                        new RecipeController(recipes, calculator, confirmations))
+                .setControllerAdvice(advice).build();
+
+        mvc.perform(post("/recipe/save-and-add-intake")
+                        .requestAttr(AuthContext.USER_ID_ATTRIBUTE, 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"recipe":{"recipeId":"meal-1","name":"测试菜谱","protein":0,
+                                "carb":0,"fat":0,"calorie":0,"ingredients":[{"foodName":"米饭","weight":100}]},
+                                "date":"2026-10-07","requestId":"confirm-1","mealSlot":"INVALID",
+                                "servingCount":1,"consumedTime":"12:30"}
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(400));
+        verifyNoInteractions(recipes, calculator, confirmations);
     }
 
     @Test
@@ -78,7 +105,9 @@ class ControllerValidationTest {
     @Test
     void invalidRecipeSourceIsRejectedBeforeServiceCall() throws Exception {
         RecipeService recipes = mock(RecipeService.class);
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new RecipeController(recipes))
+        MockMvc mvc = MockMvcBuilders.standaloneSetup(
+                        new RecipeController(recipes, mock(RecipeNutritionCalculator.class),
+                                mock(RecipeIntakeConfirmationService.class)))
                 .setControllerAdvice(advice).build();
 
         mvc.perform(get("/recipe/catalog").param("source", "ADMIN")
